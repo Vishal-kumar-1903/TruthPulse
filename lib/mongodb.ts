@@ -1,10 +1,10 @@
 import mongoose from 'mongoose';
 
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/truthpulse';
+const MONGODB_URI = process.env.MONGODB_URI;
 
 interface MongooseCache {
   conn: typeof mongoose | null;
-  promise: Promise<typeof mongoose> | null;
+  promise: Promise<typeof mongoose | null> | null;
 }
 
 declare global {
@@ -17,30 +17,54 @@ if (!global.mongooseCache) {
   global.mongooseCache = cached;
 }
 
-export async function connectDB(): Promise<typeof mongoose> {
-  // If already connected and readyState is 1 (connected), return
+export async function connectDB(): Promise<typeof mongoose | null> {
+  // If already connected and readyState is 1 (connected), return cached connection
   if (cached.conn && mongoose.connection.readyState === 1) {
     return cached.conn;
   }
 
+  // If running in Vercel or production and MONGODB_URI is not provided, gracefully return null
+  if (!MONGODB_URI) {
+    if (process.env.VERCEL) {
+      console.warn('⚠️ MONGODB_URI is not configured in Vercel. Running in resilient zero-config fallback mode.');
+      return null;
+    }
+  }
+
   if (!cached.promise) {
     const opts: mongoose.ConnectOptions = {
-      serverSelectionTimeoutMS: 5000,
+      serverSelectionTimeoutMS: 4000,
       autoIndex: true,
     };
 
     cached.promise = (async () => {
-      try {
-        console.log(`🔌 Connecting to MongoDB at: ${MONGODB_URI.replace(/:([^:@]{4})[^:@]*@/, ':****@')}`);
-        const conn = await mongoose.connect(MONGODB_URI, opts);
-        console.log(`✅ Successfully connected to MongoDB database: "${conn.connection.name}" on host: ${conn.connection.host}`);
-        return conn;
-      } catch (err: any) {
-        if (process.env.VERCEL) {
-          throw new Error('MONGODB_URI is not configured in Vercel. Please add your MongoDB Atlas connection string (MONGODB_URI) in Vercel Project Settings > Environment Variables.');
+      // 1. Try connecting to configured MONGODB_URI
+      if (MONGODB_URI) {
+        try {
+          console.log(`🔌 Connecting to MongoDB Atlas / Remote Cluster...`);
+          const conn = await mongoose.connect(MONGODB_URI, opts);
+          console.log(`✅ Successfully connected to MongoDB database: "${conn.connection.name}"`);
+          return conn;
+        } catch (err: any) {
+          console.warn(`⚠️ Configured MONGODB_URI failed (${err.message}).`);
+          if (process.env.VERCEL) {
+            return null;
+          }
         }
+      }
 
-        console.warn(`⚠️ Primary MongoDB connection failed (${err.message}). Starting embedded memory server fallback...`);
+      // 2. On Vercel, if MONGODB_URI was missing or failed, do NOT use MongoMemoryServer (read-only filesystem)
+      if (process.env.VERCEL) {
+        return null;
+      }
+
+      // 3. In local development only, attempt local MongoDB or MongoMemoryServer
+      try {
+        const localUri = 'mongodb://127.0.0.1:27017/truthpulse';
+        console.log(`🔌 Attempting local MongoDB at: ${localUri}`);
+        return await mongoose.connect(localUri, opts);
+      } catch (localErr: any) {
+        console.warn(`⚠️ Local MongoDB daemon unavailable (${localErr.message}). Starting embedded memory server fallback...`);
         try {
           const { MongoMemoryServer } = await import('mongodb-memory-server');
           const memoryServer = await MongoMemoryServer.create();
@@ -48,7 +72,8 @@ export async function connectDB(): Promise<typeof mongoose> {
           console.log(`✅ Connected to Embedded In-Memory MongoDB at: ${memUri}`);
           return await mongoose.connect(memUri);
         } catch (memErr: any) {
-          throw new Error(`Failed to connect to primary MongoDB (${err.message}) and memory server fallback failed (${memErr.message})`);
+          console.warn(`⚠️ Memory server unavailable: ${memErr.message}. Operating in stateless fallback mode.`);
+          return null;
         }
       }
     })();
@@ -58,7 +83,8 @@ export async function connectDB(): Promise<typeof mongoose> {
     cached.conn = await cached.promise;
   } catch (e) {
     cached.promise = null;
-    throw e;
+    cached.conn = null;
+    return null;
   }
 
   return cached.conn;

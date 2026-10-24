@@ -55,6 +55,7 @@ export interface ArticleItem {
   redVoters?: string[];
   isVerified: boolean;
   trustScore: number;
+  isPinned?: boolean;
   contentHash?: string;
   imageUrl?: string;
   createdAt?: string;
