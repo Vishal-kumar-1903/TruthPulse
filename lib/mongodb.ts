@@ -18,22 +18,25 @@ if (!global.mongooseCache) {
 }
 
 export async function connectDB(): Promise<typeof mongoose> {
-  if (cached.conn) {
+  // If already connected and readyState is 1 (connected), return
+  if (cached.conn && mongoose.connection.readyState === 1) {
     return cached.conn;
   }
 
   if (!cached.promise) {
-    const opts = {
-      bufferCommands: false,
-      serverSelectionTimeoutMS: 3000,
+    const opts: mongoose.ConnectOptions = {
+      serverSelectionTimeoutMS: 5000,
+      autoIndex: true,
     };
 
     cached.promise = (async () => {
       try {
-        console.log(`Connecting to MongoDB at: ${MONGODB_URI}`);
-        return await mongoose.connect(MONGODB_URI, opts);
-      } catch (err) {
-        console.warn('⚠️ Local MongoDB unreachable, starting embedded MongoDB Memory Server fallback...');
+        console.log(`🔌 Connecting to MongoDB at: ${MONGODB_URI.replace(/:([^:@]{4})[^:@]*@/, ':****@')}`);
+        const conn = await mongoose.connect(MONGODB_URI, opts);
+        console.log(`✅ Successfully connected to MongoDB database: "${conn.connection.name}" on host: ${conn.connection.host}`);
+        return conn;
+      } catch (err: any) {
+        console.warn(`⚠️ Primary MongoDB connection failed (${err.message}). Starting embedded memory server fallback...`);
         const { MongoMemoryServer } = await import('mongodb-memory-server');
         const memoryServer = await MongoMemoryServer.create();
         const memUri = memoryServer.getUri();
