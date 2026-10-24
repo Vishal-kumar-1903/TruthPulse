@@ -25,6 +25,7 @@ import { BreakingShort } from './BreakingShorts';
 import { AuthUser } from './AuthModal';
 import ReelActionSidebar from './ReelActionSidebar';
 import ReelCommentDrawer from './ReelCommentDrawer';
+import { SupportedLanguage, SUPPORTED_LANGUAGES, translateHeadline, getUIText } from '@/lib/translations';
 
 interface ReelsViewerProps {
   shorts: BreakingShort[];
@@ -34,6 +35,7 @@ interface ReelsViewerProps {
   currentUser: AuthUser | null;
   onRequireAuth: (reason?: string) => void;
   onOpenFullArticle?: (short: BreakingShort) => void;
+  currentLang?: SupportedLanguage;
 }
 
 export default function ReelsViewer({
@@ -43,7 +45,8 @@ export default function ReelsViewer({
   onClose,
   currentUser,
   onRequireAuth,
-  onOpenFullArticle
+  onOpenFullArticle,
+  currentLang = 'en'
 }: ReelsViewerProps) {
   const [activeIndex, setActiveIndex] = useState<number>(initialIndex);
   const [progress, setProgress] = useState<number>(0);
@@ -76,12 +79,16 @@ export default function ReelsViewer({
     window.speechSynthesis.cancel();
     if (!isAudioOn) return;
 
-    const speechText = `${short.badge}. ${short.headline}. ${short.snippet}`;
+    const langObj = SUPPORTED_LANGUAGES.find(l => l.code === currentLang);
+    const speechCode = langObj?.speechCode || 'en-IN';
+
+    const translatedHeadline = currentLang !== 'en' ? translateHeadline(short.headline, currentLang) : short.headline;
+    const speechText = `${short.badge}. ${translatedHeadline}. ${short.snippet}`;
     const utterance = new SpeechSynthesisUtterance(speechText);
-    utterance.rate = 1.1;
-    utterance.lang = 'en-IN';
+    utterance.rate = 1.05;
+    utterance.lang = speechCode;
     window.speechSynthesis.speak(utterance);
-  }, [isAudioOn]);
+  }, [isAudioOn, currentLang]);
 
   const toggleAudio = useCallback(() => {
     if (isAudioOn) {
@@ -467,7 +474,7 @@ export default function ReelsViewer({
 
             {/* Bold 2-Line Headline */}
             <h2 className="text-base sm:text-lg font-black text-white leading-tight tracking-tight drop-shadow-md line-clamp-2">
-              {activeShort.headline}
+              {currentLang !== 'en' ? translateHeadline(activeShort.headline, currentLang) : activeShort.headline}
             </h2>
 
             {/* 40-Word AI-Synthesized Bullet Takeaway */}

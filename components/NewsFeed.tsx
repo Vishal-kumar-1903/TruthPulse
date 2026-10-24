@@ -1,10 +1,11 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import NewsCard, { ArticleItem } from './NewsCard';
 import NativeSponsoredCard, { DEFAULT_PARTNER_CARDS } from './NativeSponsoredCard';
 import BreakingShorts, { DEFAULT_BREAKING_SHORTS, BreakingShort } from './BreakingShorts';
 import { AuthUser } from './AuthModal';
+import { SupportedLanguage, getUIText, translateHeadline } from '@/lib/translations';
 import { 
   Flame, 
   MapPin, 
@@ -15,7 +16,8 @@ import {
   Radio, 
   ArrowRight,
   TrendingUp,
-  Clock
+  Clock,
+  Wifi
 } from 'lucide-react';
 import { ALL_INDIAN_STATES } from './SidebarDrawer';
 
@@ -33,6 +35,7 @@ interface NewsFeedProps {
   currentUser: AuthUser | null;
   onRequireAuth: (reason?: string) => void;
   onOpenReels?: (index: number) => void;
+  currentLang?: SupportedLanguage;
 }
 
 export default function NewsFeed({
@@ -48,16 +51,57 @@ export default function NewsFeed({
   onSelectArticle,
   currentUser,
   onRequireAuth,
-  onOpenReels
+  onOpenReels,
+  currentLang = 'en'
 }: NewsFeedProps) {
+  // Live SSE Wire Alerts
+  const [liveSseHeadline, setLiveSseHeadline] = useState<string | null>(null);
+  const [sseConnected, setSseConnected] = useState<boolean>(false);
+
+  useEffect(() => {
+    let eventSource: EventSource | null = null;
+    try {
+      eventSource = new EventSource('/api/stream/breaking');
+      
+      eventSource.onopen = () => {
+        setSseConnected(true);
+      };
+
+      eventSource.addEventListener('breaking_alert', (e: MessageEvent) => {
+        try {
+          const data = JSON.parse(e.data);
+          if (data && data.headline) {
+            setLiveSseHeadline(data.headline);
+          }
+        } catch (err) {}
+      });
+
+      eventSource.onerror = () => {
+        setSseConnected(false);
+      };
+    } catch (e) {
+      // Fallback
+    }
+
+    return () => {
+      if (eventSource) {
+        eventSource.close();
+      }
+    };
+  }, []);
+
   // Identify Hero / Featured Story (pinned or highest trustScore / first article)
   const heroArticle = articles.length > 0 ? articles[0] : null;
   const gridArticles = articles.length > 1 ? articles.slice(1) : [];
 
-  // Breaking ticker headline
-  const breakingHeadline = heroArticle 
+  // Breaking ticker headline (prioritizes live SSE alert, then hero article, then default)
+  const rawBreaking = liveSseHeadline || (heroArticle 
     ? heroArticle.title 
-    : 'Parliament clears landmark Electoral Transparency and Digital Infrastructure Bill in New Delhi.';
+    : 'Parliament clears landmark Electoral Transparency and Digital Infrastructure Bill in New Delhi.');
+
+  const breakingHeadline = currentLang && currentLang !== 'en'
+    ? translateHeadline(rawBreaking, currentLang)
+    : rawBreaking;
 
   const hasActiveFilter = (currentCategory && currentCategory !== 'ALL' && currentCategory !== 'Home') || 
                           (currentState && currentState !== 'All India');
@@ -71,7 +115,7 @@ export default function NewsFeed({
           
           <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-red-600 text-white font-black text-[11px] uppercase tracking-wider shrink-0 animate-pulse">
             <Radio className="w-3.5 h-3.5" />
-            <span>BREAKING NEWS</span>
+            <span>{getUIText('breakingNews', currentLang)}</span>
           </div>
 
           <div className="flex-1 overflow-hidden min-w-0">
@@ -80,9 +124,10 @@ export default function NewsFeed({
             </p>
           </div>
 
-          <span className="hidden md:inline text-[11px] font-mono text-slate-400 shrink-0">
-            Real-Time Wire Feed
-          </span>
+          <div className="hidden md:flex items-center gap-1.5 text-[11px] font-mono text-slate-400 shrink-0">
+            <span className={`w-2 h-2 rounded-full ${sseConnected ? 'bg-emerald-500 animate-ping' : 'bg-amber-500'}`}></span>
+            <span>{getUIText('realTimeWire', currentLang)}</span>
+          </div>
         </div>
       </div>
 
@@ -218,7 +263,7 @@ export default function NewsFeed({
           <div className="flex items-center gap-2 mb-3">
             <span className="w-2.5 h-2.5 rounded-full bg-red-600 animate-ping"></span>
             <h2 className="text-xs sm:text-sm font-black uppercase tracking-wider text-red-600 dark:text-red-400">
-              Top Story & Editorial Lead
+              {getUIText('topStoryLead', currentLang)}
             </h2>
           </div>
 
@@ -228,6 +273,7 @@ export default function NewsFeed({
             currentUser={currentUser}
             onRequireAuth={onRequireAuth}
             onOpenCryptoSeal={onOpenCryptoSeal} 
+            currentLang={currentLang}
           />
         </div>
       )}
@@ -237,13 +283,13 @@ export default function NewsFeed({
         <div id="news-grid-section" className="w-full max-w-full">
           <div className="flex items-center justify-between pb-2 mb-6 border-b border-slate-200 dark:border-slate-800">
             <h2 className="text-base sm:text-lg font-black tracking-tight text-slate-900 dark:text-slate-100 flex items-center gap-2">
-              <span>Verified Dispatches</span>
+              <span>{getUIText('verifiedDispatches', currentLang)}</span>
               <span className="text-xs font-mono font-normal text-slate-500">
                 ({gridArticles.length} stories)
               </span>
             </h2>
             <span className="text-xs font-mono text-slate-400">
-              Double-Verified Feed
+              {getUIText('doubleVerifiedFeed', currentLang)}
             </span>
           </div>
 
@@ -256,6 +302,7 @@ export default function NewsFeed({
                   currentUser={currentUser}
                   onRequireAuth={onRequireAuth}
                   onOpenCryptoSeal={onOpenCryptoSeal}
+                  currentLang={currentLang}
                 />
 
                 {/* In-feed native sponsored partner card after index 2 */}

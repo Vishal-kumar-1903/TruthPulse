@@ -20,6 +20,7 @@ import {
   Link as LinkIcon
 } from 'lucide-react';
 import { AuthUser } from './AuthModal';
+import { SupportedLanguage, translateHeadline, getUIText } from '@/lib/translations';
 
 export interface ArticleItem {
   _id: string;
@@ -69,6 +70,7 @@ interface NewsCardProps {
   onRequireAuth: (reason?: string) => void;
   onOpenCryptoSeal?: (article: ArticleItem) => void;
   isHero?: boolean;
+  currentLang?: SupportedLanguage;
 }
 
 export default function NewsCard({ 
@@ -76,7 +78,8 @@ export default function NewsCard({
   currentUser, 
   onRequireAuth, 
   onOpenCryptoSeal,
-  isHero = false
+  isHero = false,
+  currentLang = 'en'
 }: NewsCardProps) {
   const [upvotes, setUpvotes] = useState(article.upvotes || 0);
   const [downvotes, setDownvotes] = useState(article.downvotes || 0);
@@ -289,6 +292,10 @@ export default function NewsCard({
     ? `${article.city}, ${article.state || ''}` 
     : article.state || article.location?.city || article.location?.state || article.region || 'India';
 
+  const displayTitle = currentLang && currentLang !== 'en' 
+    ? translateHeadline(article.title, currentLang) 
+    : article.title;
+
   return (
     <div className={`bg-white dark:bg-slate-900 border rounded-2xl sm:rounded-3xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 group font-sans w-full max-w-full ${
       isHero ? 'grid grid-cols-1 lg:grid-cols-12 gap-0' : 'flex flex-col justify-between'
@@ -356,7 +363,7 @@ export default function NewsCard({
           isVerified && (
             <div className="absolute bottom-2 left-3 py-0.5 px-2 rounded-md bg-emerald-600/90 text-white text-[10px] font-bold flex items-center gap-1 shadow-sm backdrop-blur-sm">
               <CheckCircle2 className="w-3 h-3" />
-              <span>Verified by Editor</span>
+              <span>{getUIText('verifiedByEditor', currentLang)}</span>
             </div>
           )
         )}
@@ -380,7 +387,7 @@ export default function NewsCard({
 
           {/* Headline */}
           <h3 className={`${isHero ? 'text-lg sm:text-2xl lg:text-3xl font-black' : 'text-base sm:text-lg font-bold'} text-slate-900 dark:text-slate-100 group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors line-clamp-2 sm:line-clamp-3 leading-snug mb-2.5`}>
-            {article.title}
+            {displayTitle}
           </h3>
 
           {/* Observer Mode Content (60-80w summary + 3 bullets) */}
@@ -436,8 +443,7 @@ export default function NewsCard({
                 title={currentUser ? 'Cast Sahi News Vote (Toggle)' : 'Login required to vote'}
               >
                 <ThumbsUp className={`w-3.5 h-3.5 ${userVote === 'GREEN' ? 'fill-current' : ''}`} />
-                <span>Sahi</span>
-                <span className="hidden xs:inline">News</span>
+                <span>{getUIText('sahiNews', currentLang)}</span>
                 <span className="font-mono text-[10px] sm:text-[11px] px-1 py-0.2 rounded bg-emerald-600/20">
                   {upvotes}
                 </span>
@@ -455,8 +461,7 @@ export default function NewsCard({
                 title={currentUser ? 'Cast Fake News Flag (Toggle)' : 'Login required to flag'}
               >
                 <ThumbsDown className={`w-3.5 h-3.5 ${userVote === 'RED' ? 'fill-current' : ''}`} />
-                <span>Fake</span>
-                <span className="hidden xs:inline">News</span>
+                <span>{getUIText('fakeNews', currentLang)}</span>
                 <span className="font-mono text-[10px] sm:text-[11px] px-1 py-0.2 rounded bg-red-600/20">
                   {downvotes}
                 </span>

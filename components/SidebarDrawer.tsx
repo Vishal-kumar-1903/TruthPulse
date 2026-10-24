@@ -32,6 +32,8 @@ import {
   Layers
 } from 'lucide-react';
 import { AuthUser } from './AuthModal';
+import LanguageSelector from './LanguageSelector';
+import { SupportedLanguage, getUIText } from '@/lib/translations';
 
 export const ALL_INDIAN_STATES = [
   'All India',
@@ -75,6 +77,8 @@ interface SidebarDrawerProps {
   onToggleDarkMode: () => void;
   onOpenLiveStream?: () => void;
   onOpenReels?: () => void;
+  currentLang?: SupportedLanguage;
+  onSelectLang?: (lang: SupportedLanguage) => void;
 }
 
 export default function SidebarDrawer({
@@ -92,7 +96,9 @@ export default function SidebarDrawer({
   darkMode,
   onToggleDarkMode,
   onOpenLiveStream,
-  onOpenReels
+  onOpenReels,
+  currentLang = 'en',
+  onSelectLang
 }: SidebarDrawerProps) {
   const [isStatesAccordionOpen, setIsStatesAccordionOpen] = useState(true);
   const [touchStartX, setTouchStartX] = useState<number | null>(null);
@@ -354,7 +360,7 @@ export default function SidebarDrawer({
                   >
                     <div className="flex items-center gap-2.5">
                       <CategoryIcon className={`w-4 h-4 ${item.color}`} />
-                      <span>{item.name}</span>
+                      <span>{getUIText(item.name.toLowerCase(), currentLang)}</span>
                     </div>
                     {isCatActive && <span className="w-1.5 h-1.5 rounded-full bg-red-500"></span>}
                   </button>
@@ -413,6 +419,17 @@ export default function SidebarDrawer({
                   <span>Theme: {darkMode ? 'Dark Mode' : 'Light Mode'}</span>
                 </div>
               </button>
+
+              {/* Vernacular Language Selector */}
+              {onSelectLang && (
+                <div className="pt-2 border-t border-slate-900 mt-2">
+                  <LanguageSelector
+                    currentLang={currentLang}
+                    onSelectLang={onSelectLang}
+                    variant="drawer"
+                  />
+                </div>
+              )}
 
               {currentUser && (
                 <button

@@ -23,6 +23,8 @@ import {
   MapPin
 } from 'lucide-react';
 import { AuthUser } from './AuthModal';
+import LanguageSelector from './LanguageSelector';
+import { SupportedLanguage, getUIText } from '@/lib/translations';
 
 export const CATEGORIES = [
   'Home',
@@ -50,6 +52,8 @@ interface NavbarProps {
   currentUser: AuthUser | null;
   onOpenAuthModal: () => void;
   onLogout: () => void;
+  currentLang?: SupportedLanguage;
+  onSelectLang?: (lang: SupportedLanguage) => void;
 }
 
 export default function Navbar({
@@ -67,7 +71,9 @@ export default function Navbar({
   onOpenReels,
   currentUser,
   onOpenAuthModal,
-  onLogout
+  onLogout,
+  currentLang = 'en',
+  onSelectLang
 }: NavbarProps) {
   const [searchInput, setSearchInput] = useState('');
   const [showNotifications, setShowNotifications] = useState(false);
@@ -237,6 +243,15 @@ export default function Navbar({
               )}
             </div>
 
+            {/* Language Selector Dropdown */}
+            {onSelectLang && (
+              <LanguageSelector
+                currentLang={currentLang}
+                onSelectLang={onSelectLang}
+                variant="navbar"
+              />
+            )}
+
             {/* Dark Mode Toggle */}
             <button
               onClick={onToggleDarkMode}
@@ -320,6 +335,7 @@ export default function Navbar({
           <div className="flex items-center space-x-1 sm:space-x-2 shrink-0">
             {CATEGORIES.map((category) => {
               const isActive = (currentCategory === category) || (!currentCategory && category === 'Home');
+              const localizedLabel = getUIText(category.toLowerCase(), currentLang);
               return (
                 <button
                   key={category}
@@ -330,7 +346,7 @@ export default function Navbar({
                       : 'text-slate-700 dark:text-slate-300 hover:text-red-600 dark:hover:text-red-400 hover:bg-slate-50 dark:hover:bg-slate-900/40'
                   }`}
                 >
-                  <span>{category}</span>
+                  <span>{localizedLabel}</span>
                   {isActive && (
                     <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-red-600 dark:bg-red-500 rounded-full"></span>
                   )}

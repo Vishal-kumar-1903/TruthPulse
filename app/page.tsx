@@ -11,6 +11,7 @@ import LiveStreamModal from '@/components/LiveStreamModal';
 import ReelsViewer from '@/components/ReelsViewer';
 import { DEFAULT_BREAKING_SHORTS } from '@/components/BreakingShorts';
 import { ArticleItem } from '@/components/NewsCard';
+import { SupportedLanguage } from '@/lib/translations';
 import { ShieldCheck, Cpu } from 'lucide-react';
 
 function NewsPortalContent() {
@@ -40,12 +41,17 @@ function NewsPortalContent() {
   const [isReelsOpen, setIsReelsOpen] = useState<boolean>(false);
   const [reelsInitialIndex, setReelsInitialIndex] = useState<number>(0);
   const [selectedSealArticle, setSelectedSealArticle] = useState<ArticleItem | null>(null);
+  const [currentLang, setCurrentLang] = useState<SupportedLanguage>('en');
 
   // Authenticated User State (Loaded from localStorage)
   const [currentUser, setCurrentUser] = useState<AuthUser | null>(null);
 
   useEffect(() => {
     try {
+      const savedLang = localStorage.getItem('truthpulse_lang') as SupportedLanguage;
+      if (savedLang) {
+        setCurrentLang(savedLang);
+      }
       const savedUser = localStorage.getItem('truthpulse_user');
       if (savedUser) {
         setCurrentUser(JSON.parse(savedUser));
@@ -204,6 +210,8 @@ function NewsPortalContent() {
           setIsAuthModalOpen(true);
         }}
         onLogout={handleLogout}
+        currentLang={currentLang}
+        onSelectLang={setCurrentLang}
       />
 
       {/* 2. SLEEK DARK SLIDING SIDEBAR DRAWER (Core Hub, Geo Accordion, Categories, User/Settings) */}
@@ -226,6 +234,8 @@ function NewsPortalContent() {
         onToggleDarkMode={() => setDarkMode(!darkMode)}
         onOpenLiveStream={() => setIsLiveStreamOpen(true)}
         onOpenReels={() => handleOpenReels(0)}
+        currentLang={currentLang}
+        onSelectLang={setCurrentLang}
       />
 
       {/* 3. MAIN NEWS FEED & RESPONSIVE GRID (Shorts Reel, State Pills, Breaking Banner, Cards) */}
@@ -243,6 +253,7 @@ function NewsPortalContent() {
           currentUser={currentUser}
           onRequireAuth={handleRequireAuth}
           onOpenReels={(idx) => handleOpenReels(idx)}
+          currentLang={currentLang}
         />
       </main>
 
@@ -254,6 +265,7 @@ function NewsPortalContent() {
         onClose={() => setIsReelsOpen(false)}
         currentUser={currentUser}
         onRequireAuth={handleRequireAuth}
+        currentLang={currentLang}
         onOpenFullArticle={(short) => {
           setIsReelsOpen(false);
           const matched = articles.find(a => a._id === short.fullArticleId || a.title.toLowerCase().includes(short.headline.slice(0, 25).toLowerCase()));
