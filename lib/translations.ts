@@ -2,20 +2,20 @@ export type SupportedLanguage = 'en' | 'hi' | 'bn' | 'mr' | 'te' | 'ta' | 'gu';
 
 export interface LanguageOption {
   code: SupportedLanguage;
+  shortCode: string;
   name: string;
   nativeName: string;
-  flag: string;
   speechCode: string;
 }
 
 export const SUPPORTED_LANGUAGES: LanguageOption[] = [
-  { code: 'en', name: 'English', nativeName: 'English', flag: '🇬🇧', speechCode: 'en-IN' },
-  { code: 'hi', name: 'Hindi', nativeName: 'हिन्दी', flag: '🇮🇳', speechCode: 'hi-IN' },
-  { code: 'bn', name: 'Bengali', nativeName: 'বাংলা', flag: '🇮🇳', speechCode: 'bn-IN' },
-  { code: 'mr', name: 'Marathi', nativeName: 'मराठी', flag: '🇮🇳', speechCode: 'mr-IN' },
-  { code: 'te', name: 'Telugu', nativeName: 'తెలుగు', flag: '🇮🇳', speechCode: 'te-IN' },
-  { code: 'ta', name: 'Tamil', nativeName: 'தமிழ்', flag: '🇮🇳', speechCode: 'ta-IN' },
-  { code: 'gu', name: 'Gujarati', nativeName: 'ગુજરાતી', flag: '🇮🇳', speechCode: 'gu-IN' }
+  { code: 'en', shortCode: 'EN', name: 'English', nativeName: 'English', speechCode: 'en-IN' },
+  { code: 'hi', shortCode: 'हि', name: 'Hindi', nativeName: 'हिन्दी', speechCode: 'hi-IN' },
+  { code: 'bn', shortCode: 'বা', name: 'Bengali', nativeName: 'বাংলা', speechCode: 'bn-IN' },
+  { code: 'mr', shortCode: 'म', name: 'Marathi', nativeName: 'मराठी', speechCode: 'mr-IN' },
+  { code: 'te', shortCode: 'తె', name: 'Telugu', nativeName: 'తెలుగు', speechCode: 'te-IN' },
+  { code: 'ta', shortCode: 'த', name: 'Tamil', nativeName: 'தமிழ்', speechCode: 'ta-IN' },
+  { code: 'gu', shortCode: 'ગુ', name: 'Gujarati', nativeName: 'ગુજરાતી', speechCode: 'gu-IN' }
 ];
 
 export const UI_TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
