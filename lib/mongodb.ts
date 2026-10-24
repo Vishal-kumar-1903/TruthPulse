@@ -1,5 +1,8 @@
 import mongoose from 'mongoose';
 
+// Disable Mongoose command buffering on disconnected states so operations fail-fast or use in-memory fallbacks
+mongoose.set('bufferCommands', false);
+
 const MONGODB_URI = process.env.MONGODB_URI;
 
 interface MongooseCache {
@@ -33,7 +36,7 @@ export async function connectDB(): Promise<typeof mongoose | null> {
 
   if (!cached.promise) {
     const opts: mongoose.ConnectOptions = {
-      serverSelectionTimeoutMS: 4000,
+      serverSelectionTimeoutMS: 3000,
       autoIndex: true,
     };
 
@@ -53,7 +56,7 @@ export async function connectDB(): Promise<typeof mongoose | null> {
         }
       }
 
-      // 2. On Vercel, if MONGODB_URI was missing or failed, do NOT use MongoMemoryServer (read-only filesystem)
+      // 2. On Vercel, if MONGODB_URI was missing or failed, do NOT use MongoMemoryServer
       if (process.env.VERCEL) {
         return null;
       }
