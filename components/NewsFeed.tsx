@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import NewsCard, { ArticleItem } from './NewsCard';
 import NativeSponsoredCard, { DEFAULT_PARTNER_CARDS } from './NativeSponsoredCard';
+import AdSidebar from './AdSidebar';
 import BreakingShorts, { DEFAULT_BREAKING_SHORTS, BreakingShort } from './BreakingShorts';
 import { AuthUser } from './AuthModal';
 import { SupportedLanguage, getUIText, translateHeadline } from '@/lib/translations';
@@ -305,31 +306,39 @@ export default function NewsFeed({
             </span>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {gridArticles.map((article, index) => (
-              <React.Fragment key={article._id}>
-                
-                <NewsCard
-                  article={article}
-                  currentUser={currentUser}
-                  onRequireAuth={onRequireAuth}
-                  onOpenCryptoSeal={onOpenCryptoSeal}
-                  onOpenForensics={onOpenForensics}
-                  onOpenGazetteRag={onOpenGazetteRag}
-                  onOpenCommunityNotes={onOpenCommunityNotes}
-                  onOpenUpiTip={onOpenUpiTip}
-                  currentLang={currentLang}
-                />
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+            {/* Left 8/9 Columns: Verified News Card Grid */}
+            <div className="lg:col-span-8 xl:col-span-9">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {gridArticles.map((article, index) => (
+                  <React.Fragment key={article._id}>
+                    <NewsCard
+                      article={article}
+                      currentUser={currentUser}
+                      onRequireAuth={onRequireAuth}
+                      onOpenCryptoSeal={onOpenCryptoSeal}
+                      onOpenForensics={onOpenForensics}
+                      onOpenGazetteRag={onOpenGazetteRag}
+                      onOpenCommunityNotes={onOpenCommunityNotes}
+                      onOpenUpiTip={onOpenUpiTip}
+                      currentLang={currentLang}
+                    />
 
-                {/* In-feed native sponsored partner card after index 2 */}
-                {index === 2 && (
-                  <div className="md:col-span-2 lg:col-span-3">
-                    <NativeSponsoredCard partner={DEFAULT_PARTNER_CARDS[0]} />
-                  </div>
-                )}
+                    {/* In-feed native sponsored partner card after index 2 */}
+                    {index === 2 && (
+                      <div className="md:col-span-2">
+                        <NativeSponsoredCard partner={DEFAULT_PARTNER_CARDS[0]} />
+                      </div>
+                    )}
+                  </React.Fragment>
+                ))}
+              </div>
+            </div>
 
-              </React.Fragment>
-            ))}
+            {/* Right 4/3 Columns: Sticky Infinite Auto-Scrolling Ad Banner */}
+            <div className="lg:col-span-4 xl:col-span-3 space-y-6 lg:sticky lg:top-24">
+              <AdSidebar />
+            </div>
           </div>
         </div>
       )}

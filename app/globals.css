@@ -37,6 +37,22 @@
   animation: fadeIn 0.25s ease-out forwards;
 }
 
+@keyframes verticalMarquee {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(-50%);
+  }
+}
+
+.animate-vertical-marquee {
+  animation: verticalMarquee 35s linear infinite;
+}
+.animate-vertical-marquee:hover {
+  animation-play-state: paused;
+}
+
 /* Custom scrollbars */
 ::-webkit-scrollbar {
   width: 6px;
