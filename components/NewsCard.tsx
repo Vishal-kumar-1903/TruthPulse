@@ -17,7 +17,12 @@ import {
   Cpu,
   ChevronDown,
   ChevronUp,
-  Link as LinkIcon
+  Link as LinkIcon,
+  Scan,
+  Scale,
+  Users,
+  Heart,
+  Coins
 } from 'lucide-react';
 import { AuthUser } from './AuthModal';
 import { SupportedLanguage, translateHeadline, getUIText } from '@/lib/translations';
@@ -69,6 +74,10 @@ interface NewsCardProps {
   currentUser: AuthUser | null;
   onRequireAuth: (reason?: string) => void;
   onOpenCryptoSeal?: (article: ArticleItem) => void;
+  onOpenForensics?: (imageUrl: string, title: string) => void;
+  onOpenGazetteRag?: (claim: string) => void;
+  onOpenCommunityNotes?: (articleId: string, articleTitle: string) => void;
+  onOpenUpiTip?: (authorName: string, articleTitle: string) => void;
   isHero?: boolean;
   currentLang?: SupportedLanguage;
 }
@@ -78,6 +87,10 @@ export default function NewsCard({
   currentUser, 
   onRequireAuth, 
   onOpenCryptoSeal,
+  onOpenForensics,
+  onOpenGazetteRag,
+  onOpenCommunityNotes,
+  onOpenUpiTip,
   isHero = false,
   currentLang = 'en'
 }: NewsCardProps) {
@@ -336,11 +349,27 @@ export default function NewsCard({
           )}
         </div>
 
-        {/* Dual Mode Switcher Button (Observer vs Investigator) */}
-        <div className="absolute top-3 right-3">
+        {/* Dual Mode Switcher & Forensics Buttons */}
+        <div className="absolute top-3 right-3 flex items-center gap-1.5">
+          {onOpenForensics && (
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                onOpenForensics(article.imageUrl || '', article.title);
+              }}
+              className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-black/70 hover:bg-black/90 text-[10px] font-mono text-cyan-400 backdrop-blur-md border border-cyan-500/40 transition shadow-sm"
+              title="Inspect C2PA AI Deepfake Forensics & ELA Spectrum"
+            >
+              <Scan className="w-3 h-3 text-cyan-400" />
+              <span className="hidden xs:inline">C2PA</span>
+              <span>Forensics</span>
+            </button>
+          )}
+
           <button
             onClick={() => setViewMode(viewMode === 'OBSERVER' ? 'INVESTIGATOR' : 'OBSERVER')}
-            className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-black/70 hover:bg-black/90 text-[10px] font-mono text-cyan-300 backdrop-blur-md border border-cyan-500/30 transition shadow-sm"
+            className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-black/70 hover:bg-black/90 text-[10px] font-mono text-slate-200 backdrop-blur-md border border-white/20 transition shadow-sm"
             title="Toggle Observer Mode / Investigator Mode"
           >
             {viewMode === 'OBSERVER' ? <Eye className="w-3 h-3 text-emerald-400" /> : <Cpu className="w-3 h-3 text-cyan-400" />}
@@ -420,6 +449,21 @@ export default function NewsCard({
                   Source: <a href={article.sources[0].url} target="_blank" rel="noreferrer" className="text-cyan-400 underline">{article.sources[0].name}</a>
                 </div>
               )}
+
+              {/* Gazette RAG Trigger */}
+              {onOpenGazetteRag && (
+                <button
+                  type="button"
+                  onClick={() => onOpenGazetteRag(article.title)}
+                  className="w-full py-1.5 px-2.5 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 font-bold text-[11px] flex items-center justify-between transition border border-amber-500/30"
+                >
+                  <span className="flex items-center gap-1.5">
+                    <Scale className="w-3.5 h-3.5" />
+                    <span>e-Gazette of India RAG Proof</span>
+                  </span>
+                  <span className="text-[10px] underline">Inspect Statute</span>
+                </button>
+              )}
             </div>
           )}
         </div>
@@ -469,8 +513,32 @@ export default function NewsCard({
 
             </div>
 
-            {/* Right Actions: Comments, Crypto Seal & Share */}
+            {/* Right Actions: Community Notes, Micro-Tip, Comments, Crypto Seal & Share */}
             <div className="flex items-center gap-1 text-slate-400">
+              {/* Community Notes Trigger */}
+              {onOpenCommunityNotes && (
+                <button
+                  type="button"
+                  onClick={() => onOpenCommunityNotes(article._id, article.title)}
+                  className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-purple-400 hover:text-purple-300 transition"
+                  title="Community Notes (Twitter/X Bridging Algorithm)"
+                >
+                  <Users className="w-3.5 h-3.5" />
+                </button>
+              )}
+
+              {/* UPI Micro-Tip Trigger */}
+              {onOpenUpiTip && (
+                <button
+                  type="button"
+                  onClick={() => onOpenUpiTip(article.author || 'Ground Bureau', article.title)}
+                  className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-emerald-500 hover:text-emerald-400 transition"
+                  title="Tip Ground Reporter with UPI"
+                >
+                  <Heart className="w-3.5 h-3.5 fill-current opacity-80" />
+                </button>
+              )}
+
               <button
                 onClick={() => setShowComments(!showComments)}
                 className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-400 transition flex items-center gap-1"

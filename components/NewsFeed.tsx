@@ -31,6 +31,10 @@ interface NewsFeedProps {
   onSelectState: (state: string) => void;
   onClearFilters: () => void;
   onOpenCryptoSeal?: (article: ArticleItem) => void;
+  onOpenForensics?: (imageUrl: string, title: string) => void;
+  onOpenGazetteRag?: (claim: string) => void;
+  onOpenCommunityNotes?: (articleId: string, articleTitle: string) => void;
+  onOpenUpiTip?: (authorName: string, articleTitle: string) => void;
   onSelectArticle?: (article: ArticleItem) => void;
   currentUser: AuthUser | null;
   onRequireAuth: (reason?: string) => void;
@@ -48,6 +52,10 @@ export default function NewsFeed({
   onSelectState,
   onClearFilters,
   onOpenCryptoSeal,
+  onOpenForensics,
+  onOpenGazetteRag,
+  onOpenCommunityNotes,
+  onOpenUpiTip,
   onSelectArticle,
   currentUser,
   onRequireAuth,
@@ -273,6 +281,10 @@ export default function NewsFeed({
             currentUser={currentUser}
             onRequireAuth={onRequireAuth}
             onOpenCryptoSeal={onOpenCryptoSeal} 
+            onOpenForensics={onOpenForensics}
+            onOpenGazetteRag={onOpenGazetteRag}
+            onOpenCommunityNotes={onOpenCommunityNotes}
+            onOpenUpiTip={onOpenUpiTip}
             currentLang={currentLang}
           />
         </div>
@@ -302,6 +314,10 @@ export default function NewsFeed({
                   currentUser={currentUser}
                   onRequireAuth={onRequireAuth}
                   onOpenCryptoSeal={onOpenCryptoSeal}
+                  onOpenForensics={onOpenForensics}
+                  onOpenGazetteRag={onOpenGazetteRag}
+                  onOpenCommunityNotes={onOpenCommunityNotes}
+                  onOpenUpiTip={onOpenUpiTip}
                   currentLang={currentLang}
                 />
 

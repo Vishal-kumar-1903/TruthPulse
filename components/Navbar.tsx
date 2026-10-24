@@ -20,7 +20,8 @@ import {
   Coins, 
   ShieldCheck, 
   SlidersHorizontal,
-  MapPin
+  MapPin,
+  MessageCircle
 } from 'lucide-react';
 import { AuthUser } from './AuthModal';
 import LanguageSelector from './LanguageSelector';
@@ -54,6 +55,7 @@ interface NavbarProps {
   onLogout: () => void;
   currentLang?: SupportedLanguage;
   onSelectLang?: (lang: SupportedLanguage) => void;
+  onOpenWhatsAppTipline?: () => void;
 }
 
 export default function Navbar({
@@ -73,7 +75,8 @@ export default function Navbar({
   onOpenAuthModal,
   onLogout,
   currentLang = 'en',
-  onSelectLang
+  onSelectLang,
+  onOpenWhatsAppTipline
 }: NavbarProps) {
   const [searchInput, setSearchInput] = useState('');
   const [showNotifications, setShowNotifications] = useState(false);
@@ -209,6 +212,19 @@ export default function Navbar({
               <Flame className="w-3.5 h-3.5 fill-current animate-pulse" />
               <span>REELS</span>
             </button>
+
+            {/* WHATSAPP FACT-CHECK TIPLINE BUTTON */}
+            {onOpenWhatsAppTipline && (
+              <button
+                type="button"
+                onClick={onOpenWhatsAppTipline}
+                className="hidden xs:flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-[10px] sm:text-[11px] tracking-wide transition shadow-sm shrink-0"
+                title="Open WhatsApp Fact-Check Tipline Bot"
+              >
+                <MessageCircle className="w-3.5 h-3.5 fill-current" />
+                <span>WhatsApp Bot</span>
+              </button>
+            )}
 
             {/* Notifications Dropdown */}
             <div className="relative shrink-0 z-50">

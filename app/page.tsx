@@ -12,6 +12,13 @@ import ReelsViewer from '@/components/ReelsViewer';
 import { DEFAULT_BREAKING_SHORTS } from '@/components/BreakingShorts';
 import { ArticleItem } from '@/components/NewsCard';
 import { SupportedLanguage } from '@/lib/translations';
+import MediaForensicsModal from '@/components/MediaForensicsModal';
+import GazetteRagModal from '@/components/GazetteRagModal';
+import CommunityNotesDrawer from '@/components/CommunityNotesDrawer';
+import WhatsAppFactCheckModal from '@/components/WhatsAppFactCheckModal';
+import UpiTipModal from '@/components/UpiTipModal';
+import { analyzeMediaForensics, MediaForensicReport } from '@/lib/forensics';
+import { queryGazetteRag, GazetteRagResult } from '@/lib/ragEngine';
 import { ShieldCheck, Cpu } from 'lucide-react';
 
 function NewsPortalContent() {
@@ -42,6 +49,13 @@ function NewsPortalContent() {
   const [reelsInitialIndex, setReelsInitialIndex] = useState<number>(0);
   const [selectedSealArticle, setSelectedSealArticle] = useState<ArticleItem | null>(null);
   const [currentLang, setCurrentLang] = useState<SupportedLanguage>('en');
+
+  // Next-Gen Modern Modal States
+  const [selectedForensicReport, setSelectedForensicReport] = useState<MediaForensicReport | null>(null);
+  const [selectedGazetteResult, setSelectedGazetteResult] = useState<GazetteRagResult | null>(null);
+  const [selectedCommunityNotesArticle, setSelectedCommunityNotesArticle] = useState<{ id: string; title: string } | null>(null);
+  const [isWhatsAppModalOpen, setIsWhatsAppModalOpen] = useState<boolean>(false);
+  const [selectedTipTarget, setSelectedTipTarget] = useState<{ author: string; title: string } | null>(null);
 
   // Authenticated User State (Loaded from localStorage)
   const [currentUser, setCurrentUser] = useState<AuthUser | null>(null);
@@ -187,6 +201,26 @@ function NewsPortalContent() {
     setIsReelsOpen(true);
   };
 
+  // Next-Gen Feature Handlers
+  const handleOpenForensics = (imageUrl: string, title: string) => {
+    const report = analyzeMediaForensics(imageUrl || 'https://images.unsplash.com/photo-1541872703-74c5e44368f9?w=1000', title);
+    setSelectedForensicReport(report);
+  };
+
+  const handleOpenGazetteRag = (claim?: string) => {
+    const targetClaim = claim || (articles.length > 0 ? articles[0].title : 'Parliament clears landmark Electoral Transparency Bill');
+    const result = queryGazetteRag(targetClaim);
+    setSelectedGazetteResult(result);
+  };
+
+  const handleOpenCommunityNotes = (articleId: string, articleTitle: string) => {
+    setSelectedCommunityNotesArticle({ id: articleId, title: articleTitle });
+  };
+
+  const handleOpenUpiTip = (authorName: string, articleTitle: string) => {
+    setSelectedTipTarget({ author: authorName, title: articleTitle });
+  };
+
   return (
     <div className={`min-h-screen w-full max-w-full overflow-x-hidden ${darkMode ? 'bg-slate-950 text-slate-100' : 'bg-slate-50 text-slate-900'} transition-colors duration-200 font-sans`}>
       
@@ -212,6 +246,7 @@ function NewsPortalContent() {
         onLogout={handleLogout}
         currentLang={currentLang}
         onSelectLang={setCurrentLang}
+        onOpenWhatsAppTipline={() => setIsWhatsAppModalOpen(true)}
       />
 
       {/* 2. SLEEK DARK SLIDING SIDEBAR DRAWER (Core Hub, Geo Accordion, Categories, User/Settings) */}
@@ -236,6 +271,8 @@ function NewsPortalContent() {
         onOpenReels={() => handleOpenReels(0)}
         currentLang={currentLang}
         onSelectLang={setCurrentLang}
+        onOpenWhatsAppTipline={() => setIsWhatsAppModalOpen(true)}
+        onOpenGazetteRag={() => handleOpenGazetteRag()}
       />
 
       {/* 3. MAIN NEWS FEED & RESPONSIVE GRID (Shorts Reel, State Pills, Breaking Banner, Cards) */}
@@ -250,6 +287,10 @@ function NewsPortalContent() {
           onSelectState={handleSelectState}
           onClearFilters={handleClearFilters}
           onOpenCryptoSeal={(art) => setSelectedSealArticle(art)}
+          onOpenForensics={handleOpenForensics}
+          onOpenGazetteRag={handleOpenGazetteRag}
+          onOpenCommunityNotes={handleOpenCommunityNotes}
+          onOpenUpiTip={handleOpenUpiTip}
           currentUser={currentUser}
           onRequireAuth={handleRequireAuth}
           onOpenReels={(idx) => handleOpenReels(idx)}
@@ -297,6 +338,53 @@ function NewsPortalContent() {
         <CryptoSealBadge
           article={selectedSealArticle}
           onClose={() => setSelectedSealArticle(null)}
+        />
+      )}
+
+      {/* 8. AI MEDIA DEEPFAKE FORENSICS MODAL */}
+      {selectedForensicReport && (
+        <MediaForensicsModal
+          isOpen={!!selectedForensicReport}
+          onClose={() => setSelectedForensicReport(null)}
+          report={selectedForensicReport}
+        />
+      )}
+
+      {/* 9. STATUTORY GAZETTE RAG MODAL */}
+      {selectedGazetteResult && (
+        <GazetteRagModal
+          isOpen={!!selectedGazetteResult}
+          onClose={() => setSelectedGazetteResult(null)}
+          initialResult={selectedGazetteResult}
+        />
+      )}
+
+      {/* 10. COMMUNITY NOTES DRAWER (Twitter/X Bridging Algorithm) */}
+      {selectedCommunityNotesArticle && (
+        <CommunityNotesDrawer
+          isOpen={!!selectedCommunityNotesArticle}
+          onClose={() => setSelectedCommunityNotesArticle(null)}
+          articleId={selectedCommunityNotesArticle.id}
+          articleTitle={selectedCommunityNotesArticle.title}
+          currentUser={currentUser}
+          onRequireAuth={handleRequireAuth}
+        />
+      )}
+
+      {/* 11. WHATSAPP FACT-CHECK TIPLINE BOT MODAL */}
+      <WhatsAppFactCheckModal
+        isOpen={isWhatsAppModalOpen}
+        onClose={() => setIsWhatsAppModalOpen(false)}
+      />
+
+      {/* 12. CITIZEN REPORTER UPI MICRO-TIP MODAL */}
+      {selectedTipTarget && (
+        <UpiTipModal
+          isOpen={!!selectedTipTarget}
+          onClose={() => setSelectedTipTarget(null)}
+          authorName={selectedTipTarget.author}
+          articleTitle={selectedTipTarget.title}
+          currentUser={currentUser}
         />
       )}
 

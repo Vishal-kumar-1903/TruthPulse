@@ -29,7 +29,9 @@ import {
   ShieldCheck, 
   Coins, 
   SlidersHorizontal,
-  Layers
+  Layers,
+  MessageCircle,
+  Scale
 } from 'lucide-react';
 import { AuthUser } from './AuthModal';
 import LanguageSelector from './LanguageSelector';
@@ -79,6 +81,8 @@ interface SidebarDrawerProps {
   onOpenReels?: () => void;
   currentLang?: SupportedLanguage;
   onSelectLang?: (lang: SupportedLanguage) => void;
+  onOpenWhatsAppTipline?: () => void;
+  onOpenGazetteRag?: () => void;
 }
 
 export default function SidebarDrawer({
@@ -98,7 +102,9 @@ export default function SidebarDrawer({
   onOpenLiveStream,
   onOpenReels,
   currentLang = 'en',
-  onSelectLang
+  onSelectLang,
+  onOpenWhatsAppTipline,
+  onOpenGazetteRag
 }: SidebarDrawerProps) {
   const [isStatesAccordionOpen, setIsStatesAccordionOpen] = useState(true);
   const [touchStartX, setTouchStartX] = useState<number | null>(null);
@@ -247,6 +253,40 @@ export default function SidebarDrawer({
                   LIVE
                 </span>
               </button>
+
+              {/* WhatsApp Tipline Shortcut */}
+              {onOpenWhatsAppTipline && (
+                <button
+                  onClick={() => {
+                    onOpenWhatsAppTipline();
+                    onClose();
+                  }}
+                  className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-bold text-emerald-400 hover:bg-emerald-500/10 transition"
+                >
+                  <MessageCircle className="w-4 h-4 fill-current" />
+                  <span>WhatsApp Fact-Check Bot</span>
+                  <span className="ml-auto text-[9px] font-mono px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-300">
+                    24/7 AI
+                  </span>
+                </button>
+              )}
+
+              {/* Gazette RAG Shortcut */}
+              {onOpenGazetteRag && (
+                <button
+                  onClick={() => {
+                    onOpenGazetteRag();
+                    onClose();
+                  }}
+                  className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-bold text-amber-400 hover:bg-amber-500/10 transition"
+                >
+                  <Scale className="w-4 h-4 text-amber-400" />
+                  <span>e-Gazette Statutory RAG</span>
+                  <span className="ml-auto text-[9px] font-mono px-1.5 py-0.2 rounded bg-amber-500/20 text-amber-300">
+                    GOV PROOF
+                  </span>
+                </button>
+              )}
 
               <div className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-bold text-slate-400 hover:bg-slate-900/50 cursor-not-allowed opacity-80">
                 <Newspaper className="w-4 h-4 text-cyan-400" />
