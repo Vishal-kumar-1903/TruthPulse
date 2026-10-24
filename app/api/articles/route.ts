@@ -163,6 +163,8 @@ export async function POST(req: NextRequest) {
       sources = [],
       author = 'TruthPulse Contributor',
       imageUrl,
+      mediaType = 'IMAGE',
+      mediaUrl,
       civicAction
     } = body;
 
@@ -215,6 +217,8 @@ export async function POST(req: NextRequest) {
       status: 'PUBLISHED',
       author,
       imageUrl: imageUrl || 'https://images.unsplash.com/photo-1585829365295-ab7cd400c167?w=1200',
+      mediaType,
+      mediaUrl,
       civicAction,
       createdAt: new Date().toISOString()
     };

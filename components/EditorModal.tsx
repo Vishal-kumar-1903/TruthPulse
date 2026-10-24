@@ -16,7 +16,10 @@ import {
   FileCheck2,
   Lock,
   Building2,
-  Vote
+  Vote,
+  Video,
+  Layers,
+  Image as ImageIcon
 } from 'lucide-react';
 
 interface EditorModalProps {
@@ -76,6 +79,15 @@ export default function EditorModal({ initialData, onClose, onArticlePublished }
     initialData?.sources && initialData.sources.length > 0
       ? initialData.sources
       : [{ name: 'PTI Official Dispatch', url: 'https://ptinews.com/verified-report-2026', stance: 'CORROBORATING' }]
+  );
+
+  // Motion Media & Visuals State
+  const [mediaType, setMediaType] = useState<'IMAGE' | 'VIDEO_LOOP' | 'LOTTIE_ANIMATION'>(
+    initialData?.mediaType || 'IMAGE'
+  );
+  const [mediaUrl, setMediaUrl] = useState<string>(initialData?.mediaUrl || '');
+  const [imageUrl, setImageUrl] = useState<string>(
+    initialData?.imageUrl || 'https://images.unsplash.com/photo-1585829365295-ab7cd400c167?w=1200'
   );
 
   // Civic Desk Optional Block
@@ -196,7 +208,10 @@ export default function EditorModal({ initialData, onClose, onArticlePublished }
       },
       sources,
       trustScore,
-      author: 'Vikramaditya Sen (Chief Editor)'
+      author: 'Vikramaditya Sen (Chief Editor)',
+      imageUrl: imageUrl.trim() || undefined,
+      mediaType,
+      mediaUrl: mediaUrl.trim() || undefined
     };
 
     if (enableCivicAction) {
@@ -509,7 +524,105 @@ export default function EditorModal({ initialData, onClose, onArticlePublished }
             ))}
           </div>
 
-          {/* 6. CIVIC DESK TOGGLE (LOCAL ACTION BLOCK) */}
+          {/* 6. DYNAMIC MOTION MEDIA & VISUAL PRESENTATION */}
+          <div className="p-4 rounded-2xl bg-slate-900/70 border border-slate-800 space-y-3">
+            <div className="flex items-center justify-between">
+              <label className="text-xs font-bold uppercase tracking-wider text-amber-400 font-mono flex items-center gap-1.5">
+                <Sparkles className="w-3.5 h-3.5" /> Motion Media & Visual Presentation Engine
+              </label>
+              <span className="text-[10px] font-mono text-slate-400">Next-Gen Animated Dispatch Format</span>
+            </div>
+
+            {/* Format Selector Pills */}
+            <div className="grid grid-cols-3 gap-2">
+              <button
+                type="button"
+                onClick={() => setMediaType('IMAGE')}
+                className={`flex items-center justify-center gap-2 p-2.5 rounded-xl border text-xs font-bold transition ${
+                  mediaType === 'IMAGE'
+                    ? 'bg-amber-600/20 border-amber-500 text-amber-300 shadow-sm'
+                    : 'bg-slate-950 border-slate-800 text-slate-400 hover:text-slate-200'
+                }`}
+              >
+                <ImageIcon className="w-4 h-4 text-amber-400" />
+                <span>HD Ken-Burns Image</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setMediaType('VIDEO_LOOP')}
+                className={`flex items-center justify-center gap-2 p-2.5 rounded-xl border text-xs font-bold transition ${
+                  mediaType === 'VIDEO_LOOP'
+                    ? 'bg-cyan-600/20 border-cyan-500 text-cyan-300 shadow-sm'
+                    : 'bg-slate-950 border-slate-800 text-slate-400 hover:text-slate-200'
+                }`}
+              >
+                <Video className="w-4 h-4 text-cyan-400" />
+                <span>Looping Video Clip</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setMediaType('LOTTIE_ANIMATION')}
+                className={`flex items-center justify-center gap-2 p-2.5 rounded-xl border text-xs font-bold transition ${
+                  mediaType === 'LOTTIE_ANIMATION'
+                    ? 'bg-indigo-600/20 border-indigo-500 text-indigo-300 shadow-sm'
+                    : 'bg-slate-950 border-slate-800 text-slate-400 hover:text-slate-200'
+                }`}
+              >
+                <Layers className="w-4 h-4 text-indigo-400" />
+                <span>Lottie Vector Graphic</span>
+              </button>
+            </div>
+
+            {/* Inputs according to selected format */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+              <div>
+                <span className="text-[10px] text-slate-400 uppercase font-mono">
+                  Cover Image / Poster Poster URL
+                </span>
+                <input
+                  type="text"
+                  value={imageUrl}
+                  onChange={(e) => setImageUrl(e.target.value)}
+                  placeholder="https://images.unsplash.com/..."
+                  className="w-full mt-1 px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs text-slate-200 font-mono focus:border-cyan-500 focus:outline-none"
+                />
+              </div>
+
+              {mediaType === 'VIDEO_LOOP' && (
+                <div>
+                  <span className="text-[10px] text-cyan-400 uppercase font-mono">
+                    Looping MP4/WebM Video URL *
+                  </span>
+                  <input
+                    type="text"
+                    value={mediaUrl}
+                    onChange={(e) => setMediaUrl(e.target.value)}
+                    placeholder="https://.../loop.mp4"
+                    className="w-full mt-1 px-3 py-2 rounded-xl bg-slate-950 border border-cyan-500/40 text-xs text-cyan-200 font-mono focus:border-cyan-400 focus:outline-none"
+                  />
+                </div>
+              )}
+
+              {mediaType === 'LOTTIE_ANIMATION' && (
+                <div>
+                  <span className="text-[10px] text-indigo-400 uppercase font-mono">
+                    Lottie JSON URL (Optional)
+                  </span>
+                  <input
+                    type="text"
+                    value={mediaUrl}
+                    onChange={(e) => setMediaUrl(e.target.value)}
+                    placeholder="Leave empty for category vector animation"
+                    className="w-full mt-1 px-3 py-2 rounded-xl bg-slate-950 border border-indigo-500/40 text-xs text-indigo-200 font-mono focus:border-indigo-400 focus:outline-none"
+                  />
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* 7. CIVIC DESK TOGGLE (LOCAL ACTION BLOCK) */}
           <div className="p-4 rounded-2xl bg-slate-900/40 border border-slate-800">
             <div className="flex items-center justify-between mb-3">
               <label className="flex items-center gap-2 cursor-pointer">

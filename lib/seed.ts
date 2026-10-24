@@ -54,6 +54,8 @@ export async function seedDatabase(force: boolean = false) {
         trustScore: 96,
         isPinned: true,
         imageUrl: 'https://images.unsplash.com/photo-1541872703-74c5e44368f9?w=1200',
+        mediaType: 'VIDEO_LOOP',
+        mediaUrl: 'https://assets.mixkit.co/videos/preview/mixkit-aerial-view-of-city-traffic-at-night-11-large.mp4',
         author: 'TruthPulse National Bureau'
       },
 
@@ -77,6 +79,8 @@ export async function seedDatabase(force: boolean = false) {
         isVerified: true,
         trustScore: 94,
         imageUrl: 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=1200',
+        mediaType: 'VIDEO_LOOP',
+        mediaUrl: 'https://assets.mixkit.co/videos/preview/mixkit-solar-panels-in-a-field-42517-large.mp4',
         author: 'Central India Correspondent'
       },
 
@@ -123,6 +127,7 @@ export async function seedDatabase(force: boolean = false) {
         isVerified: true,
         trustScore: 95,
         imageUrl: 'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=1200',
+        mediaType: 'LOTTIE_ANIMATION',
         author: 'Financial Markets Desk'
       },
 

@@ -15,10 +15,11 @@ import {
   ArrowUpRight, 
   MapPin, 
   CheckCircle2, 
-  Sparkles,
-  Radio,
-  Clock
+  Sparkles, 
+  Radio, 
+  Clock 
 } from 'lucide-react';
+import AnimatedMedia from './AnimatedMedia';
 
 export interface BreakingShort {
   id: string;
@@ -30,6 +31,8 @@ export interface BreakingShort {
   fullArticleId?: string;
   category: string;
   imageUrl: string;
+  mediaType?: 'IMAGE' | 'VIDEO_LOOP' | 'LOTTIE_ANIMATION';
+  mediaUrl?: string;
   trustScore: number;
   timeAgo: string;
 }
@@ -45,6 +48,8 @@ export const DEFAULT_BREAKING_SHORTS: BreakingShort[] = [
     fullArticleId: '6adaec408ec6de7245571a3e',
     category: 'Politics',
     imageUrl: 'https://images.unsplash.com/photo-1541872703-74c5e44368f9?w=1000',
+    mediaType: 'VIDEO_LOOP',
+    mediaUrl: 'https://assets.mixkit.co/videos/preview/mixkit-aerial-view-of-city-traffic-at-night-11-large.mp4',
     trustScore: 96,
     timeAgo: '12m ago'
   },
@@ -57,6 +62,8 @@ export const DEFAULT_BREAKING_SHORTS: BreakingShort[] = [
     source: 'CECB Statutory Desk',
     category: 'Environment',
     imageUrl: 'https://images.unsplash.com/photo-1574943320219-553eb213f72d?w=1000',
+    mediaType: 'VIDEO_LOOP',
+    mediaUrl: 'https://assets.mixkit.co/videos/preview/mixkit-solar-panels-in-a-field-42517-large.mp4',
     trustScore: 95,
     timeAgo: '24m ago'
   },
@@ -69,6 +76,7 @@ export const DEFAULT_BREAKING_SHORTS: BreakingShort[] = [
     source: 'PIB Fact-Check Bureau',
     category: 'Health',
     imageUrl: 'https://images.unsplash.com/photo-1544816155-12df9643f363?w=1000',
+    mediaType: 'IMAGE',
     trustScore: 98,
     timeAgo: '35m ago'
   },
@@ -81,6 +89,7 @@ export const DEFAULT_BREAKING_SHORTS: BreakingShort[] = [
     source: 'Reuters / Dalal Street',
     category: 'Business',
     imageUrl: 'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=1000',
+    mediaType: 'LOTTIE_ANIMATION',
     trustScore: 94,
     timeAgo: '42m ago'
   },
@@ -93,6 +102,7 @@ export const DEFAULT_BREAKING_SHORTS: BreakingShort[] = [
     source: 'IMD Raipur Radar',
     category: 'Weather',
     imageUrl: 'https://images.unsplash.com/photo-1516912481808-3406841bd33c?w=1000',
+    mediaType: 'LOTTIE_ANIMATION',
     trustScore: 93,
     timeAgo: '50m ago'
   },
@@ -347,13 +357,19 @@ export default function BreakingShorts({
         
         {/* Background Visual Layer with High-Res Image & Dramatic Gradients */}
         <div className="absolute inset-0 z-0">
-          <img
-            src={activeShort.imageUrl}
+          <AnimatedMedia
+            key={activeShort.id}
+            mediaType={activeShort.mediaType || 'IMAGE'}
+            mediaUrl={activeShort.mediaUrl}
+            imageUrl={activeShort.imageUrl}
             alt={activeShort.headline}
+            category={activeShort.category}
+            isReel={true}
+            showBadge={false}
             className="w-full h-full object-cover opacity-35 scale-105 group-hover:scale-100 transition-transform duration-1000 ease-out"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/80 to-slate-950/40"></div>
-          <div className="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-950/60 to-transparent"></div>
+          <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/80 to-slate-950/40 pointer-events-none"></div>
+          <div className="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-950/60 to-transparent pointer-events-none"></div>
         </div>
 
         {/* 1. TOP SEGMENTED PROGRESS BARS (WhatsApp/Instagram Story Style) */}

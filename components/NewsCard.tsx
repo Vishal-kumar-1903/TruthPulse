@@ -26,6 +26,9 @@ import {
 } from 'lucide-react';
 import { AuthUser } from './AuthModal';
 import { SupportedLanguage, translateHeadline, getUIText } from '@/lib/translations';
+import AnimatedMedia from './AnimatedMedia';
+
+export type MediaType = 'IMAGE' | 'VIDEO_LOOP' | 'LOTTIE_ANIMATION';
 
 export interface ArticleItem {
   _id: string;
@@ -58,6 +61,8 @@ export interface ArticleItem {
   isPinned?: boolean;
   contentHash?: string;
   imageUrl?: string;
+  mediaType?: MediaType;
+  mediaUrl?: string;
   createdAt?: string;
   author?: string;
   comments?: Array<{
@@ -319,17 +324,17 @@ export default function NewsCard({
         : 'border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700'
     }`}>
       
-      {/* 1. COVER IMAGE & BADGES */}
+      {/* 1. COVER DYNAMIC MEDIA (VIDEO LOOP / LOTTIE / KEN-BURNS) & BADGES */}
       <div className={`relative ${isHero ? 'lg:col-span-7 aspect-[16/10] lg:aspect-auto' : 'aspect-[16/10]'} w-full overflow-hidden bg-slate-100 dark:bg-slate-800`}>
-        <img
-          src={article.imageUrl || 'https://images.unsplash.com/photo-1585829365295-ab7cd400c167?w=800'}
+        <AnimatedMedia
+          mediaType={article.mediaType || 'IMAGE'}
+          mediaUrl={article.mediaUrl}
+          imageUrl={article.imageUrl || 'https://images.unsplash.com/photo-1585829365295-ab7cd400c167?w=800'}
           alt={article.title}
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-          loading="lazy"
+          category={article.category}
+          isHero={isHero}
+          showBadge={true}
         />
-
-        {/* Gradient Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-transparent to-black/20 pointer-events-none"></div>
 
         {/* Category & Global Badges */}
         <div className="absolute top-3 left-3 flex items-center gap-1.5">

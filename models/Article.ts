@@ -19,6 +19,8 @@ export type NewsCategory =
 
 export type NewsRegion = 'National' | 'International';
 
+export type MediaType = 'IMAGE' | 'VIDEO_LOOP' | 'LOTTIE_ANIMATION';
+
 export interface IArticleComment {
   userId: string;
   userName: string;
@@ -65,6 +67,8 @@ export interface IArticle extends Document {
   isPinned: boolean;
   author: string;
   imageUrl?: string;
+  mediaType?: MediaType;
+  mediaUrl?: string;
   civicAction?: {
     isCivic: boolean;
     authorityName: string;
@@ -163,6 +167,12 @@ const ArticleSchema = new Schema<IArticle>(
     isPinned: { type: Boolean, default: false },
     author: { type: String, default: 'TruthPulse Editorial Desk' },
     imageUrl: { type: String, default: 'https://images.unsplash.com/photo-1585829365295-ab7cd400c167?w=1200' },
+    mediaType: {
+      type: String,
+      enum: ['IMAGE', 'VIDEO_LOOP', 'LOTTIE_ANIMATION'],
+      default: 'IMAGE'
+    },
+    mediaUrl: { type: String },
     civicAction: {
       isCivic: { type: Boolean, default: false },
       authorityName: { type: String, default: '' },

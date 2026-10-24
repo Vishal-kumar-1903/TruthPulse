@@ -25,6 +25,7 @@ import { BreakingShort } from './BreakingShorts';
 import { AuthUser } from './AuthModal';
 import ReelActionSidebar from './ReelActionSidebar';
 import ReelCommentDrawer from './ReelCommentDrawer';
+import AnimatedMedia from './AnimatedMedia';
 import { SupportedLanguage, SUPPORTED_LANGUAGES, translateHeadline, getUIText } from '@/lib/translations';
 
 interface ReelsViewerProps {
@@ -307,18 +308,25 @@ export default function ReelsViewer({
         onMouseUp={() => setIsHolding(false)}
       >
         
-        {/* BACKGROUND MEDIA WITH HIGH DYNAMIC CONTRAST GRADIENTS */}
+        {/* BACKGROUND ANIMATED MEDIA WITH HIGH DYNAMIC CONTRAST GRADIENTS */}
         <div className="absolute inset-0 z-0">
-          <img
+          <AnimatedMedia
             key={activeShort.id}
-            src={activeShort.imageUrl}
+            mediaType={activeShort.mediaType || 'IMAGE'}
+            mediaUrl={activeShort.mediaUrl}
+            imageUrl={activeShort.imageUrl}
             alt={activeShort.headline}
-            className="w-full h-full object-cover transition-transform duration-1000 scale-100 hover:scale-105"
+            category={activeShort.category}
+            isReel={true}
+            showBadge={false}
+            className="w-full h-full object-cover"
           />
+          {/* Dynamic Motion & Ambient Atmospheric Lighting */}
+          <div className="absolute inset-0 bg-gradient-to-tr from-cyan-500/10 via-transparent to-red-500/10 pointer-events-none mix-blend-screen animate-pulse"></div>
           {/* Top Gradient for Status & Progress Visibility */}
-          <div className="absolute inset-0 bg-gradient-to-b from-black/85 via-transparent to-transparent h-44 pointer-events-none"></div>
+          <div className="absolute inset-0 bg-gradient-to-b from-black/85 via-black/30 to-transparent h-48 pointer-events-none"></div>
           {/* Bottom Gradient for Headline & Takeaways Readability */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black via-black/85 to-transparent top-1/4 pointer-events-none"></div>
+          <div className="absolute inset-0 bg-gradient-to-t from-black via-black/90 to-transparent top-1/4 pointer-events-none"></div>
         </div>
 
         {/* 1. TOP SEGMENTED PROGRESS BARS (WhatsApp/Instagram Story Style) */}
