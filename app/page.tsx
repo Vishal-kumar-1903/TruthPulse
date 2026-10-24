@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import Navbar from '@/components/Navbar';
 import SidebarDrawer from '@/components/SidebarDrawer';
 import NewsFeed from '@/components/NewsFeed';
+import GeoDetector from '@/components/GeoDetector';
 import { AuthUser } from '@/components/AuthModal';
 import { DEFAULT_BREAKING_SHORTS } from '@/components/BreakingShorts';
 import { ArticleItem } from '@/components/NewsCard';
@@ -34,12 +35,14 @@ function NewsPortalContent() {
   const editionParam = (searchParams.get('edition') as 'National' | 'International') || 'National';
   const categoryParam = searchParams.get('category') || 'Home';
   const stateParam = searchParams.get('state') || 'All India';
+  const cityParam = searchParams.get('city') || '';
   const searchParam = searchParams.get('search') || '';
 
   // Core Feed Filter State
   const [currentEdition, setCurrentEdition] = useState<'National' | 'International'>(editionParam);
   const [currentCategory, setCurrentCategory] = useState<string>(categoryParam);
   const [currentState, setCurrentState] = useState<string>(stateParam);
+  const [currentCity, setCurrentCity] = useState<string>(cityParam);
   const [searchQuery, setSearchQuery] = useState<string>(searchParam);
 
   // Article data state
@@ -62,6 +65,14 @@ function NewsPortalContent() {
       if (savedLang) setCurrentLang(savedLang);
       const savedUser = localStorage.getItem('truthpulse_user');
       if (savedUser) setCurrentUser(JSON.parse(savedUser));
+      const savedGeo = localStorage.getItem('truthpulse_geo');
+      if (savedGeo) {
+        const parsed = JSON.parse(savedGeo);
+        if (parsed.state && stateParam === 'All India') {
+          setCurrentState(parsed.state);
+          if (parsed.city) setCurrentCity(parsed.city);
+        }
+      }
     } catch {
       // Ignore storage access errors
     }
@@ -94,8 +105,9 @@ function NewsPortalContent() {
     if (editionParam) setCurrentEdition(editionParam);
     if (categoryParam) setCurrentCategory(categoryParam);
     if (stateParam) setCurrentState(stateParam);
+    if (cityParam !== undefined) setCurrentCity(cityParam);
     if (searchParam !== undefined) setSearchQuery(searchParam);
-  }, [editionParam, categoryParam, stateParam, searchParam]);
+  }, [editionParam, categoryParam, stateParam, cityParam, searchParam]);
 
   // Sync dark mode class on document
   useEffect(() => {
@@ -107,11 +119,12 @@ function NewsPortalContent() {
   }, [darkMode]);
 
   // Update URL Query Parameters
-  const updateQueryParams = (newEdition: string, newCategory: string, newState: string, newSearch: string) => {
+  const updateQueryParams = (newEdition: string, newCategory: string, newState: string, newSearch: string, newCity: string = '') => {
     const params = new URLSearchParams();
     if (newEdition && newEdition !== 'National') params.set('edition', newEdition);
     if (newCategory && newCategory !== 'ALL' && newCategory !== 'Home') params.set('category', newCategory);
     if (newState && newState !== 'All India') params.set('state', newState);
+    if (newCity) params.set('city', newCity);
     if (newSearch) params.set('search', newSearch);
 
     const queryString = params.toString();
@@ -130,6 +143,9 @@ function NewsPortalContent() {
       }
       if (currentEdition === 'National' && currentState && currentState !== 'All India') {
         params.set('state', currentState);
+      }
+      if (currentCity) {
+        params.set('city', currentCity);
       }
       if (searchQuery.trim()) {
         params.set('search', searchQuery.trim());
@@ -151,36 +167,40 @@ function NewsPortalContent() {
 
   useEffect(() => {
     fetchArticles();
-  }, [currentEdition, currentCategory, currentState, searchQuery]);
+  }, [currentEdition, currentCategory, currentState, currentCity, searchQuery]);
 
   // Navigation handlers
   const handleSelectCategory = (cat: string) => {
     setCurrentCategory(cat);
-    updateQueryParams(currentEdition, cat, currentState, searchQuery);
+    updateQueryParams(currentEdition, cat, currentState, searchQuery, currentCity);
   };
 
   const handleSelectEdition = (edition: 'National' | 'International') => {
     setCurrentEdition(edition);
     const newState = edition === 'International' ? 'All India' : currentState;
+    const newCity = edition === 'International' ? '' : currentCity;
     setCurrentState(newState);
-    updateQueryParams(edition, currentCategory, newState, searchQuery);
+    setCurrentCity(newCity);
+    updateQueryParams(edition, currentCategory, newState, searchQuery, newCity);
   };
 
   const handleSelectState = (state: string) => {
     setCurrentState(state);
-    updateQueryParams(currentEdition, currentCategory, state, searchQuery);
+    setCurrentCity('');
+    updateQueryParams(currentEdition, currentCategory, state, searchQuery, '');
   };
 
   const handleSearch = (query: string) => {
     setSearchQuery(query);
-    updateQueryParams(currentEdition, currentCategory, currentState, query);
+    updateQueryParams(currentEdition, currentCategory, currentState, query, currentCity);
   };
 
   const handleClearFilters = () => {
     setCurrentCategory('Home');
     setCurrentState('All India');
+    setCurrentCity('');
     setSearchQuery('');
-    updateQueryParams(currentEdition, 'Home', 'All India', '');
+    updateQueryParams(currentEdition, 'Home', 'All India', '', '');
   };
 
   // Modern feature trigger handlers
@@ -245,6 +265,20 @@ function NewsPortalContent() {
 
       {/* 3. MAIN NEWS FEED & RESPONSIVE GRID */}
       <main className="w-full max-w-full overflow-x-hidden">
+        {/* HYPER-LOCAL GPS GEO-ROUTING BANNER & DIRECTORY MODAL */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4">
+          <GeoDetector
+            currentState={currentState}
+            currentCity={currentCity}
+            onLocationChange={(st, ct) => {
+              setCurrentState(st);
+              setCurrentCity(ct || '');
+              updateQueryParams(currentEdition, currentCategory, st, searchQuery, ct || '');
+            }}
+            onClearLocation={handleClearFilters}
+          />
+        </div>
+
         <NewsFeed
           articles={articles}
           loading={loading}

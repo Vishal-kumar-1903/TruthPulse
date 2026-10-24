@@ -21,7 +21,8 @@ import {
   ShieldCheck, 
   SlidersHorizontal,
   MapPin,
-  MessageCircle
+  MessageCircle,
+  BookOpen
 } from 'lucide-react';
 import { AuthUser } from './AuthModal';
 import LanguageSelector from './LanguageSelector';
@@ -212,6 +213,16 @@ export default function Navbar({
               <Flame className="w-3.5 h-3.5 fill-current animate-pulse" />
               <span>REELS</span>
             </button>
+
+            {/* E-PAPER / DIGITAL MAGAZINE FLIPBOOK BUTTON */}
+            <Link
+              href="/magazine"
+              className="hidden md:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-stone-900 hover:bg-stone-800 text-amber-300 font-bold text-[11px] tracking-wide transition border border-amber-500/30 shrink-0 shadow-sm"
+              title="Open Digital E-Paper & Magazine Flipbook"
+            >
+              <BookOpen className="w-3.5 h-3.5 text-amber-400" />
+              <span>E-PAPER</span>
+            </Link>
 
             {/* WHATSAPP FACT-CHECK TIPLINE BUTTON */}
             {onOpenWhatsAppTipline && (

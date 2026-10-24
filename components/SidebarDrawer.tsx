@@ -31,7 +31,8 @@ import {
   SlidersHorizontal,
   Layers,
   MessageCircle,
-  Scale
+  Scale,
+  BookOpen
 } from 'lucide-react';
 import { AuthUser } from './AuthModal';
 import LanguageSelector from './LanguageSelector';
@@ -253,6 +254,18 @@ export default function SidebarDrawer({
                   LIVE
                 </span>
               </button>
+
+              <Link
+                href="/magazine"
+                onClick={onClose}
+                className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-bold text-slate-300 hover:bg-slate-900 hover:text-white transition"
+              >
+                <BookOpen className="w-4 h-4 text-amber-400" />
+                <span>Digital Magazine & E-Paper</span>
+                <span className="ml-auto text-[10px] font-mono px-1.5 py-0.2 rounded bg-amber-600/30 text-amber-300 border border-amber-500/40 font-bold">
+                  FLIPBOOK
+                </span>
+              </Link>
 
               {/* WhatsApp Tipline Shortcut */}
               {onOpenWhatsAppTipline && (
