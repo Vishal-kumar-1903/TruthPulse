@@ -32,11 +32,13 @@ import {
   Layers,
   MessageCircle,
   Scale,
+  Building2,
   BookOpen
 } from 'lucide-react';
 import { AuthUser } from './AuthModal';
 import LanguageSelector from './LanguageSelector';
 import { SupportedLanguage, getUIText } from '@/lib/translations';
+import { METROPOLITAN_HUBS } from '@/lib/metroHubs';
 
 export const ALL_INDIAN_STATES = [
   'All India',
@@ -84,6 +86,8 @@ interface SidebarDrawerProps {
   onSelectLang?: (lang: SupportedLanguage) => void;
   onOpenWhatsAppTipline?: () => void;
   onOpenGazetteRag?: () => void;
+  currentMetro?: string;
+  onSelectMetro?: (metroId: string) => void;
 }
 
 export default function SidebarDrawer({
@@ -105,7 +109,9 @@ export default function SidebarDrawer({
   currentLang = 'en',
   onSelectLang,
   onOpenWhatsAppTipline,
-  onOpenGazetteRag
+  onOpenGazetteRag,
+  currentMetro,
+  onSelectMetro
 }: SidebarDrawerProps) {
   const [isStatesAccordionOpen, setIsStatesAccordionOpen] = useState(true);
   const [touchStartX, setTouchStartX] = useState<number | null>(null);
@@ -311,10 +317,51 @@ export default function SidebarDrawer({
             </div>
           </div>
 
-          {/* 2. EDITION & GEO SELECTOR ACCORDION */}
+          {/* 2. METROPOLITAN HUBS (QUICK CITY SWITCHER) */}
+          <div>
+            <div className="flex items-center justify-between mb-2 px-2">
+              <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-amber-400 flex items-center gap-1.5">
+                <Building2 className="w-3.5 h-3.5" />
+                <span>Metropolitan Hubs</span>
+              </span>
+              <span className="text-[9px] font-mono text-slate-500">Tier-1 Clusters</span>
+            </div>
+
+            <div className="grid grid-cols-2 gap-1.5">
+              {METROPOLITAN_HUBS.map((hub) => {
+                const isSelected = currentMetro === hub.id;
+                return (
+                  <button
+                    key={hub.id}
+                    onClick={() => {
+                      if (onSelectMetro) {
+                        onSelectMetro(hub.id);
+                      } else {
+                        onSelectState(hub.state);
+                      }
+                      onClose();
+                    }}
+                    className={`flex flex-col text-left p-2 rounded-xl transition border text-xs ${
+                      isSelected
+                        ? 'bg-red-600/20 border-red-500 text-white font-bold'
+                        : 'bg-slate-900/60 border-slate-800 text-slate-300 hover:bg-slate-900 hover:border-slate-700'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between w-full">
+                      <span className="font-bold text-xs truncate">{hub.shortLabel}</span>
+                      <span className={`w-1.5 h-1.5 rounded-full ${isSelected ? 'bg-red-500' : 'bg-emerald-500'} shrink-0`} />
+                    </div>
+                    <span className="text-[10px] text-slate-500 font-mono truncate">{hub.primaryCity}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* 3. EDITION & GEO SELECTOR ACCORDION */}
           <div>
             <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-slate-400 block mb-2 px-2">
-              Edition & Geo Filter
+              State & UT Directory
             </span>
 
             <div className="space-y-1.5">

@@ -13,6 +13,7 @@ import {
   RefreshCw,
   LocateFixed
 } from 'lucide-react';
+import { METROPOLITAN_HUBS, findMetroByCityOrState } from '@/lib/metroHubs';
 
 export interface IndianStateData {
   state: string;
@@ -59,13 +60,15 @@ export const INDIAN_STATES_DIRECTORY: IndianStateData[] = [
 interface GeoDetectorProps {
   currentState: string;
   currentCity?: string;
-  onLocationChange: (state: string, city?: string) => void;
+  currentMetro?: string;
+  onLocationChange: (state: string, city?: string, metro?: string) => void;
   onClearLocation: () => void;
 }
 
 export default function GeoDetector({
   currentState,
   currentCity,
+  currentMetro,
   onLocationChange,
   onClearLocation
 }: GeoDetectorProps) {
@@ -74,6 +77,7 @@ export default function GeoDetector({
   const [isDetecting, setIsDetecting] = useState(false);
   const [detectedState, setDetectedState] = useState<string | null>(null);
   const [detectedCity, setDetectedCity] = useState<string | null>(null);
+  const [detectedMetro, setDetectedMetro] = useState<string | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   // Load from localStorage on mount
@@ -137,12 +141,14 @@ export default function GeoDetector({
             }
           }
 
+          const matchedMetro = findMetroByCityOrState(city, state);
           setDetectedState(state);
           setDetectedCity(city || null);
-          onLocationChange(state, city || undefined);
+          setDetectedMetro(matchedMetro?.id || null);
+          onLocationChange(state, city || undefined, matchedMetro?.id);
 
           try {
-            localStorage.setItem('truthpulse_geo', JSON.stringify({ state, city, latitude, longitude }));
+            localStorage.setItem('truthpulse_geo', JSON.stringify({ state, city, metro: matchedMetro?.id, latitude, longitude }));
           } catch {
             // Ignore
           }
@@ -166,12 +172,13 @@ export default function GeoDetector({
     );
   };
 
-  const handleSelectStateOrCity = (state: string, city?: string) => {
+  const handleSelectStateOrCity = (state: string, city?: string, metro?: string) => {
     setDetectedState(state);
     setDetectedCity(city || null);
-    onLocationChange(state, city);
+    setDetectedMetro(metro || null);
+    onLocationChange(state, city, metro);
     try {
-      localStorage.setItem('truthpulse_geo', JSON.stringify({ state, city }));
+      localStorage.setItem('truthpulse_geo', JSON.stringify({ state, city, metro }));
     } catch {
       // Ignore
     }
@@ -188,7 +195,11 @@ export default function GeoDetector({
     );
   });
 
-  const isLocationActive = (currentState && currentState !== 'All India') || !!currentCity || !!detectedState;
+  const activeMetro = currentMetro 
+    ? METROPOLITAN_HUBS.find(h => h.id === currentMetro)
+    : (detectedMetro ? METROPOLITAN_HUBS.find(h => h.id === detectedMetro) : null);
+
+  const isLocationActive = (currentState && currentState !== 'All India') || !!currentCity || !!detectedState || !!activeMetro;
 
   return (
     <>
@@ -200,7 +211,20 @@ export default function GeoDetector({
               <LocateFixed className="w-3.5 h-3.5 animate-pulse" />
             </span>
             <div className="truncate">
-              {isLocationActive ? (
+              {activeMetro ? (
+                <span className="text-slate-800 dark:text-slate-200 font-medium">
+                  Showing verified dispatches for Metro Hub:{' '}
+                  <strong className="text-red-600 dark:text-red-400 font-bold">
+                    {activeMetro.name}
+                  </strong>{' '}
+                  <span className="hidden md:inline px-1.5 py-0.5 rounded-md bg-red-600/10 text-red-600 dark:text-red-300 text-[10px] font-bold">
+                    {activeMetro.districts.slice(0, 3).join(', ')}...
+                  </span>
+                  <span className="hidden sm:inline text-slate-500 text-[11px] ml-1.5 font-mono">
+                    (Metro Feed → State → National)
+                  </span>
+                </span>
+              ) : isLocationActive ? (
                 <span className="text-slate-800 dark:text-slate-200 font-medium">
                   Showing verified dispatches for{' '}
                   <strong className="text-red-600 dark:text-red-400 font-bold">
@@ -212,7 +236,7 @@ export default function GeoDetector({
                 </span>
               ) : (
                 <span className="text-slate-700 dark:text-slate-300">
-                  <strong className="text-red-600 dark:text-red-400 font-bold">Hyper-Local News:</strong> Detect your location to route instant Raigarh, Raipur, or State investigative briefs.
+                  <strong className="text-red-600 dark:text-red-400 font-bold">Hyper-Local News:</strong> Detect your location to route instant Raigarh, Raipur, Delhi NCR, or State investigative briefs.
                 </span>
               )}
             </div>
@@ -328,6 +352,33 @@ export default function GeoDetector({
               {errorMsg && (
                 <p className="mt-2 text-[11px] text-amber-500 font-medium">{errorMsg}</p>
               )}
+            </div>
+
+            {/* Metropolitan Mega Clusters Quick Row */}
+            <div className="p-3 bg-slate-50/90 dark:bg-slate-950/80 border-b border-slate-200 dark:border-slate-800">
+              <div className="flex items-center gap-1.5 text-[11px] font-mono font-bold text-amber-500 uppercase mb-2">
+                <Building2 className="w-3.5 h-3.5" />
+                <span>Tier-1 Metropolitan Mega Clusters</span>
+              </div>
+              <div className="flex flex-wrap gap-1.5">
+                {METROPOLITAN_HUBS.map((hub) => {
+                  const isSelected = currentMetro === hub.id;
+                  return (
+                    <button
+                      key={hub.id}
+                      onClick={() => handleSelectStateOrCity(hub.state, hub.primaryCity, hub.id)}
+                      className={`px-2.5 py-1 rounded-xl text-xs font-bold transition flex items-center gap-1 border ${
+                        isSelected
+                          ? 'bg-red-600 text-white border-red-600 shadow-sm'
+                          : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 hover:border-red-500'
+                      }`}
+                    >
+                      <span>{hub.shortLabel}</span>
+                      <span className="text-[10px] opacity-70 font-normal">({hub.state})</span>
+                    </button>
+                  );
+                })}
+              </div>
             </div>
 
             {/* States & Tier-2/3 Cities Grid */}

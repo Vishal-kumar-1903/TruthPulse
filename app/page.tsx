@@ -14,6 +14,7 @@ import { SupportedLanguage } from '@/lib/translations';
 import { analyzeMediaForensics } from '@/lib/forensics';
 import { queryGazetteRag } from '@/lib/ragEngine';
 import { FALLBACK_ARTICLES, filterFallbackArticles } from '@/lib/fallbackArticles';
+import { METROPOLITAN_HUBS } from '@/lib/metroHubs';
 import { usePortalModals } from '@/hooks/usePortalModals';
 import { Cpu } from 'lucide-react';
 
@@ -37,6 +38,7 @@ function NewsPortalContent() {
   const categoryParam = searchParams.get('category') || 'Home';
   const stateParam = searchParams.get('state') || 'All India';
   const cityParam = searchParams.get('city') || '';
+  const metroParam = searchParams.get('metro') || '';
   const searchParam = searchParams.get('search') || '';
 
   // Core Feed Filter State
@@ -44,6 +46,7 @@ function NewsPortalContent() {
   const [currentCategory, setCurrentCategory] = useState<string>(categoryParam);
   const [currentState, setCurrentState] = useState<string>(stateParam);
   const [currentCity, setCurrentCity] = useState<string>(cityParam);
+  const [currentMetro, setCurrentMetro] = useState<string>(metroParam);
   const [searchQuery, setSearchQuery] = useState<string>(searchParam);
 
   // Article data state - Pre-populated with instant verified dispatches for 0ms initial paint!
@@ -53,6 +56,7 @@ function NewsPortalContent() {
       category: categoryParam,
       state: stateParam,
       city: cityParam,
+      metro: metroParam,
       search: searchParam
     });
   });
@@ -115,8 +119,9 @@ function NewsPortalContent() {
     if (categoryParam) setCurrentCategory(categoryParam);
     if (stateParam) setCurrentState(stateParam);
     if (cityParam !== undefined) setCurrentCity(cityParam);
+    if (metroParam !== undefined) setCurrentMetro(metroParam);
     if (searchParam !== undefined) setSearchQuery(searchParam);
-  }, [editionParam, categoryParam, stateParam, cityParam, searchParam]);
+  }, [editionParam, categoryParam, stateParam, cityParam, metroParam, searchParam]);
 
   // Sync dark mode class on document
   useEffect(() => {
@@ -128,12 +133,20 @@ function NewsPortalContent() {
   }, [darkMode]);
 
   // Update URL Query Parameters
-  const updateQueryParams = (newEdition: string, newCategory: string, newState: string, newSearch: string, newCity: string = '') => {
+  const updateQueryParams = (
+    newEdition: string,
+    newCategory: string,
+    newState: string,
+    newSearch: string,
+    newCity: string = '',
+    newMetro: string = ''
+  ) => {
     const params = new URLSearchParams();
     if (newEdition && newEdition !== 'National') params.set('edition', newEdition);
     if (newCategory && newCategory !== 'ALL' && newCategory !== 'Home') params.set('category', newCategory);
     if (newState && newState !== 'All India') params.set('state', newState);
     if (newCity) params.set('city', newCity);
+    if (newMetro) params.set('metro', newMetro);
     if (newSearch) params.set('search', newSearch);
 
     const queryString = params.toString();
@@ -158,6 +171,9 @@ function NewsPortalContent() {
       if (currentCity) {
         params.set('city', currentCity);
       }
+      if (currentMetro) {
+        params.set('metro', currentMetro);
+      }
       if (searchQuery.trim()) {
         params.set('search', searchQuery.trim());
       }
@@ -177,49 +193,81 @@ function NewsPortalContent() {
 
   useEffect(() => {
     fetchArticles();
-  }, [currentEdition, currentCategory, currentState, currentCity, searchQuery]);
+  }, [currentEdition, currentCategory, currentState, currentCity, currentMetro, searchQuery]);
 
   // Navigation handlers with instant optimistic feedback
+  const handleSelectMetro = (metroId: string) => {
+    if (currentMetro === metroId) {
+      // Toggle off
+      setCurrentMetro('');
+      const instantFiltered = filterFallbackArticles({ edition: currentEdition, category: currentCategory, state: currentState, city: currentCity, search: searchQuery });
+      if (instantFiltered.length > 0) setArticles(instantFiltered);
+      updateQueryParams(currentEdition, currentCategory, currentState, searchQuery, currentCity, '');
+      return;
+    }
+
+    const hub = METROPOLITAN_HUBS.find(h => h.id === metroId);
+    if (hub) {
+      setCurrentMetro(hub.id);
+      setCurrentState(hub.state);
+      setCurrentCity(hub.primaryCity);
+      const instantFiltered = filterFallbackArticles({
+        edition: currentEdition,
+        category: currentCategory,
+        state: hub.state,
+        city: hub.primaryCity,
+        metro: hub.id,
+        search: searchQuery
+      });
+      if (instantFiltered.length > 0) setArticles(instantFiltered);
+      updateQueryParams(currentEdition, currentCategory, hub.state, searchQuery, hub.primaryCity, hub.id);
+    }
+  };
+
   const handleSelectCategory = (cat: string) => {
     setCurrentCategory(cat);
-    const instantFiltered = filterFallbackArticles({ edition: currentEdition, category: cat, state: currentState, city: currentCity, search: searchQuery });
+    const instantFiltered = filterFallbackArticles({ edition: currentEdition, category: cat, state: currentState, city: currentCity, metro: currentMetro, search: searchQuery });
     if (instantFiltered.length > 0) setArticles(instantFiltered);
-    updateQueryParams(currentEdition, cat, currentState, searchQuery, currentCity);
+    updateQueryParams(currentEdition, cat, currentState, searchQuery, currentCity, currentMetro);
   };
 
   const handleSelectEdition = (edition: 'National' | 'International') => {
     setCurrentEdition(edition);
     const newState = edition === 'International' ? 'All India' : currentState;
     const newCity = edition === 'International' ? '' : currentCity;
+    const newMetro = edition === 'International' ? '' : currentMetro;
     setCurrentState(newState);
     setCurrentCity(newCity);
-    const instantFiltered = filterFallbackArticles({ edition, category: currentCategory, state: newState, city: newCity, search: searchQuery });
+    setCurrentMetro(newMetro);
+    const instantFiltered = filterFallbackArticles({ edition, category: currentCategory, state: newState, city: newCity, metro: newMetro, search: searchQuery });
     if (instantFiltered.length > 0) setArticles(instantFiltered);
-    updateQueryParams(edition, currentCategory, newState, searchQuery, newCity);
+    updateQueryParams(edition, currentCategory, newState, searchQuery, newCity, newMetro);
   };
 
   const handleSelectState = (state: string) => {
     setCurrentState(state);
     setCurrentCity('');
-    const instantFiltered = filterFallbackArticles({ edition: currentEdition, category: currentCategory, state, city: '', search: searchQuery });
+    setCurrentMetro('');
+    const instantFiltered = filterFallbackArticles({ edition: currentEdition, category: currentCategory, state, city: '', metro: '', search: searchQuery });
     if (instantFiltered.length > 0) setArticles(instantFiltered);
-    updateQueryParams(currentEdition, currentCategory, state, searchQuery, '');
+    updateQueryParams(currentEdition, currentCategory, state, searchQuery, '', '');
   };
 
   const handleSearch = (query: string) => {
     setSearchQuery(query);
-    const instantFiltered = filterFallbackArticles({ edition: currentEdition, category: currentCategory, state: currentState, city: currentCity, search: query });
+    const instantFiltered = filterFallbackArticles({ edition: currentEdition, category: currentCategory, state: currentState, city: currentCity, metro: currentMetro, search: query });
     if (instantFiltered.length > 0) setArticles(instantFiltered);
-    updateQueryParams(currentEdition, currentCategory, currentState, query, currentCity);
+    updateQueryParams(currentEdition, currentCategory, currentState, query, currentCity, currentMetro);
   };
 
   const handleClearFilters = () => {
     setCurrentCategory('Home');
     setCurrentState('All India');
     setCurrentCity('');
+    setCurrentMetro('');
     setSearchQuery('');
     setArticles(FALLBACK_ARTICLES);
-    updateQueryParams(currentEdition, 'Home', 'All India', '', '');
+    updateQueryParams(currentEdition, 'Home', 'All India', '', '', '');
   };
 
   // Modern feature trigger handlers
@@ -242,9 +290,11 @@ function NewsPortalContent() {
         currentCategory={currentCategory}
         currentEdition={currentEdition}
         currentState={currentState}
+        currentMetro={currentMetro}
         onSelectCategory={handleSelectCategory}
         onSelectEdition={handleSelectEdition}
         onSelectState={handleSelectState}
+        onSelectMetro={handleSelectMetro}
         onSearch={handleSearch}
         darkMode={darkMode}
         onToggleDarkMode={() => setDarkMode(!darkMode)}
@@ -266,9 +316,11 @@ function NewsPortalContent() {
         currentEdition={currentEdition}
         currentCategory={currentCategory}
         currentState={currentState}
+        currentMetro={currentMetro}
         onSelectCategory={handleSelectCategory}
         onSelectEdition={handleSelectEdition}
         onSelectState={handleSelectState}
+        onSelectMetro={handleSelectMetro}
         currentUser={currentUser}
         onOpenAuthModal={() => modals.auth.open('Sign in to verify stories and access the citizen credibility economy.')}
         onLogout={handleLogout}
@@ -289,12 +341,21 @@ function NewsPortalContent() {
           <GeoDetector
             currentState={currentState}
             currentCity={currentCity}
-            onLocationChange={(st, ct) => {
+            currentMetro={currentMetro}
+            onLocationChange={(st, ct, mt) => {
               setCurrentState(st);
               setCurrentCity(ct || '');
-              const instantFiltered = filterFallbackArticles({ edition: currentEdition, category: currentCategory, state: st, city: ct || '', search: searchQuery });
+              if (mt) setCurrentMetro(mt);
+              const instantFiltered = filterFallbackArticles({
+                edition: currentEdition,
+                category: currentCategory,
+                state: st,
+                city: ct || '',
+                metro: mt || currentMetro,
+                search: searchQuery
+              });
               if (instantFiltered.length > 0) setArticles(instantFiltered);
-              updateQueryParams(currentEdition, currentCategory, st, searchQuery, ct || '');
+              updateQueryParams(currentEdition, currentCategory, st, searchQuery, ct || '', mt || currentMetro);
             }}
             onClearLocation={handleClearFilters}
           />

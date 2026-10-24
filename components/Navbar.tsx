@@ -22,11 +22,13 @@ import {
   SlidersHorizontal,
   MapPin,
   MessageCircle,
-  BookOpen
+  BookOpen,
+  Building2
 } from 'lucide-react';
 import { AuthUser } from './AuthModal';
 import LanguageSelector from './LanguageSelector';
 import { SupportedLanguage, getUIText } from '@/lib/translations';
+import { METROPOLITAN_HUBS } from '@/lib/metroHubs';
 
 export const CATEGORIES = [
   'Home',
@@ -57,6 +59,8 @@ interface NavbarProps {
   currentLang?: SupportedLanguage;
   onSelectLang?: (lang: SupportedLanguage) => void;
   onOpenWhatsAppTipline?: () => void;
+  currentMetro?: string;
+  onSelectMetro?: (metroId: string) => void;
 }
 
 export default function Navbar({
@@ -77,7 +81,9 @@ export default function Navbar({
   onLogout,
   currentLang = 'en',
   onSelectLang,
-  onOpenWhatsAppTipline
+  onOpenWhatsAppTipline,
+  currentMetro,
+  onSelectMetro
 }: NavbarProps) {
   const [searchInput, setSearchInput] = useState('');
   const [showNotifications, setShowNotifications] = useState(false);
@@ -443,6 +449,36 @@ export default function Navbar({
           </div>
         </div>
       </nav>
+
+      {/* 3. METROPOLITAN HUBS QUICK SWITCHER (Tier-1 Mega Clusters) */}
+      <div className="bg-slate-50/90 dark:bg-slate-900/60 px-3 sm:px-6 lg:px-8 border-b border-slate-100 dark:border-slate-800/80 w-full overflow-hidden text-xs py-1.5">
+        <div className="max-w-7xl mx-auto w-full flex items-center gap-2 overflow-x-auto scrollbar-none">
+          <div className="flex items-center gap-1.5 text-[11px] font-mono text-slate-500 font-bold uppercase shrink-0 pr-2 border-r border-slate-200 dark:border-slate-800">
+            <Building2 className="w-3.5 h-3.5 text-amber-500" />
+            <span className="hidden sm:inline">Metro Hubs:</span>
+          </div>
+
+          <div className="flex items-center gap-1.5 shrink-0">
+            {METROPOLITAN_HUBS.map((hub) => {
+              const isSelected = currentMetro === hub.id;
+              return (
+                <button
+                  key={hub.id}
+                  onClick={() => onSelectMetro ? onSelectMetro(hub.id) : onSelectState(hub.state)}
+                  className={`px-2.5 py-0.5 rounded-full text-[11px] font-bold transition whitespace-nowrap flex items-center gap-1 ${
+                    isSelected
+                      ? 'bg-red-600 text-white shadow-sm'
+                      : 'bg-white dark:bg-slate-950 text-slate-700 dark:text-slate-300 hover:text-red-600 dark:hover:text-red-400 border border-slate-200 dark:border-slate-800'
+                  }`}
+                >
+                  <span>{hub.shortLabel}</span>
+                  {isSelected && <span className="w-1.5 h-1.5 rounded-full bg-white" />}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      </div>
 
     </header>
   );

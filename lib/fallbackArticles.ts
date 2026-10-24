@@ -544,12 +544,41 @@ export interface ArticleFilterParams {
   category?: string | null;
   state?: string | null;
   city?: string | null;
+  metro?: string | null;
   search?: string | null;
   status?: string | null;
 }
 
+export const METRO_CLUSTERS_MAP: Record<string, { state: string; matchTerms: string[] }> = {
+  'delhi-ncr': { state: 'Delhi', matchTerms: ['delhi', 'new delhi', 'noida', 'gurugram', 'faridabad', 'ghaziabad'] },
+  'mumbai-mmr': { state: 'Maharashtra', matchTerms: ['mumbai', 'thane', 'navi mumbai'] },
+  'bengaluru-urban': { state: 'Karnataka', matchTerms: ['bengaluru', 'bangalore', 'whitefield', 'karnataka'] },
+  'hyderabad-ghmc': { state: 'Telangana', matchTerms: ['hyderabad', 'secunderabad', 'cyberabad', 'telangana'] },
+  'kolkata-metro': { state: 'West Bengal', matchTerms: ['kolkata', 'howrah', 'salt lake', 'bengal'] },
+  'chennai-metro': { state: 'Tamil Nadu', matchTerms: ['chennai', 'tambaram', 'avadi', 'tamil nadu'] },
+  'pune-metro': { state: 'Maharashtra', matchTerms: ['pune', 'pimpri', 'chinchwad'] },
+  'ahmedabad-gandhinagar': { state: 'Gujarat', matchTerms: ['ahmedabad', 'gandhinagar', 'gujarat'] },
+};
+
 export function filterFallbackArticles(params: ArticleFilterParams): ArticleItem[] {
   let list = [...FALLBACK_ARTICLES];
+
+  // Metro Cluster filter
+  if (params.metro && params.metro !== 'ALL') {
+    const metroKey = params.metro.toLowerCase().replace(/[^a-z0-9]/g, '-');
+    const matchedCluster = Object.entries(METRO_CLUSTERS_MAP).find(
+      ([key]) => key === metroKey || params.metro?.toLowerCase().includes(key.split('-')[0])
+    );
+
+    if (matchedCluster) {
+      const terms = matchedCluster[1].matchTerms;
+      const filtered = list.filter(a => {
+        const fullText = `${a.city || ''} ${a.state || ''} ${a.title || ''}`.toLowerCase();
+        return terms.some(term => fullText.includes(term));
+      });
+      if (filtered.length > 0) return filtered;
+    }
+  }
 
   // Edition filter
   if (params.edition && params.edition !== 'ALL') {

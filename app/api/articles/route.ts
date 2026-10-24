@@ -5,7 +5,7 @@ import AdminUser from '@/models/AdminUser';
 import { generateContentHash } from '@/lib/crypto';
 import { bot4VerificationAuditor } from '@/lib/agents';
 import { seedDatabase } from '@/lib/seed';
-import { FALLBACK_ARTICLES, filterFallbackArticles } from '@/lib/fallbackArticles';
+import { FALLBACK_ARTICLES, filterFallbackArticles, METRO_CLUSTERS_MAP } from '@/lib/fallbackArticles';
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
@@ -13,6 +13,7 @@ export async function GET(req: NextRequest) {
   const category = searchParams.get('category');
   const state = searchParams.get('state');
   const city = searchParams.get('city');
+  const metro = searchParams.get('metro');
   const search = searchParams.get('search');
   const status = searchParams.get('status') || 'PUBLISHED';
   const regionType = searchParams.get('regionType');
@@ -77,6 +78,27 @@ export async function GET(req: NextRequest) {
         ];
       }
 
+      // Metro Cluster filter
+      if (metro && metro !== 'ALL' && metro.trim() !== '') {
+        const metroKey = metro.toLowerCase().replace(/[^a-z0-9]/g, '-');
+        const matched = Object.entries(METRO_CLUSTERS_MAP).find(
+          ([key]) => key === metroKey || metro.toLowerCase().includes(key.split('-')[0])
+        );
+        if (matched) {
+          const terms = matched[1].matchTerms;
+          const regexArray = terms.map(t => new RegExp(t, 'i'));
+          filter.$and = filter.$and || [];
+          filter.$and.push({
+            $or: [
+              { city: { $in: regexArray } },
+              { state: { $in: regexArray } },
+              { title: { $in: regexArray } },
+              { summary: { $in: regexArray } }
+            ]
+          });
+        }
+      }
+
       // Search query filter
       if (search && search.trim() !== '') {
         const searchRegex = new RegExp(search.trim(), 'i');
@@ -102,7 +124,7 @@ export async function GET(req: NextRequest) {
     }
 
     // High-Performance In-Memory Resilient Fallback (Zero downtime on Vercel without MongoDB Atlas)
-    const fallbackData = filterFallbackArticles({ edition, category, state, city, search, status });
+    const fallbackData = filterFallbackArticles({ edition, category, state, city, search, status, metro });
     return NextResponse.json({
       success: true,
       count: fallbackData.length,
@@ -113,7 +135,7 @@ export async function GET(req: NextRequest) {
 
   } catch (error: any) {
     console.warn('⚠️ Serving in-memory verified fallback due to:', error.message);
-    const fallbackData = filterFallbackArticles({ edition, category, state, city, search, status });
+    const fallbackData = filterFallbackArticles({ edition, category, state, city, search, status, metro });
     return NextResponse.json({
       success: true,
       count: fallbackData.length,
