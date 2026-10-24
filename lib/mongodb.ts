@@ -36,12 +36,20 @@ export async function connectDB(): Promise<typeof mongoose> {
         console.log(`✅ Successfully connected to MongoDB database: "${conn.connection.name}" on host: ${conn.connection.host}`);
         return conn;
       } catch (err: any) {
+        if (process.env.VERCEL) {
+          throw new Error('MONGODB_URI is not configured in Vercel. Please add your MongoDB Atlas connection string (MONGODB_URI) in Vercel Project Settings > Environment Variables.');
+        }
+
         console.warn(`⚠️ Primary MongoDB connection failed (${err.message}). Starting embedded memory server fallback...`);
-        const { MongoMemoryServer } = await import('mongodb-memory-server');
-        const memoryServer = await MongoMemoryServer.create();
-        const memUri = memoryServer.getUri();
-        console.log(`✅ Connected to Embedded In-Memory MongoDB at: ${memUri}`);
-        return await mongoose.connect(memUri);
+        try {
+          const { MongoMemoryServer } = await import('mongodb-memory-server');
+          const memoryServer = await MongoMemoryServer.create();
+          const memUri = memoryServer.getUri();
+          console.log(`✅ Connected to Embedded In-Memory MongoDB at: ${memUri}`);
+          return await mongoose.connect(memUri);
+        } catch (memErr: any) {
+          throw new Error(`Failed to connect to primary MongoDB (${err.message}) and memory server fallback failed (${memErr.message})`);
+        }
       }
     })();
   }
