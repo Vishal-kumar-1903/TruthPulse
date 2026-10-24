@@ -1,25 +1,30 @@
 'use client';
 
 import React, { useState, useEffect, Suspense } from 'react';
+import dynamic from 'next/dynamic';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Navbar from '@/components/Navbar';
 import SidebarDrawer from '@/components/SidebarDrawer';
 import NewsFeed from '@/components/NewsFeed';
-import AuthModal, { AuthUser } from '@/components/AuthModal';
-import CryptoSealBadge from '@/components/CryptoSealBadge';
-import LiveStreamModal from '@/components/LiveStreamModal';
-import ReelsViewer from '@/components/ReelsViewer';
+import { AuthUser } from '@/components/AuthModal';
 import { DEFAULT_BREAKING_SHORTS } from '@/components/BreakingShorts';
 import { ArticleItem } from '@/components/NewsCard';
 import { SupportedLanguage } from '@/lib/translations';
-import MediaForensicsModal from '@/components/MediaForensicsModal';
-import GazetteRagModal from '@/components/GazetteRagModal';
-import CommunityNotesDrawer from '@/components/CommunityNotesDrawer';
-import WhatsAppFactCheckModal from '@/components/WhatsAppFactCheckModal';
-import UpiTipModal from '@/components/UpiTipModal';
-import { analyzeMediaForensics, MediaForensicReport } from '@/lib/forensics';
-import { queryGazetteRag, GazetteRagResult } from '@/lib/ragEngine';
-import { ShieldCheck, Cpu } from 'lucide-react';
+import { analyzeMediaForensics } from '@/lib/forensics';
+import { queryGazetteRag } from '@/lib/ragEngine';
+import { usePortalModals } from '@/hooks/usePortalModals';
+import { Cpu } from 'lucide-react';
+
+// Code-splitting heavy interactive modals with dynamic imports (ssr: false)
+const AuthModal = dynamic(() => import('@/components/AuthModal'), { ssr: false });
+const LiveStreamModal = dynamic(() => import('@/components/LiveStreamModal'), { ssr: false });
+const ReelsViewer = dynamic(() => import('@/components/ReelsViewer'), { ssr: false });
+const CryptoSealBadge = dynamic(() => import('@/components/CryptoSealBadge'), { ssr: false });
+const MediaForensicsModal = dynamic(() => import('@/components/MediaForensicsModal'), { ssr: false });
+const GazetteRagModal = dynamic(() => import('@/components/GazetteRagModal'), { ssr: false });
+const CommunityNotesDrawer = dynamic(() => import('@/components/CommunityNotesDrawer'), { ssr: false });
+const WhatsAppFactCheckModal = dynamic(() => import('@/components/WhatsAppFactCheckModal'), { ssr: false });
+const UpiTipModal = dynamic(() => import('@/components/UpiTipModal'), { ssr: false });
 
 function NewsPortalContent() {
   const router = useRouter();
@@ -31,47 +36,34 @@ function NewsPortalContent() {
   const stateParam = searchParams.get('state') || 'All India';
   const searchParam = searchParams.get('search') || '';
 
+  // Core Feed Filter State
   const [currentEdition, setCurrentEdition] = useState<'National' | 'International'>(editionParam);
   const [currentCategory, setCurrentCategory] = useState<string>(categoryParam);
   const [currentState, setCurrentState] = useState<string>(stateParam);
   const [searchQuery, setSearchQuery] = useState<string>(searchParam);
 
+  // Article data state
   const [articles, setArticles] = useState<ArticleItem[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
+  // User & Portal Preferences
   const [darkMode, setDarkMode] = useState<boolean>(false);
-  const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(false);
-  const [isAuthModalOpen, setIsAuthModalOpen] = useState<boolean>(false);
-  const [authReason, setAuthReason] = useState<string>('Please sign in to verify or dispute this story.');
-  const [isLiveStreamOpen, setIsLiveStreamOpen] = useState<boolean>(false);
-  const [isReelsOpen, setIsReelsOpen] = useState<boolean>(false);
-  const [reelsInitialIndex, setReelsInitialIndex] = useState<number>(0);
-  const [selectedSealArticle, setSelectedSealArticle] = useState<ArticleItem | null>(null);
   const [currentLang, setCurrentLang] = useState<SupportedLanguage>('en');
-
-  // Next-Gen Modern Modal States
-  const [selectedForensicReport, setSelectedForensicReport] = useState<MediaForensicReport | null>(null);
-  const [selectedGazetteResult, setSelectedGazetteResult] = useState<GazetteRagResult | null>(null);
-  const [selectedCommunityNotesArticle, setSelectedCommunityNotesArticle] = useState<{ id: string; title: string } | null>(null);
-  const [isWhatsAppModalOpen, setIsWhatsAppModalOpen] = useState<boolean>(false);
-  const [selectedTipTarget, setSelectedTipTarget] = useState<{ author: string; title: string } | null>(null);
-
-  // Authenticated User State (Loaded from localStorage)
   const [currentUser, setCurrentUser] = useState<AuthUser | null>(null);
 
+  // Centralized Modal Manager Hook
+  const modals = usePortalModals();
+
+  // Load preferences from localStorage on mount
   useEffect(() => {
     try {
       const savedLang = localStorage.getItem('truthpulse_lang') as SupportedLanguage;
-      if (savedLang) {
-        setCurrentLang(savedLang);
-      }
+      if (savedLang) setCurrentLang(savedLang);
       const savedUser = localStorage.getItem('truthpulse_user');
-      if (savedUser) {
-        setCurrentUser(JSON.parse(savedUser));
-      }
-    } catch (e) {
-      // Ignore
+      if (savedUser) setCurrentUser(JSON.parse(savedUser));
+    } catch {
+      // Ignore storage access errors
     }
   }, []);
 
@@ -79,8 +71,8 @@ function NewsPortalContent() {
     setCurrentUser(user);
     try {
       localStorage.setItem('truthpulse_user', JSON.stringify(user));
-    } catch (e) {
-      // Ignore
+    } catch {
+      // Ignore storage errors
     }
   };
 
@@ -88,14 +80,13 @@ function NewsPortalContent() {
     setCurrentUser(null);
     try {
       localStorage.removeItem('truthpulse_user');
-    } catch (e) {
-      // Ignore
+    } catch {
+      // Ignore storage errors
     }
   };
 
   const handleRequireAuth = (reason?: string) => {
-    if (reason) setAuthReason(reason);
-    setIsAuthModalOpen(true);
+    modals.auth.open(reason);
   };
 
   // Sync state from URL params
@@ -162,13 +153,12 @@ function NewsPortalContent() {
     fetchArticles();
   }, [currentEdition, currentCategory, currentState, searchQuery]);
 
-  // Category select handler
+  // Navigation handlers
   const handleSelectCategory = (cat: string) => {
     setCurrentCategory(cat);
     updateQueryParams(currentEdition, cat, currentState, searchQuery);
   };
 
-  // Edition select handler
   const handleSelectEdition = (edition: 'National' | 'International') => {
     setCurrentEdition(edition);
     const newState = edition === 'International' ? 'All India' : currentState;
@@ -176,19 +166,16 @@ function NewsPortalContent() {
     updateQueryParams(edition, currentCategory, newState, searchQuery);
   };
 
-  // State select handler
   const handleSelectState = (state: string) => {
     setCurrentState(state);
     updateQueryParams(currentEdition, currentCategory, state, searchQuery);
   };
 
-  // Search handler
   const handleSearch = (query: string) => {
     setSearchQuery(query);
     updateQueryParams(currentEdition, currentCategory, currentState, query);
   };
 
-  // Clear all filters
   const handleClearFilters = () => {
     setCurrentCategory('Home');
     setCurrentState('All India');
@@ -196,35 +183,22 @@ function NewsPortalContent() {
     updateQueryParams(currentEdition, 'Home', 'All India', '');
   };
 
-  const handleOpenReels = (index: number = 0) => {
-    setReelsInitialIndex(index);
-    setIsReelsOpen(true);
-  };
-
-  // Next-Gen Feature Handlers
+  // Modern feature trigger handlers
   const handleOpenForensics = (imageUrl: string, title: string) => {
     const report = analyzeMediaForensics(imageUrl || 'https://images.unsplash.com/photo-1541872703-74c5e44368f9?w=1000', title);
-    setSelectedForensicReport(report);
+    modals.forensics.open(report);
   };
 
   const handleOpenGazetteRag = (claim?: string) => {
     const targetClaim = claim || (articles.length > 0 ? articles[0].title : 'Parliament clears landmark Electoral Transparency Bill');
     const result = queryGazetteRag(targetClaim);
-    setSelectedGazetteResult(result);
-  };
-
-  const handleOpenCommunityNotes = (articleId: string, articleTitle: string) => {
-    setSelectedCommunityNotesArticle({ id: articleId, title: articleTitle });
-  };
-
-  const handleOpenUpiTip = (authorName: string, articleTitle: string) => {
-    setSelectedTipTarget({ author: authorName, title: articleTitle });
+    modals.gazette.open(result);
   };
 
   return (
     <div className={`min-h-screen w-full max-w-full overflow-x-hidden ${darkMode ? 'bg-slate-950 text-slate-100' : 'bg-slate-50 text-slate-900'} transition-colors duration-200 font-sans`}>
       
-      {/* 1. TOP NAVBAR (Hamburger, Brand, Categories, Weather/AQI, Live Stream, Notifications, Profile) */}
+      {/* 1. TOP NAVBAR */}
       <Navbar
         currentCategory={currentCategory}
         currentEdition={currentEdition}
@@ -235,24 +209,21 @@ function NewsPortalContent() {
         onSearch={handleSearch}
         darkMode={darkMode}
         onToggleDarkMode={() => setDarkMode(!darkMode)}
-        onOpenLiveStream={() => setIsLiveStreamOpen(true)}
-        onOpenSidebar={() => setIsSidebarOpen(true)}
-        onOpenReels={() => handleOpenReels(0)}
+        onOpenLiveStream={modals.liveStream.open}
+        onOpenSidebar={modals.sidebar.open}
+        onOpenReels={() => modals.reels.open(0)}
         currentUser={currentUser}
-        onOpenAuthModal={() => {
-          setAuthReason('Sign in to access credibility voting, bookmark articles, and view personal TruthCredits.');
-          setIsAuthModalOpen(true);
-        }}
+        onOpenAuthModal={() => modals.auth.open('Sign in to access credibility voting, bookmark articles, and view personal TruthCredits.')}
         onLogout={handleLogout}
         currentLang={currentLang}
         onSelectLang={setCurrentLang}
-        onOpenWhatsAppTipline={() => setIsWhatsAppModalOpen(true)}
+        onOpenWhatsAppTipline={modals.whatsApp.open}
       />
 
-      {/* 2. SLEEK DARK SLIDING SIDEBAR DRAWER (Core Hub, Geo Accordion, Categories, User/Settings) */}
+      {/* 2. SLEEK DARK SLIDING SIDEBAR DRAWER */}
       <SidebarDrawer
-        isOpen={isSidebarOpen}
-        onClose={() => setIsSidebarOpen(false)}
+        isOpen={modals.sidebar.isOpen}
+        onClose={modals.sidebar.close}
         currentEdition={currentEdition}
         currentCategory={currentCategory}
         currentState={currentState}
@@ -260,22 +231,19 @@ function NewsPortalContent() {
         onSelectEdition={handleSelectEdition}
         onSelectState={handleSelectState}
         currentUser={currentUser}
-        onOpenAuthModal={() => {
-          setAuthReason('Sign in to verify stories and access the citizen credibility economy.');
-          setIsAuthModalOpen(true);
-        }}
+        onOpenAuthModal={() => modals.auth.open('Sign in to verify stories and access the citizen credibility economy.')}
         onLogout={handleLogout}
         darkMode={darkMode}
         onToggleDarkMode={() => setDarkMode(!darkMode)}
-        onOpenLiveStream={() => setIsLiveStreamOpen(true)}
-        onOpenReels={() => handleOpenReels(0)}
+        onOpenLiveStream={modals.liveStream.open}
+        onOpenReels={() => modals.reels.open(0)}
         currentLang={currentLang}
         onSelectLang={setCurrentLang}
-        onOpenWhatsAppTipline={() => setIsWhatsAppModalOpen(true)}
+        onOpenWhatsAppTipline={modals.whatsApp.open}
         onOpenGazetteRag={() => handleOpenGazetteRag()}
       />
 
-      {/* 3. MAIN NEWS FEED & RESPONSIVE GRID (Shorts Reel, State Pills, Breaking Banner, Cards) */}
+      {/* 3. MAIN NEWS FEED & RESPONSIVE GRID */}
       <main className="w-full max-w-full overflow-x-hidden">
         <NewsFeed
           articles={articles}
@@ -286,109 +254,109 @@ function NewsPortalContent() {
           currentState={currentState}
           onSelectState={handleSelectState}
           onClearFilters={handleClearFilters}
-          onOpenCryptoSeal={(art) => setSelectedSealArticle(art)}
+          onOpenCryptoSeal={(art) => modals.cryptoSeal.open(art)}
           onOpenForensics={handleOpenForensics}
           onOpenGazetteRag={handleOpenGazetteRag}
-          onOpenCommunityNotes={handleOpenCommunityNotes}
-          onOpenUpiTip={handleOpenUpiTip}
+          onOpenCommunityNotes={(id, title) => modals.communityNotes.open(id, title)}
+          onOpenUpiTip={(author, title) => modals.tip.open(author, title)}
           currentUser={currentUser}
           onRequireAuth={handleRequireAuth}
-          onOpenReels={(idx) => handleOpenReels(idx)}
+          onOpenReels={(idx) => modals.reels.open(idx)}
           currentLang={currentLang}
         />
       </main>
 
-      {/* 4. FULL-SCREEN VERTICAL SWIPE REELS / SHORTS VIEWER */}
-      <ReelsViewer
-        shorts={DEFAULT_BREAKING_SHORTS}
-        initialIndex={reelsInitialIndex}
-        isOpen={isReelsOpen}
-        onClose={() => setIsReelsOpen(false)}
-        currentUser={currentUser}
-        onRequireAuth={handleRequireAuth}
-        currentLang={currentLang}
-        onOpenFullArticle={(short) => {
-          setIsReelsOpen(false);
-          const matched = articles.find(a => a._id === short.fullArticleId || a.title.toLowerCase().includes(short.headline.slice(0, 25).toLowerCase()));
-          if (matched) {
-            setSelectedSealArticle(matched);
-          } else {
-            const el = document.getElementById('news-grid-section');
-            if (el) el.scrollIntoView({ behavior: 'smooth' });
-          }
-        }}
-      />
+      {/* 4. CODE-SPLIT LAZY LOADED MODALS */}
+      {modals.reels.isOpen && (
+        <ReelsViewer
+          shorts={DEFAULT_BREAKING_SHORTS}
+          initialIndex={modals.reels.initialIndex}
+          isOpen={modals.reels.isOpen}
+          onClose={modals.reels.close}
+          currentUser={currentUser}
+          onRequireAuth={handleRequireAuth}
+          currentLang={currentLang}
+          onOpenFullArticle={(short) => {
+            modals.reels.close();
+            const matched = articles.find(a => a._id === short.fullArticleId || a.title.toLowerCase().includes(short.headline.slice(0, 25).toLowerCase()));
+            if (matched) {
+              modals.cryptoSeal.open(matched);
+            } else {
+              const el = document.getElementById('news-grid-section');
+              if (el) el.scrollIntoView({ behavior: 'smooth' });
+            }
+          }}
+        />
+      )}
 
-      {/* 4. AUTH MODAL (Login / Create Account Prompt for Role-Gated Actions) */}
-      <AuthModal
-        isOpen={isAuthModalOpen}
-        onClose={() => setIsAuthModalOpen(false)}
-        onLoginSuccess={handleLoginSuccess}
-        reasonMessage={authReason}
-      />
+      {modals.auth.isOpen && (
+        <AuthModal
+          isOpen={modals.auth.isOpen}
+          onClose={modals.auth.close}
+          onLoginSuccess={handleLoginSuccess}
+          reasonMessage={modals.auth.reason}
+        />
+      )}
 
-      {/* 5. LIVE STREAM BROADCAST MODAL */}
-      <LiveStreamModal
-        isOpen={isLiveStreamOpen}
-        onClose={() => setIsLiveStreamOpen(false)}
-      />
+      {modals.liveStream.isOpen && (
+        <LiveStreamModal
+          isOpen={modals.liveStream.isOpen}
+          onClose={modals.liveStream.close}
+        />
+      )}
 
-      {/* 6. CRYPTOGRAPHIC SEAL INSPECTOR MODAL */}
-      {selectedSealArticle && (
+      {modals.cryptoSeal.article && (
         <CryptoSealBadge
-          article={selectedSealArticle}
-          onClose={() => setSelectedSealArticle(null)}
+          article={modals.cryptoSeal.article}
+          onClose={modals.cryptoSeal.close}
         />
       )}
 
-      {/* 8. AI MEDIA DEEPFAKE FORENSICS MODAL */}
-      {selectedForensicReport && (
+      {modals.forensics.report && (
         <MediaForensicsModal
-          isOpen={!!selectedForensicReport}
-          onClose={() => setSelectedForensicReport(null)}
-          report={selectedForensicReport}
+          isOpen={!!modals.forensics.report}
+          onClose={modals.forensics.close}
+          report={modals.forensics.report}
         />
       )}
 
-      {/* 9. STATUTORY GAZETTE RAG MODAL */}
-      {selectedGazetteResult && (
+      {modals.gazette.result && (
         <GazetteRagModal
-          isOpen={!!selectedGazetteResult}
-          onClose={() => setSelectedGazetteResult(null)}
-          initialResult={selectedGazetteResult}
+          isOpen={!!modals.gazette.result}
+          onClose={modals.gazette.close}
+          initialResult={modals.gazette.result}
         />
       )}
 
-      {/* 10. COMMUNITY NOTES DRAWER (Twitter/X Bridging Algorithm) */}
-      {selectedCommunityNotesArticle && (
+      {modals.communityNotes.target && (
         <CommunityNotesDrawer
-          isOpen={!!selectedCommunityNotesArticle}
-          onClose={() => setSelectedCommunityNotesArticle(null)}
-          articleId={selectedCommunityNotesArticle.id}
-          articleTitle={selectedCommunityNotesArticle.title}
+          isOpen={!!modals.communityNotes.target}
+          onClose={modals.communityNotes.close}
+          articleId={modals.communityNotes.target.id}
+          articleTitle={modals.communityNotes.target.title}
           currentUser={currentUser}
           onRequireAuth={handleRequireAuth}
         />
       )}
 
-      {/* 11. WHATSAPP FACT-CHECK TIPLINE BOT MODAL */}
-      <WhatsAppFactCheckModal
-        isOpen={isWhatsAppModalOpen}
-        onClose={() => setIsWhatsAppModalOpen(false)}
-      />
+      {modals.whatsApp.isOpen && (
+        <WhatsAppFactCheckModal
+          isOpen={modals.whatsApp.isOpen}
+          onClose={modals.whatsApp.close}
+        />
+      )}
 
-      {/* 12. CITIZEN REPORTER UPI MICRO-TIP MODAL */}
-      {selectedTipTarget && (
+      {modals.tip.target && (
         <UpiTipModal
-          isOpen={!!selectedTipTarget}
-          onClose={() => setSelectedTipTarget(null)}
-          authorName={selectedTipTarget.author}
-          articleTitle={selectedTipTarget.title}
+          isOpen={!!modals.tip.target}
+          onClose={modals.tip.close}
+          authorName={modals.tip.target.author}
+          articleTitle={modals.tip.target.title}
           currentUser={currentUser}
         />
       )}
 
-      {/* 7. FOOTER */}
+      {/* 5. FOOTER */}
       <footer className="mt-20 border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 py-10 text-xs text-slate-500 dark:text-slate-400 font-sans">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
