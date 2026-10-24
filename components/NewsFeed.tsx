@@ -229,8 +229,8 @@ export default function NewsFeed({
         </div>
       )}
 
-      {/* 4. LOADING & ERROR STATES */}
-      {loading && (
+      {/* 4. LOADING & ERROR STATES (Only shown if zero articles exist) */}
+      {loading && articles.length === 0 && (
         <div className="py-24 text-center space-y-3">
           <Cpu className="w-9 h-9 text-red-600 animate-spin mx-auto" />
           <p className="text-sm font-mono text-slate-500 dark:text-slate-400">
