@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, Suspense } from 'react';
 import dynamic from 'next/dynamic';
+import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Navbar from '@/components/Navbar';
 import SidebarDrawer from '@/components/SidebarDrawer';
@@ -16,7 +17,7 @@ import { queryGazetteRag } from '@/lib/ragEngine';
 import { FALLBACK_ARTICLES, filterFallbackArticles } from '@/lib/fallbackArticles';
 import { METROPOLITAN_HUBS } from '@/lib/metroHubs';
 import { usePortalModals } from '@/hooks/usePortalModals';
-import { Cpu } from 'lucide-react';
+import { Cpu, Sparkles } from 'lucide-react';
 
 // Code-splitting heavy interactive modals with dynamic imports (ssr: false)
 const AuthModal = dynamic(() => import('@/components/AuthModal'), { ssr: false });
@@ -95,8 +96,14 @@ function NewsPortalContent() {
     setCurrentUser(user);
     try {
       localStorage.setItem('truthpulse_user', JSON.stringify(user));
+      document.cookie = `truthpulse_auth=${encodeURIComponent(JSON.stringify({ id: user.id, name: user.name, role: user.role, email: user.email }))}; path=/; max-age=604800; SameSite=Lax`;
     } catch {
       // Ignore storage errors
+    }
+
+    // Role-based routing: Editors automatically enter the Editor Studio Hub
+    if (user.role === 'CHIEF_EDITOR' || user.role === 'ADMIN' || (user.role as string) === 'EDITOR') {
+      router.push('/studio');
     }
   };
 
@@ -104,6 +111,7 @@ function NewsPortalContent() {
     setCurrentUser(null);
     try {
       localStorage.removeItem('truthpulse_user');
+      document.cookie = 'truthpulse_auth=; path=/; max-age=0; SameSite=Lax';
     } catch {
       // Ignore storage errors
     }
@@ -486,6 +494,20 @@ function NewsPortalContent() {
           </div>
         </div>
       </footer>
+
+      {/* 6. FLOATING QUICK RETURN BUTTON FOR EDITORS BROWSING LIVE PORTAL */}
+      {currentUser && (currentUser.role === 'CHIEF_EDITOR' || currentUser.role === 'ADMIN' || (currentUser.role as string) === 'EDITOR') && (
+        <div className="fixed bottom-6 right-6 z-40 animate-bounce">
+          <Link
+            href="/studio"
+            className="flex items-center gap-2 px-4 py-2.5 rounded-full bg-slate-900/95 hover:bg-slate-900 text-amber-300 hover:text-amber-200 border border-amber-500/40 shadow-2xl backdrop-blur-md text-xs font-mono font-bold transition hover:scale-105 active:scale-95 group"
+            title="Return to Editor Studio Hub"
+          >
+            <Sparkles className="w-4 h-4 text-amber-400 group-hover:rotate-12 transition-transform" />
+            <span>Return to Studio Desk</span>
+          </Link>
+        </div>
+      )}
 
     </div>
   );

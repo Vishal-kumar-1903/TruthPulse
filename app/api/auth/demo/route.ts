@@ -47,18 +47,34 @@ export async function POST(req: NextRequest) {
           });
         }
 
-        return NextResponse.json({
+        const userPayload = {
+          id: user._id.toString(),
+          name: user.name,
+          email: user.email,
+          role: user.role,
+          truthCredits: user.truthCredits,
+          votedArticles: user.votedArticles || [],
+          bookmarks: user.bookmarks || []
+        };
+
+        const res = NextResponse.json({
           success: true,
-          user: {
-            id: user._id.toString(),
-            name: user.name,
-            email: user.email,
-            role: user.role,
-            truthCredits: user.truthCredits,
-            votedArticles: user.votedArticles || [],
-            bookmarks: user.bookmarks || []
-          }
+          user: userPayload
         });
+
+        res.cookies.set('truthpulse_auth', JSON.stringify({
+          id: userPayload.id,
+          name: userPayload.name,
+          email: userPayload.email,
+          role: userPayload.role
+        }), {
+          path: '/',
+          maxAge: 60 * 60 * 24 * 7,
+          httpOnly: false,
+          sameSite: 'lax'
+        });
+
+        return res;
       } catch (dbErr) {
         console.warn('MongoDB User operation skipped, falling back to in-memory user:', dbErr);
       }
@@ -75,12 +91,26 @@ export async function POST(req: NextRequest) {
       bookmarks: []
     };
 
-    return NextResponse.json({
+    const res = NextResponse.json({
       success: true,
       user: mockUser,
       isDatabaseConnected: false,
       message: 'Authenticated via resilient verified citizen profile.'
     });
+
+    res.cookies.set('truthpulse_auth', JSON.stringify({
+      id: mockUser.id,
+      name: mockUser.name,
+      email: mockUser.email,
+      role: mockUser.role
+    }), {
+      path: '/',
+      maxAge: 60 * 60 * 24 * 7,
+      httpOnly: false,
+      sameSite: 'lax'
+    });
+
+    return res;
 
   } catch (error: any) {
     // Fail-safe user grant so reader is never blocked from exploring the portal
@@ -94,10 +124,24 @@ export async function POST(req: NextRequest) {
       bookmarks: []
     };
 
-    return NextResponse.json({
+    const res = NextResponse.json({
       success: true,
       user: fallbackUser,
       isDatabaseConnected: false
     });
+
+    res.cookies.set('truthpulse_auth', JSON.stringify({
+      id: fallbackUser.id,
+      name: fallbackUser.name,
+      email: fallbackUser.email,
+      role: fallbackUser.role
+    }), {
+      path: '/',
+      maxAge: 60 * 60 * 24 * 7,
+      httpOnly: false,
+      sameSite: 'lax'
+    });
+
+    return res;
   }
 }

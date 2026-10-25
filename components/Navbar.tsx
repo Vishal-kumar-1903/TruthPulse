@@ -23,7 +23,8 @@ import {
   MapPin,
   MessageCircle,
   BookOpen,
-  Building2
+  Building2,
+  Sparkles
 } from 'lucide-react';
 import { AuthUser } from './AuthModal';
 import LanguageSelector from './LanguageSelector';
@@ -220,6 +221,18 @@ export default function Navbar({
               <span>REELS</span>
             </button>
 
+            {/* EDITOR STUDIO TRIGGER PILL (IF EDITOR/ADMIN) */}
+            {currentUser && (currentUser.role === 'CHIEF_EDITOR' || currentUser.role === 'ADMIN' || (currentUser.role as string) === 'EDITOR') && (
+              <Link
+                href="/studio"
+                className="hidden lg:flex items-center gap-1.5 px-3 py-1 rounded-full bg-gradient-to-r from-red-600 via-rose-600 to-amber-600 hover:opacity-90 text-white font-bold text-[11px] tracking-wide transition shadow-sm shrink-0 border border-amber-400/40"
+                title="Open Dedicated Editor Studio Hub"
+              >
+                <Sparkles className="w-3.5 h-3.5 text-amber-300 animate-pulse" />
+                <span>STUDIO DESK</span>
+              </Link>
+            )}
+
             {/* E-PAPER / DIGITAL MAGAZINE FLIPBOOK BUTTON */}
             <Link
               href="/magazine"
@@ -380,6 +393,17 @@ export default function Navbar({
                             <span>{currentUser.truthCredits} Credits</span>
                           </div>
                         </div>
+
+                        {(currentUser.role === 'CHIEF_EDITOR' || currentUser.role === 'ADMIN' || (currentUser.role as string) === 'EDITOR') && (
+                          <Link
+                            href="/studio"
+                            onClick={() => setShowProfileMenu(false)}
+                            className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-amber-500 hover:bg-amber-500/10 font-bold transition"
+                          >
+                            <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+                            <span>Editor Studio Desk</span>
+                          </Link>
+                        )}
 
                         <Link
                           href="/admin"
