@@ -32,9 +32,11 @@ export async function connectDB(): Promise<typeof mongoose | null> {
   }
 
   if (!cached.promise) {
+    const isCloudAtlas = MONGODB_URI.includes('mongodb+srv://') || MONGODB_URI.includes('mongodb.net');
     const opts: mongoose.ConnectOptions = {
-      serverSelectionTimeoutMS: 1500, // Fast fail-over to zero-downtime fallback in 1.5s
+      serverSelectionTimeoutMS: isCloudAtlas ? 15000 : 3000,
       autoIndex: false,
+      tlsAllowInvalidCertificates: isCloudAtlas ? true : false,
     };
 
     cached.promise = (async () => {

@@ -24,7 +24,8 @@ async function runSetup() {
 
   try {
     await mongoose.connect(MONGODB_URI, {
-      serverSelectionTimeoutMS: 5000
+      serverSelectionTimeoutMS: 15000,
+      tlsAllowInvalidCertificates: true
     });
     console.log(`✓ Connected to MongoDB successfully!`);
     console.log(`  Database Name: ${mongoose.connection.name}`);
