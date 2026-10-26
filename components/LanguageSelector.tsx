@@ -80,10 +80,10 @@ export default function LanguageSelector({
         title="Change Language / भाषा बदलें"
       >
         <Globe className="w-3.5 h-3.5 text-slate-600 dark:text-slate-400 shrink-0" />
-        <span className="hidden sm:inline font-bold tracking-wide">
+        <span className="hidden 2xl:inline font-bold tracking-wide">
           {activeOption.nativeName}
         </span>
-        <span className="sm:hidden font-mono text-[10px] font-bold uppercase">
+        <span className="2xl:hidden font-mono text-[11px] font-bold uppercase">
           {activeOption.shortCode}
         </span>
         <ChevronDown className={`w-3 h-3 text-slate-400 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
