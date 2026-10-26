@@ -119,8 +119,8 @@ export default function NewsFeed({
     <div className="w-full max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-6 font-sans overflow-x-hidden">
       
       {/* 1. TOP BREAKING NEWS TICKER BANNER */}
-      <div className="mb-6 rounded-2xl bg-gradient-to-r from-red-600 via-rose-600 to-amber-600 text-white p-0.5 shadow-md overflow-hidden w-full">
-        <div className="bg-slate-950 dark:bg-slate-950 rounded-[14px] px-3.5 py-2.5 flex items-center gap-3 w-full">
+      <div className="mb-6 rounded-2xl border border-red-600/30 dark:border-red-500/20 bg-slate-900 text-white p-0.5 shadow-sm overflow-hidden w-full">
+        <div className="bg-slate-950 rounded-[14px] px-3.5 py-2.5 flex items-center gap-3 w-full">
           
           <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-red-600 text-white font-black text-[11px] uppercase tracking-wider shrink-0 animate-pulse">
             <Radio className="w-3.5 h-3.5" />

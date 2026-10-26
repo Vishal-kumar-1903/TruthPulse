@@ -72,16 +72,19 @@ export default function LanguageSelector({
           e.stopPropagation();
           setIsOpen(!isOpen);
         }}
-        className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold transition shadow-sm border ${
+        className={`flex items-center gap-1 sm:gap-1.5 px-2 sm:px-2.5 py-1 rounded-full text-xs font-bold transition shadow-sm border ${
           isOpen
-            ? 'bg-red-50 dark:bg-slate-850 border-red-500/50 text-red-600 dark:text-red-400 ring-2 ring-red-500/20'
+            ? 'bg-slate-200 dark:bg-slate-800 border-slate-400 dark:border-slate-700 text-slate-900 dark:text-slate-100'
             : 'bg-slate-100 dark:bg-slate-900 hover:bg-slate-200 dark:hover:bg-slate-800 border-slate-300 dark:border-slate-800 text-slate-800 dark:text-slate-200'
         }`}
         title="Change Language / भाषा बदलें"
       >
-        <Globe className="w-3.5 h-3.5 text-red-600 dark:text-red-400 shrink-0" />
-        <span className="font-bold tracking-wide">
+        <Globe className="w-3.5 h-3.5 text-slate-600 dark:text-slate-400 shrink-0" />
+        <span className="hidden sm:inline font-bold tracking-wide">
           {activeOption.nativeName}
+        </span>
+        <span className="sm:hidden font-mono text-[10px] font-bold uppercase">
+          {activeOption.shortCode}
         </span>
         <ChevronDown className={`w-3 h-3 text-slate-400 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
       </button>
@@ -95,7 +98,7 @@ export default function LanguageSelector({
           />
           
           {/* Dropdown Menu */}
-          <div className="absolute right-0 mt-2 w-52 rounded-2xl bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 p-2 shadow-2xl z-[100] text-xs space-y-1 animate-fadeIn">
+          <div className="absolute right-0 mt-2 w-52 max-w-[calc(100vw-1.5rem)] rounded-2xl bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 p-2 shadow-2xl z-[100] text-xs space-y-1 animate-fadeIn">
             <div className="px-2.5 py-1.5 text-[10px] font-mono text-slate-400 border-b border-slate-100 dark:border-slate-850 flex items-center justify-between">
               <span className="font-bold uppercase tracking-wider">Select Language</span>
               <span className="text-red-500 font-sans">भाषा</span>

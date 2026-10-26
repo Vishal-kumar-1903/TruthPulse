@@ -234,13 +234,13 @@ export default function EditorStudioPage() {
   });
 
   return (
-    <div className="min-h-screen bg-[#090A0F] text-zinc-100 flex flex-col font-sans select-none antialiased">
+    <div className="min-h-screen w-full max-w-full overflow-x-hidden bg-[#090A0F] text-zinc-100 flex flex-col font-sans select-none antialiased">
       
       {/* =========================================================================
           1. MINIMAL PRO CONTROL BAR (Clean, Monochrome, High Contrast)
          ========================================================================= */}
-      <header className="sticky top-0 z-50 bg-[#0E1118]/90 backdrop-blur-md border-b border-zinc-800/80 px-4 sm:px-6 py-2.5">
-        <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
+      <header className="sticky top-0 z-50 bg-[#0E1118]/90 backdrop-blur-md border-b border-zinc-800/80 px-3 sm:px-6 py-2.5 w-full max-w-full">
+        <div className="max-w-7xl mx-auto flex items-center justify-between gap-2 sm:gap-4 w-full">
           
           {/* Left: Prominent Live Portal Switcher & Workspace Label */}
           <div className="flex items-center gap-3">

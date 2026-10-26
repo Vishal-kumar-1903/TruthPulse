@@ -218,10 +218,10 @@ export default function MagazineViewer() {
   };
 
   return (
-    <div className="min-h-screen bg-stone-900 text-stone-100 flex flex-col font-serif selection:bg-amber-600 selection:text-white">
+    <div className="min-h-screen w-full max-w-full overflow-x-hidden bg-stone-900 text-stone-100 flex flex-col font-serif selection:bg-amber-600 selection:text-white">
       
       {/* 1. TOP EDITORIAL TOOLBAR */}
-      <header className="sticky top-0 z-40 bg-stone-950/95 backdrop-blur-md border-b border-stone-800 px-4 py-3 flex items-center justify-between text-xs font-sans">
+      <header className="sticky top-0 z-40 bg-stone-950/95 backdrop-blur-md border-b border-stone-800 px-3 sm:px-4 py-3 flex items-center justify-between text-xs font-sans w-full max-w-full">
         
         {/* Left: Back to Live Feed + Brand */}
         <div className="flex items-center gap-3">
