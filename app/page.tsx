@@ -497,14 +497,14 @@ function NewsPortalContent() {
 
       {/* 6. FLOATING QUICK RETURN BUTTON FOR EDITORS BROWSING LIVE PORTAL */}
       {currentUser && (currentUser.role === 'CHIEF_EDITOR' || currentUser.role === 'ADMIN' || (currentUser.role as string) === 'EDITOR') && (
-        <div className="fixed bottom-6 right-6 z-40 animate-bounce">
+        <div className="fixed bottom-6 right-6 z-40">
           <Link
             href="/studio"
-            className="flex items-center gap-2 px-4 py-2.5 rounded-full bg-slate-900/95 hover:bg-slate-900 text-amber-300 hover:text-amber-200 border border-amber-500/40 shadow-2xl backdrop-blur-md text-xs font-mono font-bold transition hover:scale-105 active:scale-95 group"
-            title="Return to Editor Studio Hub"
+            className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-zinc-900/95 hover:bg-zinc-800 text-zinc-200 border border-zinc-700/80 shadow-xl backdrop-blur-md text-xs font-mono font-medium transition active:scale-95 group"
+            title="Return to Editor Workstation"
           >
-            <Sparkles className="w-4 h-4 text-amber-400 group-hover:rotate-12 transition-transform" />
-            <span>Return to Studio Desk</span>
+            <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+            <span>Editor Studio</span>
           </Link>
         </div>
       )}

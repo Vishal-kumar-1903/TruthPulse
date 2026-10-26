@@ -15,27 +15,20 @@ import {
   Layers, 
   MapPin, 
   Link as LinkIcon, 
-  ThumbsUp, 
-  ThumbsDown, 
   ShieldCheck, 
   Activity, 
-  HelpCircle,
-  TrendingUp,
-  FileText,
-  Clock,
-  Eye,
-  RefreshCw,
-  ExternalLink,
-  Search,
-  Building2,
-  Lock,
-  LogOut,
-  Sliders,
+  FileText, 
+  Eye, 
+  RefreshCw, 
+  Search, 
+  Building2, 
+  LogOut, 
+  X, 
+  ChevronRight,
+  SlidersHorizontal,
+  Compass,
   Check,
-  X,
-  Radio,
-  FilePlus2,
-  AlertCircle
+  Globe
 } from 'lucide-react';
 import { METROPOLITAN_HUBS } from '@/lib/metroHubs';
 import AnimatedMedia from '@/components/AnimatedMedia';
@@ -60,7 +53,7 @@ interface ArticlePerformance {
 export default function EditorStudioPage() {
   const router = useRouter();
 
-  // Navigation / View Tabs
+  // Navigation / View Tabs: 'CREATOR' vs 'ANALYTICS'
   const [activeWorkspaceTab, setActiveWorkspaceTab] = useState<'CREATOR' | 'ANALYTICS'>('CREATOR');
 
   // Editor Identity & Session
@@ -71,7 +64,7 @@ export default function EditorStudioPage() {
     truthCredits: 185
   });
 
-  // Form States (All-in-One Studio Canvas)
+  // Form States (Clean Professional Terminal Canvas)
   const [title, setTitle] = useState('');
   const [category, setCategory] = useState('Politics');
   const [summary, setSummary] = useState('');
@@ -84,8 +77,8 @@ export default function EditorStudioPage() {
   const [sourceName, setSourceName] = useState('');
   const [trustScore, setTrustScore] = useState(88);
   const [enableCivicAction, setEnableCivicAction] = useState(false);
-  const [authorityDept, setAuthorityDept] = useState('Municipal Corporation (Public Utilities Division)');
-  const [authorityEmail, setAuthorityEmail] = useState('grievances@municipal.gov.in');
+  const [authorityDept, setAuthorityDept] = useState('Municipal Utilities Authority');
+  const [authorityEmail, setAuthorityEmail] = useState('grievance@municipal.gov.in');
 
   // UI Interactive States
   const [isPublishing, setIsPublishing] = useState(false);
@@ -147,7 +140,7 @@ export default function EditorStudioPage() {
   // AI Assistant auto-synthesis
   const handleAutoSynthesize = () => {
     if (!title.trim()) {
-      setToastMessage('⚠️ Kripya pehle Article Title enter karein!');
+      setToastMessage('Enter an article headline first.');
       setTimeout(() => setToastMessage(null), 3000);
       return;
     }
@@ -164,21 +157,21 @@ export default function EditorStudioPage() {
       if (!sourceName) setSourceName('Press Trust of India / Official Bulletin');
       if (!sourceUrl) setSourceUrl('https://ptinews.com/verified-dispatch-2026');
       setIsSynthesizing(false);
-      setToastMessage('✨ AI Copilot: 60-word briefing & 3 takeaway highlights synthesized!');
+      setToastMessage('Briefing and 3 key takeaways generated.');
       setTimeout(() => setToastMessage(null), 4000);
-    }, 600);
+    }, 500);
   };
 
   // Publish Article
   const handlePublishArticle = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!title.trim() || !summary.trim() || !sourceUrl.trim()) {
-      alert('Kripya Title, Summary aur kam se kam 1 Primary Source URL anivarya roop se bharein!');
+      alert('Please fill the Headline, Summary, and at least 1 Primary Source URL.');
       return;
     }
 
     if (trustScore < 80) {
-      alert('Editorial Gating Blocked: AI Trust Score kam se kam 80% hona zaroori hai.');
+      alert('Editorial Gating Blocked: AI Trust Score must be at least 80%.');
       return;
     }
 
@@ -196,7 +189,7 @@ export default function EditorStudioPage() {
           mediaUrl: mediaUrl.trim() || undefined,
           imageUrl: imageUrl.trim() || 'https://images.unsplash.com/photo-1585829365295-ab7cd400c167?w=1200',
           metro: metroHub || undefined,
-          sources: [{ name: sourceName.trim() || 'Primary News Wire', url: sourceUrl.trim(), stance: 'CORROBORATING' }],
+          sources: [{ name: sourceName.trim() || 'Primary Wire', url: sourceUrl.trim(), stance: 'CORROBORATING' }],
           trustScore,
           author: currentEditor.name || 'TruthPulse Editorial Bureau'
         })
@@ -204,14 +197,12 @@ export default function EditorStudioPage() {
 
       const data = await res.json();
       if (data.success) {
-        setToastMessage('✅ Dispatched & Cryptographically Sealed to TruthPulse Live Wire!');
-        // Reset form
+        setToastMessage('Article dispatched and cryptographically sealed.');
         setTitle('');
         setSummary('');
         setBullets(['', '', '']);
         setSourceUrl('');
         setSourceName('');
-        // Re-fetch analytics
         fetchAnalytics();
       } else {
         alert(data.error || 'Failed to publish article');
@@ -243,83 +234,77 @@ export default function EditorStudioPage() {
   });
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans select-none">
+    <div className="min-h-screen bg-[#090A0F] text-zinc-100 flex flex-col font-sans select-none antialiased">
       
       {/* =========================================================================
-          1. TOP DOCKED CONTROL BAR WITH PROMINENT PERMANENT BACK BUTTON
+          1. MINIMAL PRO CONTROL BAR (Clean, Monochrome, High Contrast)
          ========================================================================= */}
-      <header className="sticky top-0 z-50 bg-slate-900/95 backdrop-blur-md border-b border-slate-800 px-4 sm:px-6 py-3 shadow-xl">
-        <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
+      <header className="sticky top-0 z-50 bg-[#0E1118]/90 backdrop-blur-md border-b border-zinc-800/80 px-4 sm:px-6 py-2.5">
+        <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
           
-          {/* Left: Prominent Live Portal Switcher & Identity */}
+          {/* Left: Prominent Live Portal Switcher & Workspace Label */}
           <div className="flex items-center gap-3">
             <Link
               href="/?view=public"
-              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-red-600 via-rose-600 to-amber-600 hover:from-red-500 hover:to-amber-500 text-white font-bold text-xs shadow-lg shadow-red-600/30 transition-all active:scale-95 group"
-              title="Switch to live public portal without ending editor session"
+              className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-zinc-800/90 hover:bg-zinc-700 text-zinc-200 text-xs font-medium border border-zinc-700/60 transition active:scale-95 group"
+              title="Switch to public reader website without ending your editor session"
             >
-              <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-              <span>Back to Live News Portal</span>
+              <ArrowLeft className="w-3.5 h-3.5 text-zinc-400 group-hover:-translate-x-0.5 transition-transform" />
+              <span>Live Reader Mode</span>
             </Link>
 
-            <div className="h-6 w-px bg-slate-800 hidden sm:block"></div>
+            <span className="text-zinc-600 hidden sm:inline">/</span>
 
-            <div className="flex items-center gap-2.5">
-              <span className="p-1.5 rounded-xl bg-amber-500/10 text-amber-400 border border-amber-500/30">
-                <Sparkles className="w-4 h-4 animate-pulse" />
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-semibold tracking-tight text-zinc-200">
+                Editorial Workstation
               </span>
-              <div>
-                <h1 className="text-sm font-black tracking-wide bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent">
-                  TruthPulse Studio
-                </h1>
-                <p className="text-[10px] font-mono text-slate-400 hidden xs:block">
-                  Editor & Verification Workspace
-                </p>
-              </div>
+              <span className="text-[10px] font-mono text-zinc-400 px-1.5 py-0.5 rounded bg-zinc-800/80 border border-zinc-700/50">
+                PRO CMS
+              </span>
             </div>
           </div>
 
-          {/* Center: Dual Mode Switcher Tabs */}
-          <div className="flex items-center bg-slate-950 p-1 rounded-2xl border border-slate-800 shadow-inner">
+          {/* Center: Workstation Segmented Switcher */}
+          <div className="flex items-center bg-zinc-900/90 p-1 rounded-lg border border-zinc-800 text-xs">
             <button
               onClick={() => setActiveWorkspaceTab('CREATOR')}
-              className={`flex items-center gap-1.5 px-4 py-1.5 rounded-xl text-xs font-bold transition-all ${
+              className={`flex items-center gap-1.5 px-3.5 py-1 rounded-md font-medium transition ${
                 activeWorkspaceTab === 'CREATOR'
-                  ? 'bg-red-600 text-white shadow-md'
-                  : 'text-slate-400 hover:text-white'
+                  ? 'bg-zinc-800 text-white shadow-sm'
+                  : 'text-zinc-400 hover:text-zinc-200'
               }`}
             >
               <FileText className="w-3.5 h-3.5" />
-              <span>Story Creator</span>
+              <span>Drafting Desk</span>
             </button>
 
             <button
               onClick={() => setActiveWorkspaceTab('ANALYTICS')}
-              className={`flex items-center gap-1.5 px-4 py-1.5 rounded-xl text-xs font-bold transition-all ${
+              className={`flex items-center gap-1.5 px-3.5 py-1 rounded-md font-medium transition ${
                 activeWorkspaceTab === 'ANALYTICS'
-                  ? 'bg-red-600 text-white shadow-md'
-                  : 'text-slate-400 hover:text-white'
+                  ? 'bg-zinc-800 text-white shadow-sm'
+                  : 'text-zinc-400 hover:text-zinc-200'
               }`}
             >
               <BarChart3 className="w-3.5 h-3.5" />
-              <span>Vote Analytics</span>
+              <span>Ledger & Credibility</span>
             </button>
           </div>
 
-          {/* Right: Active Editor Profile & Gating Badge */}
-          <div className="flex items-center gap-3">
-            <div className="hidden md:flex items-center gap-2 px-3 py-1 rounded-xl bg-slate-950 border border-slate-800 text-xs">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-              <span className="font-semibold text-slate-200">{currentEditor.name}</span>
-              <span className="px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-300 font-mono text-[10px] font-bold">
-                {currentEditor.truthCredits} Credits
-              </span>
+          {/* Right: Clean User Pill & Signout */}
+          <div className="flex items-center gap-2.5">
+            <div className="hidden md:flex items-center gap-2 text-xs font-mono text-zinc-400">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+              <span className="text-zinc-300 font-sans font-medium">{currentEditor.name.split(' ')[0]}</span>
+              <span className="text-zinc-500">•</span>
+              <span className="text-zinc-400 font-mono text-[11px]">{currentEditor.truthCredits} TC</span>
             </div>
 
             <button
               onClick={handleLogout}
-              className="p-2 rounded-xl bg-slate-800/80 hover:bg-red-950/60 hover:text-red-300 text-slate-400 transition"
-              title="Sign Out of Editor Desk"
+              className="p-1.5 rounded-lg bg-zinc-900 hover:bg-zinc-800 text-zinc-400 hover:text-zinc-200 border border-zinc-800 transition"
+              title="Sign Out"
             >
               <LogOut className="w-3.5 h-3.5" />
             </button>
@@ -328,89 +313,84 @@ export default function EditorStudioPage() {
         </div>
       </header>
 
-      {/* Toast Notification */}
+      {/* Toast Notification (Clean Neutral Notification) */}
       {toastMessage && (
-        <div className="fixed top-16 right-6 z-50 px-4 py-3 rounded-2xl bg-slate-900 border border-emerald-500/50 text-emerald-300 text-xs font-mono shadow-2xl flex items-center gap-2.5 animate-in fade-in slide-in-from-top-4">
+        <div className="fixed top-14 right-6 z-50 px-4 py-2.5 rounded-lg bg-zinc-900 border border-zinc-700 text-zinc-200 text-xs font-mono shadow-2xl flex items-center gap-2">
           <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
           <span>{toastMessage}</span>
         </div>
       )}
 
       {/* =========================================================================
-          2. MAIN WORKSPACE CONTAINER
+          2. WORKSPACE INTERFACE
          ========================================================================= */}
-      <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8">
+      <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6">
         
         {/* =========================================================================
-            VIEW A: ALL-IN-ONE ARTICLE CREATOR WITH DOCKED SIDE TOOLBARS
+            PANE A: DRAFTING DESK (Clean Document Editor + Right Inspector)
            ========================================================================= */}
         {activeWorkspaceTab === 'CREATOR' && (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
             
-            {/* LEFT / CENTER: MAIN EDITORIAL DRAFTING CANVAS (Cols 8) */}
-            <div className="lg:col-span-8 space-y-5 bg-slate-900/60 border border-slate-800/80 rounded-3xl p-6 shadow-xl backdrop-blur-sm">
-              <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-                <span className="text-xs font-mono font-bold text-red-400 uppercase tracking-widest flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-red-500 animate-ping"></span>
-                  Primary News Dispatch Drafter
-                </span>
-                
+            {/* CENTER: CLEAN DOCUMENT DRAFTING CANVAS (Cols 8) */}
+            <div className="lg:col-span-8 bg-[#0E1118] border border-zinc-800/80 rounded-2xl p-6 sm:p-7 space-y-6">
+              
+              {/* Header Action Row */}
+              <div className="flex items-center justify-between pb-4 border-b border-zinc-800/60">
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-mono uppercase text-zinc-400 font-semibold tracking-wider">
+                    New Article Dispatch
+                  </span>
+                  <span className="text-[10px] font-mono text-zinc-400 px-1.5 py-0.5 rounded bg-zinc-800/60">
+                    Draft
+                  </span>
+                </div>
+
                 <button
                   type="button"
                   onClick={handleAutoSynthesize}
                   disabled={isSynthesizing}
-                  className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-cyan-950/60 hover:bg-cyan-900/60 text-cyan-300 border border-cyan-500/40 text-xs font-mono font-bold transition shadow-sm active:scale-95"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs font-mono transition border border-zinc-700/60 disabled:opacity-50"
                 >
-                  <Sparkles className={`w-3.5 h-3.5 ${isSynthesizing ? 'animate-spin' : ''}`} />
-                  <span>{isSynthesizing ? 'Synthesizing...' : 'AI Copilot Synthesize'}</span>
+                  <Sparkles className={`w-3.5 h-3.5 text-zinc-400 ${isSynthesizing ? 'animate-spin' : ''}`} />
+                  <span>{isSynthesizing ? 'Synthesizing...' : 'AI Assist'}</span>
                 </button>
               </div>
 
-              {/* Title Input */}
+              {/* Title / Headline (Document Style) */}
               <div className="space-y-1.5">
-                <label className="text-xs font-mono font-bold text-slate-300 uppercase">
-                  Article Title / Headline *
-                </label>
                 <input
                   type="text"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  placeholder="e.g. Parliament Clears Historic Electoral Transparency & Digital Infrastructure Act..."
-                  className="w-full px-4 py-3 rounded-2xl bg-slate-950 border border-slate-800 focus:border-red-500 text-slate-100 text-sm font-semibold focus:outline-none transition shadow-inner"
+                  placeholder="Article Headline..."
+                  className="w-full bg-transparent border-0 border-b border-zinc-800 focus:border-zinc-500 pb-2 text-lg sm:text-xl font-bold text-zinc-100 placeholder-zinc-600 focus:outline-none transition"
                 />
               </div>
 
               {/* 60-Word Takeaway Summary */}
-              <div className="space-y-1.5">
-                <div className="flex items-center justify-between">
-                  <label className="text-xs font-mono font-bold text-slate-300 uppercase">
-                    60-Word Core Takeaway *
-                  </label>
-                  <span className={`text-[11px] font-mono px-2 py-0.5 rounded ${
-                    summary.trim().split(/\s+/).filter(Boolean).length >= 50 && summary.trim().split(/\s+/).filter(Boolean).length <= 80
-                      ? 'bg-emerald-500/10 text-emerald-400 font-bold'
-                      : 'text-slate-500'
-                  }`}>
-                    {summary.trim() ? summary.trim().split(/\s+/).filter(Boolean).length : 0} Words (Optimal: 60-80)
-                  </span>
+              <div className="space-y-2">
+                <div className="flex items-center justify-between text-xs font-mono text-zinc-400">
+                  <span className="uppercase text-[11px] font-semibold">Core Takeaway Summary</span>
+                  <span>{summary.trim() ? summary.trim().split(/\s+/).filter(Boolean).length : 0} Words</span>
                 </div>
                 <textarea
                   rows={4}
                   value={summary}
                   onChange={(e) => setSummary(e.target.value)}
-                  placeholder="Provide concise, objective takeaway facts for fast reader consumption and mobile swipe reels..."
-                  className="w-full px-4 py-3 rounded-2xl bg-slate-950 border border-slate-800 focus:border-red-500 text-slate-100 text-xs leading-relaxed focus:outline-none transition shadow-inner"
+                  placeholder="Draft a 60-word objective summary of verified factual developments..."
+                  className="w-full p-3.5 rounded-xl bg-zinc-900/60 border border-zinc-800 text-zinc-200 text-xs leading-relaxed placeholder-zinc-600 focus:border-zinc-600 focus:outline-none transition"
                 />
               </div>
 
               {/* 3 Key Bullets */}
-              <div className="space-y-2">
-                <label className="text-xs font-mono font-bold text-slate-300 uppercase">
-                  3 Ground Reality Highlights
-                </label>
+              <div className="space-y-2.5">
+                <span className="block text-[11px] font-mono uppercase text-zinc-400 font-semibold">
+                  3 Ground Highlights
+                </span>
                 {bullets.map((b, idx) => (
-                  <div key={idx} className="flex items-center gap-2.5">
-                    <span className="w-6 h-6 rounded-full bg-slate-800 text-slate-400 font-mono text-xs flex items-center justify-center font-bold shrink-0">
+                  <div key={idx} className="flex items-center gap-2">
+                    <span className="w-5 h-5 rounded bg-zinc-800/80 text-zinc-400 font-mono text-[11px] flex items-center justify-center font-bold shrink-0">
                       {idx + 1}
                     </span>
                     <input
@@ -421,161 +401,159 @@ export default function EditorStudioPage() {
                         next[idx] = e.target.value;
                         setBullets(next);
                       }}
-                      placeholder={`Bullet highlight ${idx + 1}...`}
-                      className="flex-1 px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-xs text-slate-200 focus:border-red-500 focus:outline-none"
+                      placeholder={`Key ground takeaway ${idx + 1}...`}
+                      className="flex-1 px-3 py-2 rounded-lg bg-zinc-900/60 border border-zinc-800 text-xs text-zinc-200 placeholder-zinc-600 focus:border-zinc-600 focus:outline-none"
                     />
                   </div>
                 ))}
               </div>
 
-              {/* Primary Source Verification (Editorial Gating Requirement) */}
-              <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 space-y-3">
-                <div className="flex items-center justify-between">
-                  <label className="text-xs font-mono font-bold text-cyan-400 uppercase flex items-center gap-1.5">
-                    <LinkIcon className="w-3.5 h-3.5" /> Mandatory Source Corroboration *
-                  </label>
-                  <span className="text-[10px] font-mono text-slate-400">
-                    Required for Gating Verification
+              {/* Primary Source Verification */}
+              <div className="p-4 rounded-xl bg-zinc-900/40 border border-zinc-800/80 space-y-2.5">
+                <div className="flex items-center justify-between text-xs">
+                  <span className="font-mono text-[11px] uppercase font-semibold text-zinc-300 flex items-center gap-1.5">
+                    <LinkIcon className="w-3.5 h-3.5 text-zinc-400" /> Primary Source Reference *
                   </span>
+                  <span className="text-[10px] font-mono text-zinc-500">Statutory Gazette or Verified Wire</span>
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                   <input
                     type="text"
                     value={sourceName}
                     onChange={(e) => setSourceName(e.target.value)}
-                    placeholder="Source Org (e.g. PTI, Gazette, CECB)"
-                    className="px-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-xs text-slate-200 focus:border-cyan-500 focus:outline-none"
+                    placeholder="Source Agency (e.g. PTI, Gazette, CECB)"
+                    className="px-3 py-2 rounded-lg bg-zinc-900 border border-zinc-800 text-xs text-zinc-200 placeholder-zinc-600 focus:border-zinc-600 focus:outline-none"
                   />
                   <input
                     type="url"
                     value={sourceUrl}
                     onChange={(e) => setSourceUrl(e.target.value)}
-                    placeholder="https://official-gazette.gov.in/report-2026"
-                    className="px-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-xs text-slate-200 focus:border-cyan-500 focus:outline-none font-mono"
+                    placeholder="https://official-gazette.gov.in/..."
+                    className="px-3 py-2 rounded-lg bg-zinc-900 border border-zinc-800 text-xs text-zinc-200 font-mono placeholder-zinc-600 focus:border-zinc-600 focus:outline-none"
                   />
                 </div>
               </div>
 
-              {/* Civic Desk Action Option */}
-              <div className="p-4 rounded-2xl bg-slate-950/60 border border-slate-800">
+              {/* Civic Resolution Option */}
+              <div className="p-3.5 rounded-xl bg-zinc-900/30 border border-zinc-800/60 text-xs">
                 <div className="flex items-center justify-between">
                   <label className="flex items-center gap-2 cursor-pointer">
                     <input
                       type="checkbox"
                       checked={enableCivicAction}
                       onChange={(e) => setEnableCivicAction(e.target.checked)}
-                      className="rounded text-purple-600 focus:ring-0 bg-slate-900 border-slate-700 w-4 h-4"
+                      className="rounded bg-zinc-900 border-zinc-700 text-zinc-100 focus:ring-0 w-3.5 h-3.5"
                     />
-                    <span className="text-xs font-mono font-bold text-purple-300 uppercase flex items-center gap-1.5">
-                      <Building2 className="w-3.5 h-3.5" /> Enable Civic Resolution Poll
+                    <span className="font-mono font-medium text-zinc-300 text-[11px] uppercase">
+                      Attach Civic Accountability Poll
                     </span>
                   </label>
-                  <span className="text-[10px] font-mono text-slate-500">Appends public accountability desk</span>
+                  <span className="text-[10px] font-mono text-zinc-500">Public redressal desk</span>
                 </div>
 
                 {enableCivicAction && (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3 pt-3 border-t border-slate-800/80">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 mt-3 pt-3 border-t border-zinc-800">
                     <input
                       type="text"
                       value={authorityDept}
                       onChange={(e) => setAuthorityDept(e.target.value)}
-                      placeholder="Municipal Authority Name"
-                      className="px-3 py-2 rounded-xl bg-slate-900 border border-slate-800 text-xs text-slate-200"
+                      placeholder="Concerned Municipal Body"
+                      className="px-3 py-1.5 rounded-lg bg-zinc-900 border border-zinc-800 text-xs text-zinc-200"
                     />
                     <input
                       type="email"
                       value={authorityEmail}
                       onChange={(e) => setAuthorityEmail(e.target.value)}
-                      placeholder="authority@municipal.gov.in"
-                      className="px-3 py-2 rounded-xl bg-slate-900 border border-slate-800 text-xs text-slate-200 font-mono"
+                      placeholder="grievance@municipal.gov.in"
+                      className="px-3 py-1.5 rounded-lg bg-zinc-900 border border-zinc-800 text-xs text-zinc-200 font-mono"
                     />
                   </div>
                 )}
               </div>
 
-              {/* Publish Action Button */}
-              <div className="pt-2">
-                <button
-                  type="button"
-                  disabled={isPublishing || trustScore < 80 || !title.trim() || !summary.trim() || !sourceUrl.trim()}
-                  onClick={handlePublishArticle}
-                  className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-red-600 via-rose-600 to-amber-600 hover:from-red-500 hover:to-amber-500 text-white font-bold text-sm shadow-xl shadow-red-600/25 transition-all flex items-center justify-center gap-2 disabled:opacity-50 active:scale-[0.99]"
-                >
-                  {isPublishing ? (
-                    <>
-                      <RefreshCw className="w-4 h-4 animate-spin" />
-                      <span>Hashing & Cryptographically Sealing to Live Wire...</span>
-                    </>
-                  ) : (
-                    <>
-                      <Send className="w-4 h-4" />
-                      <span>Broadcast Verified Dispatch to Live Wire</span>
-                    </>
-                  )}
-                </button>
-              </div>
             </div>
 
-            {/* RIGHT: DOCKED TOOLS & ACCREDITATION SIDEBAR (Cols 4) */}
-            <div className="lg:col-span-4 space-y-5">
+            {/* RIGHT: DOCKED INSPECTOR PANEL (Cols 4) */}
+            <div className="lg:col-span-4 space-y-4">
               
-              {/* Tool 1: AI Verification Trust Gauge */}
-              <div className="bg-slate-900/60 border border-slate-800/80 rounded-3xl p-5 shadow-lg space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-mono font-bold text-slate-300 uppercase flex items-center gap-1.5">
-                    <Activity className="w-4 h-4 text-emerald-400" />
-                    AI Trust Gauge
+              {/* Card 1: Verification & Gating Status */}
+              <div className="bg-[#0E1118] border border-zinc-800/80 rounded-2xl p-5 space-y-3">
+                <div className="flex items-center justify-between text-xs">
+                  <span className="font-mono text-[11px] uppercase text-zinc-400 font-semibold">
+                    Trust Gating Meter
                   </span>
-                  <span className={`px-2 py-0.5 rounded text-xs font-mono font-bold ${
-                    trustScore >= 80 ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30' : 'bg-red-500/10 text-red-400'
+                  <span className={`font-mono text-xs font-semibold px-2 py-0.5 rounded ${
+                    trustScore >= 80 
+                      ? 'bg-emerald-950/40 text-emerald-400 border border-emerald-800/50' 
+                      : 'bg-zinc-800 text-zinc-400'
                   }`}>
                     {trustScore}% Trust
                   </span>
                 </div>
 
-                <div className="w-full bg-slate-950 h-2.5 rounded-full overflow-hidden p-0.5 border border-slate-800">
+                <div className="w-full bg-zinc-900 h-1.5 rounded-full overflow-hidden border border-zinc-800">
                   <div
-                    className="h-full bg-gradient-to-r from-amber-500 to-emerald-500 rounded-full transition-all duration-500"
+                    className="h-full bg-zinc-300 rounded-full transition-all duration-300"
                     style={{ width: `${trustScore}%` }}
                   ></div>
                 </div>
 
-                <p className="text-[11px] font-mono text-slate-400">
-                  {trustScore >= 80 
-                    ? '✓ Gating passed: Ready for immediate citizen wire broadcast.' 
-                    : '⚠️ Trust score below 80% requires primary source corroboration.'}
+                <p className="text-[11px] font-mono text-zinc-400 leading-normal">
+                  {trustScore >= 80
+                    ? '✓ Verification benchmark met (≥80%). Broadcast permitted.'
+                    : 'Corroboration required before wire transmission.'}
                 </p>
+
+                {/* Primary Action Button (Clean high contrast) */}
+                <button
+                  type="button"
+                  disabled={isPublishing || trustScore < 80 || !title.trim() || !summary.trim() || !sourceUrl.trim()}
+                  onClick={handlePublishArticle}
+                  className="w-full py-2.5 rounded-xl bg-zinc-100 hover:bg-white text-zinc-950 font-semibold text-xs transition shadow-sm flex items-center justify-center gap-2 disabled:opacity-40 disabled:hover:bg-zinc-100 active:scale-98"
+                >
+                  {isPublishing ? (
+                    <>
+                      <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                      <span>Signing & Broadcasting...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Send className="w-3.5 h-3.5" />
+                      <span>Publish Verified Dispatch</span>
+                    </>
+                  )}
+                </button>
               </div>
 
-              {/* Tool 2: Category & Metro Cluster Geo-Tagger */}
-              <div className="bg-slate-900/60 border border-slate-800/80 rounded-3xl p-5 shadow-lg space-y-4">
-                <span className="text-xs font-mono font-bold text-slate-300 uppercase flex items-center gap-1.5">
-                  <MapPin className="w-4 h-4 text-cyan-400" />
-                  Routing & Geo Cluster
+              {/* Card 2: Routing & Classification */}
+              <div className="bg-[#0E1118] border border-zinc-800/80 rounded-2xl p-5 space-y-3 text-xs">
+                <span className="font-mono text-[11px] uppercase text-zinc-400 font-semibold block">
+                  Taxonomy & Geo-Routing
                 </span>
 
-                <div className="space-y-1.5">
-                  <span className="text-[10px] font-mono uppercase text-slate-400">Category</span>
+                <div className="space-y-1">
+                  <span className="text-[10px] font-mono text-zinc-400">Category</span>
                   <select
                     value={category}
                     onChange={(e) => setCategory(e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs text-slate-200 focus:border-red-500 focus:outline-none"
+                    className="w-full px-3 py-2 rounded-lg bg-zinc-900 border border-zinc-800 text-xs text-zinc-200 focus:outline-none"
                   >
                     <option value="Politics">Politics & Governance</option>
                     <option value="Business">Business & Markets</option>
                     <option value="Weather">Weather & Climate</option>
                     <option value="Health">Public Health</option>
-                    <option value="Entertainment">Culture & Cinema</option>
+                    <option value="Entertainment">Culture & Media</option>
                     <option value="Sports">Sports</option>
                   </select>
                 </div>
 
-                <div className="space-y-1.5">
-                  <span className="text-[10px] font-mono uppercase text-slate-400">Metropolitan Cluster</span>
+                <div className="space-y-1">
+                  <span className="text-[10px] font-mono text-zinc-400">Metropolitan Cluster</span>
                   <select
                     value={metroHub}
                     onChange={(e) => setMetroHub(e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs text-slate-200 focus:border-red-500 focus:outline-none"
+                    className="w-full px-3 py-2 rounded-lg bg-zinc-900 border border-zinc-800 text-xs text-zinc-200 focus:outline-none"
                   >
                     <option value="">National / Pan-India</option>
                     {METROPOLITAN_HUBS.map((m) => (
@@ -585,45 +563,39 @@ export default function EditorStudioPage() {
                 </div>
               </div>
 
-              {/* Tool 3: Dynamic Motion Media Format Selector */}
-              <div className="bg-slate-900/60 border border-slate-800/80 rounded-3xl p-5 shadow-lg space-y-3">
-                <span className="text-xs font-mono font-bold text-slate-300 uppercase flex items-center gap-1.5">
-                  <Layers className="w-4 h-4 text-amber-400" />
-                  Motion Visual Engine
+              {/* Card 3: Media Visual Presentation */}
+              <div className="bg-[#0E1118] border border-zinc-800/80 rounded-2xl p-5 space-y-3 text-xs">
+                <span className="font-mono text-[11px] uppercase text-zinc-400 font-semibold block">
+                  Media Presentation
                 </span>
 
-                <div className="grid grid-cols-3 gap-1.5 p-1 bg-slate-950 rounded-xl border border-slate-800">
+                <div className="grid grid-cols-3 gap-1 bg-zinc-900 p-1 rounded-lg border border-zinc-800 text-[11px]">
                   <button
                     type="button"
                     onClick={() => setMediaType('IMAGE')}
-                    className={`p-2 rounded-lg text-[10px] font-bold flex flex-col items-center gap-1 transition ${
-                      mediaType === 'IMAGE' ? 'bg-slate-800 text-amber-300 shadow-sm' : 'text-slate-400 hover:text-white'
+                    className={`py-1.5 rounded font-medium transition ${
+                      mediaType === 'IMAGE' ? 'bg-zinc-800 text-white' : 'text-zinc-400 hover:text-zinc-200'
                     }`}
                   >
-                    <ImageIcon className="w-4 h-4" />
-                    <span>Image</span>
+                    Image
                   </button>
-
                   <button
                     type="button"
                     onClick={() => setMediaType('VIDEO_LOOP')}
-                    className={`p-2 rounded-lg text-[10px] font-bold flex flex-col items-center gap-1 transition ${
-                      mediaType === 'VIDEO_LOOP' ? 'bg-slate-800 text-cyan-300 shadow-sm' : 'text-slate-400 hover:text-white'
+                    className={`py-1.5 rounded font-medium transition ${
+                      mediaType === 'VIDEO_LOOP' ? 'bg-zinc-800 text-white' : 'text-zinc-400 hover:text-zinc-200'
                     }`}
                   >
-                    <Video className="w-4 h-4" />
-                    <span>Loop</span>
+                    Loop
                   </button>
-
                   <button
                     type="button"
                     onClick={() => setMediaType('LOTTIE_ANIMATION')}
-                    className={`p-2 rounded-lg text-[10px] font-bold flex flex-col items-center gap-1 transition ${
-                      mediaType === 'LOTTIE_ANIMATION' ? 'bg-slate-800 text-indigo-300 shadow-sm' : 'text-slate-400 hover:text-white'
+                    className={`py-1.5 rounded font-medium transition ${
+                      mediaType === 'LOTTIE_ANIMATION' ? 'bg-zinc-800 text-white' : 'text-zinc-400 hover:text-zinc-200'
                     }`}
                   >
-                    <Sparkles className="w-4 h-4" />
-                    <span>Vector</span>
+                    Vector
                   </button>
                 </div>
 
@@ -632,46 +604,31 @@ export default function EditorStudioPage() {
                     type="text"
                     value={imageUrl}
                     onChange={(e) => setImageUrl(e.target.value)}
-                    placeholder="Cover Image / Poster URL..."
-                    className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs text-slate-200 font-mono focus:border-red-500 focus:outline-none"
+                    placeholder="Poster Image URL..."
+                    className="w-full px-3 py-1.5 rounded-lg bg-zinc-900 border border-zinc-800 text-xs text-zinc-200 font-mono placeholder-zinc-600 focus:outline-none"
                   />
 
-                  {mediaType === 'VIDEO_LOOP' && (
+                  {mediaType !== 'IMAGE' && (
                     <input
                       type="text"
                       value={mediaUrl}
                       onChange={(e) => setMediaUrl(e.target.value)}
-                      placeholder="Looping MP4/WebM URL (e.g. https://.../loop.mp4)..."
-                      className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-cyan-500/40 text-xs text-cyan-200 font-mono focus:border-cyan-400 focus:outline-none"
-                    />
-                  )}
-
-                  {mediaType === 'LOTTIE_ANIMATION' && (
-                    <input
-                      type="text"
-                      value={mediaUrl}
-                      onChange={(e) => setMediaUrl(e.target.value)}
-                      placeholder="Lottie JSON URL (Optional - default vector scene active)..."
-                      className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-indigo-500/40 text-xs text-indigo-200 font-mono focus:border-indigo-400 focus:outline-none"
+                      placeholder={mediaType === 'VIDEO_LOOP' ? 'MP4/WebM Loop URL...' : 'Lottie JSON URL (Optional)...'}
+                      className="w-full px-3 py-1.5 rounded-lg bg-zinc-900 border border-zinc-800 text-xs text-zinc-200 font-mono placeholder-zinc-600 focus:outline-none"
                     />
                   )}
                 </div>
 
-                {/* Live Media Thumbnail Preview */}
-                <div className="pt-1">
-                  <div className="w-full h-28 rounded-xl overflow-hidden border border-slate-800 bg-slate-950 relative">
-                    <AnimatedMedia
-                      mediaType={mediaType}
-                      mediaUrl={mediaUrl}
-                      imageUrl={imageUrl || 'https://images.unsplash.com/photo-1585829365295-ab7cd400c167?w=600'}
-                      alt="Studio Preview"
-                      category={category}
-                      showBadge={true}
-                    />
-                  </div>
-                  <span className="text-[10px] font-mono text-slate-500 mt-1 block text-center">
-                    Live Visual Dispatch Preview
-                  </span>
+                {/* Minimal preview thumbnail */}
+                <div className="w-full h-24 rounded-lg overflow-hidden border border-zinc-800 bg-zinc-900 relative">
+                  <AnimatedMedia
+                    mediaType={mediaType}
+                    mediaUrl={mediaUrl}
+                    imageUrl={imageUrl || 'https://images.unsplash.com/photo-1585829365295-ab7cd400c167?w=600'}
+                    alt="Preview"
+                    category={category}
+                    showBadge={false}
+                  />
                 </div>
               </div>
 
@@ -680,99 +637,93 @@ export default function EditorStudioPage() {
         )}
 
         {/* =========================================================================
-            VIEW B: RIGHT VS WRONG CREDIBILITY VOTE ANALYTICS
+            PANE B: LEDGER & CREDIBILITY ANALYTICS (Clean Financial Terminal Style)
            ========================================================================= */}
         {activeWorkspaceTab === 'ANALYTICS' && (
-          <div className="space-y-6">
+          <div className="space-y-5">
             
-            {/* Stat Cards Overview */}
+            {/* 4 Minimal Metric Cards (Zero Gaudy Colors) */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              <div className="p-5 rounded-3xl bg-slate-900/80 border border-slate-800 shadow-lg">
-                <span className="text-xs font-mono text-slate-400 uppercase">Total Published Dispatches</span>
-                <p className="text-3xl font-black text-white mt-1">{analyticsSummary.totalArticles}</p>
-                <span className="text-[11px] font-mono text-emerald-400 mt-2 block flex items-center gap-1">
-                  <ShieldCheck className="w-3.5 h-3.5" /> 100% Cryptographically Sealed
-                </span>
+              <div className="p-4 rounded-xl bg-[#0E1118] border border-zinc-800/80">
+                <span className="text-[11px] font-mono text-zinc-400 uppercase font-semibold">Total Dispatches</span>
+                <p className="text-2xl font-bold text-zinc-100 mt-1 font-mono">{analyticsSummary.totalArticles}</p>
+                <span className="text-[10px] font-mono text-zinc-400 mt-1 block">Cryptographically Sealed</span>
               </div>
 
-              <div className="p-5 rounded-3xl bg-slate-900/80 border border-slate-800 shadow-lg">
-                <span className="text-xs font-mono text-slate-400 uppercase">🟢 Reader Right Votes (Sahi)</span>
-                <p className="text-3xl font-black text-emerald-400 mt-1">{analyticsSummary.totalUpvotes}</p>
-                <span className="text-[11px] font-mono text-slate-400 mt-2 block">Corroborated by verified citizens</span>
+              <div className="p-4 rounded-xl bg-[#0E1118] border border-zinc-800/80">
+                <span className="text-[11px] font-mono text-zinc-400 uppercase font-semibold">🟢 Verified (Sahi)</span>
+                <p className="text-2xl font-bold text-emerald-400 mt-1 font-mono">+{analyticsSummary.totalUpvotes}</p>
+                <span className="text-[10px] font-mono text-zinc-400 mt-1 block">Reader corroborations</span>
               </div>
 
-              <div className="p-5 rounded-3xl bg-slate-900/80 border border-slate-800 shadow-lg">
-                <span className="text-xs font-mono text-slate-400 uppercase">🔴 Reader Disputes (Galat)</span>
-                <p className="text-3xl font-black text-red-400 mt-1">{analyticsSummary.totalDownvotes}</p>
-                <span className="text-[11px] font-mono text-red-400/80 mt-2 block">Flagged for editorial inspection</span>
+              <div className="p-4 rounded-xl bg-[#0E1118] border border-zinc-800/80">
+                <span className="text-[11px] font-mono text-zinc-400 uppercase font-semibold">🔴 Disputed (Galat)</span>
+                <p className="text-2xl font-bold text-rose-400 mt-1 font-mono">-{analyticsSummary.totalDownvotes}</p>
+                <span className="text-[10px] font-mono text-zinc-400 mt-1 block">Citizen dispute flags</span>
               </div>
 
-              <div className="p-5 rounded-3xl bg-slate-900/80 border border-slate-800 shadow-lg">
-                <span className="text-xs font-mono text-slate-400 uppercase">Global Authenticity Index</span>
-                <p className="text-3xl font-black text-cyan-400 mt-1">{analyticsSummary.globalAuthenticity}%</p>
-                <span className="text-[11px] font-mono text-slate-400 mt-2 block">Weighted reliability threshold</span>
+              <div className="p-4 rounded-xl bg-[#0E1118] border border-zinc-800/80">
+                <span className="text-[11px] font-mono text-zinc-400 uppercase font-semibold">Authenticity Ratio</span>
+                <p className="text-2xl font-bold text-zinc-100 mt-1 font-mono">{analyticsSummary.globalAuthenticity}%</p>
+                <span className="text-[10px] font-mono text-zinc-400 mt-1 block">Quality threshold</span>
               </div>
             </div>
 
-            {/* Performance Ledger Table */}
-            <div className="bg-slate-900/60 border border-slate-800 rounded-3xl overflow-hidden shadow-xl">
-              <div className="px-6 py-4 border-b border-slate-800 flex flex-wrap items-center justify-between gap-3">
+            {/* Scoreboard Table (Clean Financial Ledger Aesthetic) */}
+            <div className="bg-[#0E1118] border border-zinc-800/80 rounded-2xl overflow-hidden shadow-sm">
+              <div className="px-5 py-3.5 border-b border-zinc-800/80 flex flex-wrap items-center justify-between gap-3 text-xs">
                 <div className="flex items-center gap-2">
-                  <BarChart3 className="w-4 h-4 text-red-500" />
-                  <h3 className="text-sm font-bold text-white font-mono">
-                    Published Dispatch Ledger & Credibility Scoreboard
-                  </h3>
+                  <BarChart3 className="w-3.5 h-3.5 text-zinc-400" />
+                  <span className="font-mono uppercase font-semibold text-zinc-300">
+                    Dispatch Scoreboard
+                  </span>
                 </div>
 
-                <div className="flex items-center gap-2.5">
-                  {/* Search Input */}
+                <div className="flex items-center gap-2">
                   <div className="relative">
-                    <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                    <Search className="w-3 h-3 absolute left-2.5 top-1/2 -translate-y-1/2 text-zinc-500" />
                     <input
                       type="text"
                       value={searchFilter}
                       onChange={(e) => setSearchFilter(e.target.value)}
-                      placeholder="Filter articles..."
-                      className="pl-8 pr-3 py-1.5 rounded-xl bg-slate-950 border border-slate-800 text-xs text-slate-200 placeholder-slate-500 focus:outline-none font-mono"
+                      placeholder="Search title..."
+                      className="pl-7 pr-3 py-1 rounded-lg bg-zinc-900 border border-zinc-800 text-xs text-zinc-200 placeholder-zinc-600 focus:outline-none font-mono"
                     />
                   </div>
 
-                  {/* Category Filter */}
                   <select
                     value={categoryFilter}
                     onChange={(e) => setCategoryFilter(e.target.value)}
-                    className="px-3 py-1.5 rounded-xl bg-slate-950 border border-slate-800 text-xs text-slate-200 focus:outline-none font-mono"
+                    className="px-2.5 py-1 rounded-lg bg-zinc-900 border border-zinc-800 text-xs text-zinc-300 focus:outline-none font-mono"
                   >
                     <option value="ALL">All Categories</option>
                     <option value="Politics">Politics</option>
                     <option value="Business">Business</option>
                     <option value="Weather">Weather</option>
                     <option value="Health">Health</option>
-                    <option value="Entertainment">Entertainment</option>
                     <option value="Sports">Sports</option>
                   </select>
                 </div>
               </div>
 
               <div className="overflow-x-auto">
-                <table className="w-full text-left border-collapse">
+                <table className="w-full text-left border-collapse text-xs">
                   <thead>
-                    <tr className="border-b border-slate-800/80 text-[11px] font-mono uppercase text-slate-400 bg-slate-950/40">
-                      <th className="py-3 px-5">Article Headline</th>
-                      <th className="py-3 px-4">Category</th>
-                      <th className="py-3 px-4">Visual Format</th>
-                      <th className="py-3 px-4 text-center">🟢 Right (Sahi)</th>
-                      <th className="py-3 px-4 text-center">🔴 Wrong (Galat)</th>
-                      <th className="py-3 px-4">Authenticity Ratio</th>
-                      <th className="py-3 px-4">Dispute Notes</th>
-                      <th className="py-3 px-4 text-right">Actions</th>
+                    <tr className="border-b border-zinc-800/80 text-[10px] font-mono uppercase text-zinc-400 bg-zinc-900/40">
+                      <th className="py-2.5 px-4 font-semibold">Dispatch Title</th>
+                      <th className="py-2.5 px-3 font-semibold">Category</th>
+                      <th className="py-2.5 px-3 text-center font-semibold">🟢 Right</th>
+                      <th className="py-2.5 px-3 text-center font-semibold">🔴 Wrong</th>
+                      <th className="py-2.5 px-3 font-semibold">Authenticity</th>
+                      <th className="py-2.5 px-3 font-semibold">Notes</th>
+                      <th className="py-2.5 px-4 text-right font-semibold">Action</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-800/50 text-xs">
+                  <tbody className="divide-y divide-zinc-800/40 text-xs">
                     {filteredArticles.length === 0 ? (
                       <tr>
-                        <td colSpan={8} className="py-8 text-center text-slate-500 font-mono">
-                          No dispatches found matching filters.
+                        <td colSpan={7} className="py-6 text-center text-zinc-500 font-mono">
+                          No matching dispatches.
                         </td>
                       </tr>
                     ) : (
@@ -783,58 +734,45 @@ export default function EditorStudioPage() {
                           : (totalVotes > 0 ? Math.round((art.upvotes / totalVotes) * 100) : 100);
 
                         return (
-                          <tr key={art._id} className="hover:bg-slate-800/30 transition">
-                            <td className="py-3.5 px-5 max-w-xs truncate font-medium text-slate-200">
+                          <tr key={art._id} className="hover:bg-zinc-800/20 transition">
+                            <td className="py-3 px-4 max-w-sm truncate text-zinc-200 font-medium">
                               {art.title}
                             </td>
-                            <td className="py-3.5 px-4">
-                              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-800 text-slate-300">
-                                {art.category}
-                              </span>
+                            <td className="py-3 px-3 text-zinc-400 font-mono text-[11px]">
+                              {art.category}
                             </td>
-                            <td className="py-3.5 px-4">
-                              <span className={`px-2 py-0.5 rounded text-[10px] font-mono font-bold ${
-                                art.mediaType === 'VIDEO_LOOP'
-                                  ? 'bg-cyan-500/10 text-cyan-300'
-                                  : art.mediaType === 'LOTTIE_ANIMATION'
-                                  ? 'bg-indigo-500/10 text-indigo-300'
-                                  : 'bg-amber-500/10 text-amber-300'
-                              }`}>
-                                {art.mediaType || 'IMAGE'}
-                              </span>
-                            </td>
-                            <td className="py-3.5 px-4 text-center font-mono font-bold text-emerald-400">
+                            <td className="py-3 px-3 text-center font-mono font-medium text-emerald-400">
                               {art.upvotes}
                             </td>
-                            <td className="py-3.5 px-4 text-center font-mono font-bold text-red-400">
+                            <td className="py-3 px-3 text-center font-mono font-medium text-rose-400">
                               {art.downvotes}
                             </td>
-                            <td className="py-3.5 px-4">
+                            <td className="py-3 px-3">
                               <div className="flex items-center gap-2">
-                                <div className="w-16 bg-slate-950 h-2 rounded-full overflow-hidden border border-slate-800">
+                                <div className="w-14 bg-zinc-900 h-1.5 rounded-full overflow-hidden border border-zinc-800">
                                   <div
-                                    className={`h-full ${accuracyRate >= 80 ? 'bg-emerald-500' : (accuracyRate >= 60 ? 'bg-amber-500' : 'bg-red-500')}`}
+                                    className={`h-full ${accuracyRate >= 80 ? 'bg-emerald-500' : (accuracyRate >= 60 ? 'bg-zinc-400' : 'bg-rose-500')}`}
                                     style={{ width: `${accuracyRate}%` }}
                                   ></div>
                                 </div>
-                                <span className="text-[11px] font-mono font-bold text-slate-300">{accuracyRate}%</span>
+                                <span className="font-mono text-[11px] text-zinc-300">{accuracyRate}%</span>
                               </div>
                             </td>
-                            <td className="py-3.5 px-4 font-mono">
+                            <td className="py-3 px-3 font-mono text-[11px]">
                               {art.evidenceNotesCount > 0 ? (
-                                <span className="px-2 py-0.5 rounded bg-red-500/10 text-red-300 text-[10px] font-bold border border-red-500/30">
-                                  {art.evidenceNotesCount} Flagged Links
+                                <span className="text-rose-400">
+                                  {art.evidenceNotesCount} flags
                                 </span>
                               ) : (
-                                <span className="text-slate-600 text-[11px]">Clean</span>
+                                <span className="text-zinc-600">0</span>
                               )}
                             </td>
-                            <td className="py-3.5 px-4 text-right">
+                            <td className="py-3 px-4 text-right">
                               <button
                                 onClick={() => setSelectedInspectionArticle(art)}
-                                className="px-3 py-1 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-[11px] font-mono transition"
+                                className="px-2.5 py-1 rounded bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-[11px] font-mono transition"
                               >
-                                Inspect
+                                Review
                               </button>
                             </td>
                           </tr>
@@ -851,74 +789,59 @@ export default function EditorStudioPage() {
 
       </main>
 
-      {/* =========================================================================
-          3. COMMUNITY EVIDENCE & INSPECTION MODAL
-         ========================================================================= */}
+      {/* Review Modal */}
       {selectedInspectionArticle && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-3xl max-w-lg w-full p-6 shadow-2xl space-y-4">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-              <span className="text-xs font-mono font-bold text-amber-400 uppercase flex items-center gap-1.5">
-                <AlertCircle className="w-4 h-4 text-amber-400" />
-                Community Credibility Inspection
+        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-[#0E1118] border border-zinc-800 rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-4">
+            <div className="flex items-center justify-between border-b border-zinc-800 pb-3">
+              <span className="text-xs font-mono font-semibold text-zinc-300 uppercase">
+                Dispatch Verification Audit
               </span>
               <button
                 onClick={() => setSelectedInspectionArticle(null)}
-                className="p-1.5 rounded-full hover:bg-slate-800 text-slate-400 hover:text-white"
+                className="p-1 rounded hover:bg-zinc-800 text-zinc-400 hover:text-white"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
             <div>
-              <h4 className="text-sm font-bold text-white mb-1">
+              <h4 className="text-sm font-semibold text-zinc-100 mb-1">
                 {selectedInspectionArticle.title}
               </h4>
-              <div className="flex items-center gap-3 text-xs font-mono text-slate-400">
-                <span>Category: {selectedInspectionArticle.category}</span>
+              <div className="flex items-center gap-3 text-xs font-mono text-zinc-400">
+                <span>{selectedInspectionArticle.category}</span>
                 <span>•</span>
                 <span className="text-emerald-400">🟢 {selectedInspectionArticle.upvotes} Right</span>
                 <span>•</span>
-                <span className="text-red-400">🔴 {selectedInspectionArticle.downvotes} Disputed</span>
+                <span className="text-rose-400">🔴 {selectedInspectionArticle.downvotes} Disputed</span>
               </div>
             </div>
 
-            <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 space-y-2">
-              <span className="text-[11px] font-mono font-bold text-slate-300 uppercase">
-                Citizen Submitted Counter-Evidence & Community Notes:
-              </span>
+            <div className="p-3.5 rounded-xl bg-zinc-900 border border-zinc-800 text-xs font-mono text-zinc-300">
               {selectedInspectionArticle.downvotes > 0 ? (
-                <div className="space-y-2 text-xs text-slate-400 font-mono">
-                  <div className="p-2.5 rounded-xl bg-slate-900 border border-slate-800">
-                    <p className="text-slate-300">"Citizen Note: Clarification requested regarding municipal tender dates."</p>
-                    <span className="text-[10px] text-cyan-400 mt-1 block">Verified Citizen • Ref: Gazette Notice 44B</span>
-                  </div>
-                </div>
+                <p className="text-zinc-400">Citizen note: Submitted reference links verified against municipal records.</p>
               ) : (
-                <p className="text-xs text-emerald-400 font-mono">
-                  ✓ No community flags or contradictory counter-evidence submitted for this dispatch.
-                </p>
+                <p className="text-emerald-400">✓ No discrepancies reported by community fact-checkers.</p>
               )}
             </div>
 
             <div className="flex items-center justify-end gap-2 pt-2">
               <Link
-                href={`/?search=${encodeURIComponent(selectedInspectionArticle.title.slice(0, 25))}&view=public`}
-                className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold transition flex items-center gap-1.5"
+                href={`/?search=${encodeURIComponent(selectedInspectionArticle.title.slice(0, 20))}&view=public`}
+                className="px-3.5 py-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs font-medium transition"
               >
-                <Eye className="w-3.5 h-3.5" />
-                <span>View on Live Reader</span>
+                View in Reader
               </Link>
-
               <button
                 onClick={() => {
-                  setToastMessage('Statutory Gazette Note Appended to Article');
+                  setToastMessage('Audit review acknowledged.');
                   setSelectedInspectionArticle(null);
                   setTimeout(() => setToastMessage(null), 3000);
                 }}
-                className="px-4 py-2 rounded-xl bg-red-600 hover:bg-red-500 text-white text-xs font-bold transition"
+                className="px-3.5 py-1.5 rounded-lg bg-zinc-100 hover:bg-white text-zinc-950 text-xs font-semibold transition"
               >
-                Acknowledge Review
+                Acknowledge
               </button>
             </div>
           </div>

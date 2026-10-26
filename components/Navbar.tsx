@@ -225,11 +225,11 @@ export default function Navbar({
             {currentUser && (currentUser.role === 'CHIEF_EDITOR' || currentUser.role === 'ADMIN' || (currentUser.role as string) === 'EDITOR') && (
               <Link
                 href="/studio"
-                className="hidden lg:flex items-center gap-1.5 px-3 py-1 rounded-full bg-gradient-to-r from-red-600 via-rose-600 to-amber-600 hover:opacity-90 text-white font-bold text-[11px] tracking-wide transition shadow-sm shrink-0 border border-amber-400/40"
-                title="Open Dedicated Editor Studio Hub"
+                className="hidden lg:flex items-center gap-1.5 px-3 py-1 rounded-full bg-zinc-900 hover:bg-zinc-800 text-zinc-200 font-mono text-[11px] font-semibold tracking-wide transition shadow-sm shrink-0 border border-zinc-700/80"
+                title="Open Dedicated Editor Workstation"
               >
-                <Sparkles className="w-3.5 h-3.5 text-amber-300 animate-pulse" />
-                <span>STUDIO DESK</span>
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                <span>STUDIO</span>
               </Link>
             )}
 
