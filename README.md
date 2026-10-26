@@ -4,7 +4,7 @@
 [![Next.js 15](https://img.shields.io/badge/Next.js-15.1.7-black?style=flat-square&logo=next.js)](https://nextjs.org/)
 [![React 19](https://img.shields.io/badge/React-19.0.0-blue?style=flat-square&logo=react)](https://react.dev/)
 [![Tailwind CSS](https://img.shields.io/badge/TailwindCSS-3.4.17-38B2AC?style=flat-square&logo=tailwind-css)](https://tailwindcss.com/)
-[![MongoDB](https://img.shields.io/badge/MongoDB-Mongoose-green?style=flat-square&logo=mongodb)](https://www.mongodb.com/)
+[![MongoDB](https://img.shields.io/badge/MongoDB-Atlas_Cloud-green?style=flat-square&logo=mongodb)](https://www.mongodb.com/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](LICENSE)
 
 TruthPulse is a modern, full-stack Indian news channel web application designed to counter digital misinformation through cryptographic SHA-256 content seals, authenticated citizen credibility voting, multi-agent AI fact-checking, hyper-local geo-routing (28 Indian states), and an immersive TikTok/Instagram-style vertical swipe Reels engine.
