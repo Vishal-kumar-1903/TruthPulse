@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   ThumbsUp, 
   ThumbsDown, 
@@ -22,7 +22,9 @@ import {
   Scale,
   Users,
   Heart,
-  Coins
+  Coins,
+  Volume2,
+  VolumeX
 } from 'lucide-react';
 import { AuthUser } from './AuthModal';
 import { SupportedLanguage, translateHeadline, getUIText } from '@/lib/translations';
@@ -122,6 +124,52 @@ export default function NewsCard({
 
   // 3 flags condition for Questionable / Flagged alert tag
   const isFlagged = downvotes >= 3;
+
+  // 1-Click TTS Audio Narration State
+  const [isPlayingAudio, setIsPlayingAudio] = useState(false);
+
+  useEffect(() => {
+    return () => {
+      if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+      }
+    };
+  }, []);
+
+  const handleToggleSpeech = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (typeof window === 'undefined' || !('speechSynthesis' in window)) {
+      alert('Speech synthesis is not supported on this browser.');
+      return;
+    }
+
+    if (isPlayingAudio) {
+      window.speechSynthesis.cancel();
+      setIsPlayingAudio(false);
+      return;
+    }
+
+    window.speechSynthesis.cancel();
+    const textToRead = `${displayTitle}. ${article.summary}`;
+    const utterance = new SpeechSynthesisUtterance(textToRead);
+    utterance.rate = 1.05;
+    utterance.pitch = 1.0;
+
+    const voices = window.speechSynthesis.getVoices();
+    if (currentLang === 'hi') {
+      const hiVoice = voices.find(v => v.lang.includes('hi') || v.lang.includes('Hindi'));
+      if (hiVoice) utterance.voice = hiVoice;
+    } else {
+      const inVoice = voices.find(v => v.lang.includes('en-IN') || v.lang.includes('en_IN'));
+      if (inVoice) utterance.voice = inVoice;
+    }
+
+    utterance.onstart = () => setIsPlayingAudio(true);
+    utterance.onend = () => setIsPlayingAudio(false);
+    utterance.onerror = () => setIsPlayingAudio(false);
+
+    window.speechSynthesis.speak(utterance);
+  };
 
   // Compute time ago
   const getTimeAgo = (dateString?: string) => {
@@ -424,6 +472,41 @@ export default function NewsCard({
           <h3 className={`${isHero ? 'text-lg sm:text-2xl lg:text-3xl font-black' : 'text-base sm:text-lg font-bold'} text-slate-900 dark:text-slate-100 group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors line-clamp-2 sm:line-clamp-3 leading-snug mb-2.5`}>
             {displayTitle}
           </h3>
+
+          {/* 1-Click "Listen in 20s" Audio Narration */}
+          <div className="flex items-center justify-between mb-2.5 pb-2 border-b border-slate-100 dark:border-slate-800/80">
+            <button
+              type="button"
+              onClick={handleToggleSpeech}
+              className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-mono font-bold transition shadow-sm ${
+                isPlayingAudio
+                  ? 'bg-red-600 text-white animate-pulse'
+                  : 'bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700'
+              }`}
+              title={isPlayingAudio ? 'Stop audio' : 'Listen to 60-word dispatch in 20s'}
+            >
+              {isPlayingAudio ? (
+                <>
+                  <VolumeX className="w-3.5 h-3.5 shrink-0" />
+                  <span>Playing...</span>
+                  <span className="flex items-center gap-0.5 ml-1">
+                    <span className="w-1 h-2 bg-white rounded-full animate-bounce"></span>
+                    <span className="w-1 h-3 bg-white rounded-full animate-bounce [animation-delay:0.15s]"></span>
+                    <span className="w-1 h-1.5 bg-white rounded-full animate-bounce [animation-delay:0.3s]"></span>
+                  </span>
+                </>
+              ) : (
+                <>
+                  <Volume2 className="w-3.5 h-3.5 text-red-500 shrink-0" />
+                  <span>Listen in 20s</span>
+                </>
+              )}
+            </button>
+
+            <span className="text-[10px] font-mono text-slate-400">
+              ⚡ 60 Words
+            </span>
+          </div>
 
           {/* Observer Mode Content (60-80w summary + 3 bullets) */}
           {viewMode === 'OBSERVER' ? (

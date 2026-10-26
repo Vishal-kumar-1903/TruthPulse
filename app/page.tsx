@@ -17,6 +17,7 @@ import { queryGazetteRag } from '@/lib/ragEngine';
 import { FALLBACK_ARTICLES, filterFallbackArticles } from '@/lib/fallbackArticles';
 import { METROPOLITAN_HUBS } from '@/lib/metroHubs';
 import { usePortalModals } from '@/hooks/usePortalModals';
+import MobileBottomNav from '@/components/MobileBottomNav';
 import { Cpu, Sparkles } from 'lucide-react';
 
 // Code-splitting heavy interactive modals with dynamic imports (ssr: false)
@@ -343,9 +344,9 @@ function NewsPortalContent() {
       />
 
       {/* 3. MAIN NEWS FEED & RESPONSIVE GRID */}
-      <main className="w-full max-w-full overflow-x-hidden">
+      <main className="w-full max-w-full overflow-x-hidden pb-16 md:pb-0">
         {/* HYPER-LOCAL GPS GEO-ROUTING BANNER & DIRECTORY MODAL */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4">
+        <div id="metro-detector-banner" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4">
           <GeoDetector
             currentState={currentState}
             currentCity={currentCity}
@@ -497,7 +498,7 @@ function NewsPortalContent() {
 
       {/* 6. FLOATING QUICK RETURN BUTTON FOR EDITORS BROWSING LIVE PORTAL */}
       {currentUser && (currentUser.role === 'CHIEF_EDITOR' || currentUser.role === 'ADMIN' || (currentUser.role as string) === 'EDITOR') && (
-        <div className="fixed bottom-6 right-6 z-40">
+        <div className="fixed bottom-16 md:bottom-6 right-4 md:right-6 z-40">
           <Link
             href="/studio"
             className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-zinc-900/95 hover:bg-zinc-800 text-zinc-200 border border-zinc-700/80 shadow-xl backdrop-blur-md text-xs font-mono font-medium transition active:scale-95 group"
@@ -508,6 +509,25 @@ function NewsPortalContent() {
           </Link>
         </div>
       )}
+
+      {/* 7. DEDICATED MOBILE BOTTOM NAVIGATION BAR (< 640px) */}
+      <MobileBottomNav
+        onOpenFeed={() => {
+          handleClearFilters();
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }}
+        onOpenReels={() => modals.reels.open(0)}
+        onOpenMetro={() => {
+          const el = document.getElementById('metro-detector-banner');
+          if (el) {
+            el.scrollIntoView({ behavior: 'smooth' });
+          } else {
+            modals.sidebar.open();
+          }
+        }}
+        onOpenMenu={modals.sidebar.open}
+        activeTab="feed"
+      />
 
     </div>
   );
