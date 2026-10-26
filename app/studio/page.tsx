@@ -234,45 +234,45 @@ export default function EditorStudioPage() {
   });
 
   return (
-    <div className="min-h-screen w-full max-w-full overflow-x-hidden bg-[#090A0F] text-zinc-100 flex flex-col font-sans select-none antialiased">
+    <div className="min-h-screen w-full max-w-full overflow-x-hidden bg-slate-50 text-slate-900 flex flex-col font-sans select-none antialiased">
       
       {/* =========================================================================
-          1. MINIMAL PRO CONTROL BAR (Clean, Monochrome, High Contrast)
+          1. CLEAN WHITE PRO CONTROL BAR (Editorial Standard, High Contrast)
          ========================================================================= */}
-      <header className="sticky top-0 z-50 bg-[#0E1118]/90 backdrop-blur-md border-b border-zinc-800/80 px-3 sm:px-6 py-2.5 w-full max-w-full">
+      <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-200 px-3 sm:px-6 py-2.5 w-full max-w-full shadow-sm">
         <div className="max-w-7xl mx-auto flex items-center justify-between gap-2 sm:gap-4 w-full">
           
           {/* Left: Prominent Live Portal Switcher & Workspace Label */}
           <div className="flex items-center gap-3">
             <Link
               href="/?view=public"
-              className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-zinc-800/90 hover:bg-zinc-700 text-zinc-200 text-xs font-medium border border-zinc-700/60 transition active:scale-95 group"
+              className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-medium border border-slate-300 transition active:scale-95 group"
               title="Switch to public reader website without ending your editor session"
             >
-              <ArrowLeft className="w-3.5 h-3.5 text-zinc-400 group-hover:-translate-x-0.5 transition-transform" />
+              <ArrowLeft className="w-3.5 h-3.5 text-slate-600 group-hover:-translate-x-0.5 transition-transform" />
               <span>Live Reader Mode</span>
             </Link>
 
-            <span className="text-zinc-600 hidden sm:inline">/</span>
+            <span className="text-slate-300 hidden sm:inline">/</span>
 
             <div className="flex items-center gap-2">
-              <span className="text-xs font-semibold tracking-tight text-zinc-200">
+              <span className="text-xs font-bold tracking-tight text-slate-900">
                 Editorial Workstation
               </span>
-              <span className="text-[10px] font-mono text-zinc-400 px-1.5 py-0.5 rounded bg-zinc-800/80 border border-zinc-700/50">
+              <span className="text-[10px] font-mono text-slate-600 px-1.5 py-0.5 rounded bg-slate-100 border border-slate-200 font-semibold">
                 PRO CMS
               </span>
             </div>
           </div>
 
           {/* Center: Workstation Segmented Switcher */}
-          <div className="flex items-center bg-zinc-900/90 p-1 rounded-lg border border-zinc-800 text-xs">
+          <div className="flex items-center bg-slate-100 p-1 rounded-lg border border-slate-200 text-xs">
             <button
               onClick={() => setActiveWorkspaceTab('CREATOR')}
-              className={`flex items-center gap-1.5 px-3.5 py-1 rounded-md font-medium transition ${
+              className={`flex items-center gap-1.5 px-3.5 py-1 rounded-md font-semibold transition ${
                 activeWorkspaceTab === 'CREATOR'
-                  ? 'bg-zinc-800 text-white shadow-sm'
-                  : 'text-zinc-400 hover:text-zinc-200'
+                  ? 'bg-white text-slate-900 shadow-sm border border-slate-200'
+                  : 'text-slate-600 hover:text-slate-900'
               }`}
             >
               <FileText className="w-3.5 h-3.5" />
@@ -281,10 +281,10 @@ export default function EditorStudioPage() {
 
             <button
               onClick={() => setActiveWorkspaceTab('ANALYTICS')}
-              className={`flex items-center gap-1.5 px-3.5 py-1 rounded-md font-medium transition ${
+              className={`flex items-center gap-1.5 px-3.5 py-1 rounded-md font-semibold transition ${
                 activeWorkspaceTab === 'ANALYTICS'
-                  ? 'bg-zinc-800 text-white shadow-sm'
-                  : 'text-zinc-400 hover:text-zinc-200'
+                  ? 'bg-white text-slate-900 shadow-sm border border-slate-200'
+                  : 'text-slate-600 hover:text-slate-900'
               }`}
             >
               <BarChart3 className="w-3.5 h-3.5" />
@@ -294,16 +294,16 @@ export default function EditorStudioPage() {
 
           {/* Right: Clean User Pill & Signout */}
           <div className="flex items-center gap-2.5">
-            <div className="hidden md:flex items-center gap-2 text-xs font-mono text-zinc-400">
+            <div className="hidden md:flex items-center gap-2 text-xs font-mono text-slate-600">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-              <span className="text-zinc-300 font-sans font-medium">{currentEditor.name.split(' ')[0]}</span>
-              <span className="text-zinc-500">•</span>
-              <span className="text-zinc-400 font-mono text-[11px]">{currentEditor.truthCredits} TC</span>
+              <span className="text-slate-800 font-sans font-semibold">{currentEditor.name.split(' ')[0]}</span>
+              <span className="text-slate-300">•</span>
+              <span className="text-slate-600 font-mono text-[11px] font-bold">{currentEditor.truthCredits} TC</span>
             </div>
 
             <button
               onClick={handleLogout}
-              className="p-1.5 rounded-lg bg-zinc-900 hover:bg-zinc-800 text-zinc-400 hover:text-zinc-200 border border-zinc-800 transition"
+              className="p-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900 border border-slate-200 transition"
               title="Sign Out"
             >
               <LogOut className="w-3.5 h-3.5" />
@@ -315,8 +315,8 @@ export default function EditorStudioPage() {
 
       {/* Toast Notification (Clean Neutral Notification) */}
       {toastMessage && (
-        <div className="fixed top-14 right-6 z-50 px-4 py-2.5 rounded-lg bg-zinc-900 border border-zinc-700 text-zinc-200 text-xs font-mono shadow-2xl flex items-center gap-2">
-          <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+        <div className="fixed top-14 right-6 z-50 px-4 py-2.5 rounded-xl bg-white border border-slate-300 text-slate-900 text-xs font-mono shadow-2xl flex items-center gap-2">
+          <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
           <span>{toastMessage}</span>
         </div>
       )}
@@ -332,16 +332,16 @@ export default function EditorStudioPage() {
         {activeWorkspaceTab === 'CREATOR' && (
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
             
-            {/* CENTER: CLEAN DOCUMENT DRAFTING CANVAS (Cols 8) */}
-            <div className="lg:col-span-8 bg-[#0E1118] border border-zinc-800/80 rounded-2xl p-6 sm:p-7 space-y-6">
+            {/* CENTER: CLEAN WHITE DOCUMENT DRAFTING CANVAS (Cols 8) */}
+            <div className="lg:col-span-8 bg-white border border-slate-200 rounded-2xl p-6 sm:p-7 space-y-6 shadow-sm">
               
               {/* Header Action Row */}
-              <div className="flex items-center justify-between pb-4 border-b border-zinc-800/60">
+              <div className="flex items-center justify-between pb-4 border-b border-slate-100">
                 <div className="flex items-center gap-2">
-                  <span className="text-xs font-mono uppercase text-zinc-400 font-semibold tracking-wider">
+                  <span className="text-xs font-mono uppercase text-slate-500 font-semibold tracking-wider">
                     New Article Dispatch
                   </span>
-                  <span className="text-[10px] font-mono text-zinc-400 px-1.5 py-0.5 rounded bg-zinc-800/60">
+                  <span className="text-[10px] font-mono text-slate-600 px-1.5 py-0.5 rounded bg-slate-100 border border-slate-200">
                     Draft
                   </span>
                 </div>
@@ -350,9 +350,9 @@ export default function EditorStudioPage() {
                   type="button"
                   onClick={handleAutoSynthesize}
                   disabled={isSynthesizing}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs font-mono transition border border-zinc-700/60 disabled:opacity-50"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-mono transition border border-slate-300 disabled:opacity-50 font-semibold"
                 >
-                  <Sparkles className={`w-3.5 h-3.5 text-zinc-400 ${isSynthesizing ? 'animate-spin' : ''}`} />
+                  <Sparkles className={`w-3.5 h-3.5 text-slate-600 ${isSynthesizing ? 'animate-spin' : ''}`} />
                   <span>{isSynthesizing ? 'Synthesizing...' : 'AI Assist'}</span>
                 </button>
               </div>
@@ -364,33 +364,33 @@ export default function EditorStudioPage() {
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder="Article Headline..."
-                  className="w-full bg-transparent border-0 border-b border-zinc-800 focus:border-zinc-500 pb-2 text-lg sm:text-xl font-bold text-zinc-100 placeholder-zinc-600 focus:outline-none transition"
+                  className="w-full bg-transparent border-0 border-b border-slate-200 focus:border-slate-800 pb-2 text-lg sm:text-xl font-bold text-slate-900 placeholder-slate-400 focus:outline-none transition"
                 />
               </div>
 
               {/* 60-Word Takeaway Summary */}
               <div className="space-y-2">
-                <div className="flex items-center justify-between text-xs font-mono text-zinc-400">
+                <div className="flex items-center justify-between text-xs font-mono text-slate-500">
                   <span className="uppercase text-[11px] font-semibold">Core Takeaway Summary</span>
-                  <span>{summary.trim() ? summary.trim().split(/\s+/).filter(Boolean).length : 0} Words</span>
+                  <span className="font-semibold">{summary.trim() ? summary.trim().split(/\s+/).filter(Boolean).length : 0} Words</span>
                 </div>
                 <textarea
                   rows={4}
                   value={summary}
                   onChange={(e) => setSummary(e.target.value)}
                   placeholder="Draft a 60-word objective summary of verified factual developments..."
-                  className="w-full p-3.5 rounded-xl bg-zinc-900/60 border border-zinc-800 text-zinc-200 text-xs leading-relaxed placeholder-zinc-600 focus:border-zinc-600 focus:outline-none transition"
+                  className="w-full p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-xs leading-relaxed placeholder-slate-400 focus:bg-white focus:border-slate-800 focus:outline-none transition"
                 />
               </div>
 
               {/* 3 Key Bullets */}
               <div className="space-y-2.5">
-                <span className="block text-[11px] font-mono uppercase text-zinc-400 font-semibold">
+                <span className="block text-[11px] font-mono uppercase text-slate-500 font-semibold">
                   3 Ground Highlights
                 </span>
                 {bullets.map((b, idx) => (
                   <div key={idx} className="flex items-center gap-2">
-                    <span className="w-5 h-5 rounded bg-zinc-800/80 text-zinc-400 font-mono text-[11px] flex items-center justify-center font-bold shrink-0">
+                    <span className="w-5 h-5 rounded bg-slate-100 text-slate-700 font-mono text-[11px] flex items-center justify-center font-bold shrink-0 border border-slate-200">
                       {idx + 1}
                     </span>
                     <input
@@ -402,19 +402,19 @@ export default function EditorStudioPage() {
                         setBullets(next);
                       }}
                       placeholder={`Key ground takeaway ${idx + 1}...`}
-                      className="flex-1 px-3 py-2 rounded-lg bg-zinc-900/60 border border-zinc-800 text-xs text-zinc-200 placeholder-zinc-600 focus:border-zinc-600 focus:outline-none"
+                      className="flex-1 px-3 py-2 rounded-lg bg-slate-50 border border-slate-200 text-xs text-slate-900 placeholder-slate-400 focus:bg-white focus:border-slate-800 focus:outline-none"
                     />
                   </div>
                 ))}
               </div>
 
               {/* Primary Source Verification */}
-              <div className="p-4 rounded-xl bg-zinc-900/40 border border-zinc-800/80 space-y-2.5">
+              <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-2.5">
                 <div className="flex items-center justify-between text-xs">
-                  <span className="font-mono text-[11px] uppercase font-semibold text-zinc-300 flex items-center gap-1.5">
-                    <LinkIcon className="w-3.5 h-3.5 text-zinc-400" /> Primary Source Reference *
+                  <span className="font-mono text-[11px] uppercase font-semibold text-slate-700 flex items-center gap-1.5">
+                    <LinkIcon className="w-3.5 h-3.5 text-slate-500" /> Primary Source Reference *
                   </span>
-                  <span className="text-[10px] font-mono text-zinc-500">Statutory Gazette or Verified Wire</span>
+                  <span className="text-[10px] font-mono text-slate-500">Statutory Gazette or Verified Wire</span>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
@@ -423,50 +423,50 @@ export default function EditorStudioPage() {
                     value={sourceName}
                     onChange={(e) => setSourceName(e.target.value)}
                     placeholder="Source Agency (e.g. PTI, Gazette, CECB)"
-                    className="px-3 py-2 rounded-lg bg-zinc-900 border border-zinc-800 text-xs text-zinc-200 placeholder-zinc-600 focus:border-zinc-600 focus:outline-none"
+                    className="px-3 py-2 rounded-lg bg-white border border-slate-200 text-xs text-slate-900 placeholder-slate-400 focus:border-slate-800 focus:outline-none"
                   />
                   <input
                     type="url"
                     value={sourceUrl}
                     onChange={(e) => setSourceUrl(e.target.value)}
                     placeholder="https://official-gazette.gov.in/..."
-                    className="px-3 py-2 rounded-lg bg-zinc-900 border border-zinc-800 text-xs text-zinc-200 font-mono placeholder-zinc-600 focus:border-zinc-600 focus:outline-none"
+                    className="px-3 py-2 rounded-lg bg-white border border-slate-200 text-xs text-slate-900 font-mono placeholder-slate-400 focus:border-slate-800 focus:outline-none"
                   />
                 </div>
               </div>
 
               {/* Civic Resolution Option */}
-              <div className="p-3.5 rounded-xl bg-zinc-900/30 border border-zinc-800/60 text-xs">
+              <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-xs">
                 <div className="flex items-center justify-between">
                   <label className="flex items-center gap-2 cursor-pointer">
                     <input
                       type="checkbox"
                       checked={enableCivicAction}
                       onChange={(e) => setEnableCivicAction(e.target.checked)}
-                      className="rounded bg-zinc-900 border-zinc-700 text-zinc-100 focus:ring-0 w-3.5 h-3.5"
+                      className="rounded bg-white border-slate-300 text-slate-900 focus:ring-0 w-3.5 h-3.5"
                     />
-                    <span className="font-mono font-medium text-zinc-300 text-[11px] uppercase">
+                    <span className="font-mono font-semibold text-slate-700 text-[11px] uppercase">
                       Attach Civic Accountability Poll
                     </span>
                   </label>
-                  <span className="text-[10px] font-mono text-zinc-500">Public redressal desk</span>
+                  <span className="text-[10px] font-mono text-slate-500">Public redressal desk</span>
                 </div>
 
                 {enableCivicAction && (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 mt-3 pt-3 border-t border-zinc-800">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 mt-3 pt-3 border-t border-slate-200">
                     <input
                       type="text"
                       value={authorityDept}
                       onChange={(e) => setAuthorityDept(e.target.value)}
                       placeholder="Concerned Municipal Body"
-                      className="px-3 py-1.5 rounded-lg bg-zinc-900 border border-zinc-800 text-xs text-zinc-200"
+                      className="px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-xs text-slate-900"
                     />
                     <input
                       type="email"
                       value={authorityEmail}
                       onChange={(e) => setAuthorityEmail(e.target.value)}
                       placeholder="grievance@municipal.gov.in"
-                      className="px-3 py-1.5 rounded-lg bg-zinc-900 border border-zinc-800 text-xs text-zinc-200 font-mono"
+                      className="px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-xs text-slate-900 font-mono"
                     />
                   </div>
                 )}
@@ -478,39 +478,39 @@ export default function EditorStudioPage() {
             <div className="lg:col-span-4 space-y-4">
               
               {/* Card 1: Verification & Gating Status */}
-              <div className="bg-[#0E1118] border border-zinc-800/80 rounded-2xl p-5 space-y-3">
+              <div className="bg-white border border-slate-200 rounded-2xl p-5 space-y-3 shadow-sm">
                 <div className="flex items-center justify-between text-xs">
-                  <span className="font-mono text-[11px] uppercase text-zinc-400 font-semibold">
+                  <span className="font-mono text-[11px] uppercase text-slate-500 font-semibold">
                     Trust Gating Meter
                   </span>
                   <span className={`font-mono text-xs font-semibold px-2 py-0.5 rounded ${
                     trustScore >= 80 
-                      ? 'bg-emerald-950/40 text-emerald-400 border border-emerald-800/50' 
-                      : 'bg-zinc-800 text-zinc-400'
+                      ? 'bg-slate-100 text-slate-900 border border-slate-300' 
+                      : 'bg-slate-100 text-slate-500'
                   }`}>
                     {trustScore}% Trust
                   </span>
                 </div>
 
-                <div className="w-full bg-zinc-900 h-1.5 rounded-full overflow-hidden border border-zinc-800">
+                <div className="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden border border-slate-200">
                   <div
-                    className="h-full bg-zinc-300 rounded-full transition-all duration-300"
+                    className="h-full bg-slate-800 rounded-full transition-all duration-300"
                     style={{ width: `${trustScore}%` }}
                   ></div>
                 </div>
 
-                <p className="text-[11px] font-mono text-zinc-400 leading-normal">
+                <p className="text-[11px] font-mono text-slate-600 leading-normal">
                   {trustScore >= 80
                     ? '✓ Verification benchmark met (≥80%). Broadcast permitted.'
                     : 'Corroboration required before wire transmission.'}
                 </p>
 
-                {/* Primary Action Button (Clean high contrast) */}
+                {/* Primary Action Button (Clean high contrast solid black) */}
                 <button
                   type="button"
                   disabled={isPublishing || trustScore < 80 || !title.trim() || !summary.trim() || !sourceUrl.trim()}
                   onClick={handlePublishArticle}
-                  className="w-full py-2.5 rounded-xl bg-zinc-100 hover:bg-white text-zinc-950 font-semibold text-xs transition shadow-sm flex items-center justify-center gap-2 disabled:opacity-40 disabled:hover:bg-zinc-100 active:scale-98"
+                  className="w-full py-2.5 rounded-xl bg-slate-900 hover:bg-black text-white font-semibold text-xs transition shadow-sm flex items-center justify-center gap-2 disabled:opacity-40 active:scale-98"
                 >
                   {isPublishing ? (
                     <>
@@ -527,17 +527,17 @@ export default function EditorStudioPage() {
               </div>
 
               {/* Card 2: Routing & Classification */}
-              <div className="bg-[#0E1118] border border-zinc-800/80 rounded-2xl p-5 space-y-3 text-xs">
-                <span className="font-mono text-[11px] uppercase text-zinc-400 font-semibold block">
+              <div className="bg-white border border-slate-200 rounded-2xl p-5 space-y-3 text-xs shadow-sm">
+                <span className="font-mono text-[11px] uppercase text-slate-500 font-semibold block">
                   Taxonomy & Geo-Routing
                 </span>
 
                 <div className="space-y-1">
-                  <span className="text-[10px] font-mono text-zinc-400">Category</span>
+                  <span className="text-[10px] font-mono text-slate-500 font-semibold">Category</span>
                   <select
                     value={category}
                     onChange={(e) => setCategory(e.target.value)}
-                    className="w-full px-3 py-2 rounded-lg bg-zinc-900 border border-zinc-800 text-xs text-zinc-200 focus:outline-none"
+                    className="w-full px-3 py-2 rounded-lg bg-slate-50 border border-slate-200 text-xs text-slate-900 focus:bg-white focus:border-slate-800 focus:outline-none"
                   >
                     <option value="Politics">Politics & Governance</option>
                     <option value="Business">Business & Markets</option>
@@ -549,11 +549,11 @@ export default function EditorStudioPage() {
                 </div>
 
                 <div className="space-y-1">
-                  <span className="text-[10px] font-mono text-zinc-400">Metropolitan Cluster</span>
+                  <span className="text-[10px] font-mono text-slate-500 font-semibold">Metropolitan Cluster</span>
                   <select
                     value={metroHub}
                     onChange={(e) => setMetroHub(e.target.value)}
-                    className="w-full px-3 py-2 rounded-lg bg-zinc-900 border border-zinc-800 text-xs text-zinc-200 focus:outline-none"
+                    className="w-full px-3 py-2 rounded-lg bg-slate-50 border border-slate-200 text-xs text-slate-900 focus:bg-white focus:border-slate-800 focus:outline-none"
                   >
                     <option value="">National / Pan-India</option>
                     {METROPOLITAN_HUBS.map((m) => (
@@ -564,17 +564,17 @@ export default function EditorStudioPage() {
               </div>
 
               {/* Card 3: Media Visual Presentation */}
-              <div className="bg-[#0E1118] border border-zinc-800/80 rounded-2xl p-5 space-y-3 text-xs">
-                <span className="font-mono text-[11px] uppercase text-zinc-400 font-semibold block">
+              <div className="bg-white border border-slate-200 rounded-2xl p-5 space-y-3 text-xs shadow-sm">
+                <span className="font-mono text-[11px] uppercase text-slate-500 font-semibold block">
                   Media Presentation
                 </span>
 
-                <div className="grid grid-cols-3 gap-1 bg-zinc-900 p-1 rounded-lg border border-zinc-800 text-[11px]">
+                <div className="grid grid-cols-3 gap-1 bg-slate-100 p-1 rounded-lg border border-slate-200 text-[11px]">
                   <button
                     type="button"
                     onClick={() => setMediaType('IMAGE')}
-                    className={`py-1.5 rounded font-medium transition ${
-                      mediaType === 'IMAGE' ? 'bg-zinc-800 text-white' : 'text-zinc-400 hover:text-zinc-200'
+                    className={`py-1.5 rounded font-semibold transition ${
+                      mediaType === 'IMAGE' ? 'bg-white text-slate-900 shadow-sm border border-slate-200' : 'text-slate-600 hover:text-slate-900'
                     }`}
                   >
                     Image
@@ -582,8 +582,8 @@ export default function EditorStudioPage() {
                   <button
                     type="button"
                     onClick={() => setMediaType('VIDEO_LOOP')}
-                    className={`py-1.5 rounded font-medium transition ${
-                      mediaType === 'VIDEO_LOOP' ? 'bg-zinc-800 text-white' : 'text-zinc-400 hover:text-zinc-200'
+                    className={`py-1.5 rounded font-semibold transition ${
+                      mediaType === 'VIDEO_LOOP' ? 'bg-white text-slate-900 shadow-sm border border-slate-200' : 'text-slate-600 hover:text-slate-900'
                     }`}
                   >
                     Loop
@@ -591,8 +591,8 @@ export default function EditorStudioPage() {
                   <button
                     type="button"
                     onClick={() => setMediaType('LOTTIE_ANIMATION')}
-                    className={`py-1.5 rounded font-medium transition ${
-                      mediaType === 'LOTTIE_ANIMATION' ? 'bg-zinc-800 text-white' : 'text-zinc-400 hover:text-zinc-200'
+                    className={`py-1.5 rounded font-semibold transition ${
+                      mediaType === 'LOTTIE_ANIMATION' ? 'bg-white text-slate-900 shadow-sm border border-slate-200' : 'text-slate-600 hover:text-slate-900'
                     }`}
                   >
                     Vector
@@ -605,7 +605,7 @@ export default function EditorStudioPage() {
                     value={imageUrl}
                     onChange={(e) => setImageUrl(e.target.value)}
                     placeholder="Poster Image URL..."
-                    className="w-full px-3 py-1.5 rounded-lg bg-zinc-900 border border-zinc-800 text-xs text-zinc-200 font-mono placeholder-zinc-600 focus:outline-none"
+                    className="w-full px-3 py-1.5 rounded-lg bg-slate-50 border border-slate-200 text-xs text-slate-900 font-mono placeholder-slate-400 focus:bg-white focus:border-slate-800 focus:outline-none"
                   />
 
                   {mediaType !== 'IMAGE' && (
@@ -614,13 +614,13 @@ export default function EditorStudioPage() {
                       value={mediaUrl}
                       onChange={(e) => setMediaUrl(e.target.value)}
                       placeholder={mediaType === 'VIDEO_LOOP' ? 'MP4/WebM Loop URL...' : 'Lottie JSON URL (Optional)...'}
-                      className="w-full px-3 py-1.5 rounded-lg bg-zinc-900 border border-zinc-800 text-xs text-zinc-200 font-mono placeholder-zinc-600 focus:outline-none"
+                      className="w-full px-3 py-1.5 rounded-lg bg-slate-50 border border-slate-200 text-xs text-slate-900 font-mono placeholder-slate-400 focus:bg-white focus:border-slate-800 focus:outline-none"
                     />
                   )}
                 </div>
 
                 {/* Minimal preview thumbnail */}
-                <div className="w-full h-24 rounded-lg overflow-hidden border border-zinc-800 bg-zinc-900 relative">
+                <div className="w-full h-24 rounded-lg overflow-hidden border border-slate-200 bg-slate-100 relative">
                   <AnimatedMedia
                     mediaType={mediaType}
                     mediaUrl={mediaUrl}
@@ -637,64 +637,64 @@ export default function EditorStudioPage() {
         )}
 
         {/* =========================================================================
-            PANE B: LEDGER & CREDIBILITY ANALYTICS (Clean Financial Terminal Style)
+            PANE B: LEDGER & CREDIBILITY ANALYTICS (Clean White Ledger Style)
            ========================================================================= */}
         {activeWorkspaceTab === 'ANALYTICS' && (
           <div className="space-y-5">
             
-            {/* 4 Minimal Metric Cards (Zero Gaudy Colors) */}
+            {/* 4 Minimal Metric Cards (Clean White Surface) */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              <div className="p-4 rounded-xl bg-[#0E1118] border border-zinc-800/80">
-                <span className="text-[11px] font-mono text-zinc-400 uppercase font-semibold">Total Dispatches</span>
-                <p className="text-2xl font-bold text-zinc-100 mt-1 font-mono">{analyticsSummary.totalArticles}</p>
-                <span className="text-[10px] font-mono text-zinc-400 mt-1 block">Cryptographically Sealed</span>
+              <div className="p-4 rounded-xl bg-white border border-slate-200 shadow-sm">
+                <span className="text-[11px] font-mono text-slate-500 uppercase font-semibold">Total Dispatches</span>
+                <p className="text-2xl font-bold text-slate-900 mt-1 font-mono">{analyticsSummary.totalArticles}</p>
+                <span className="text-[10px] font-mono text-slate-500 mt-1 block">Cryptographically Sealed</span>
               </div>
 
-              <div className="p-4 rounded-xl bg-[#0E1118] border border-zinc-800/80">
-                <span className="text-[11px] font-mono text-zinc-400 uppercase font-semibold">🟢 Verified (Sahi)</span>
-                <p className="text-2xl font-bold text-emerald-400 mt-1 font-mono">+{analyticsSummary.totalUpvotes}</p>
-                <span className="text-[10px] font-mono text-zinc-400 mt-1 block">Reader corroborations</span>
+              <div className="p-4 rounded-xl bg-white border border-slate-200 shadow-sm">
+                <span className="text-[11px] font-mono text-slate-500 uppercase font-semibold">🟢 Verified (Sahi)</span>
+                <p className="text-2xl font-bold text-slate-900 mt-1 font-mono">+{analyticsSummary.totalUpvotes}</p>
+                <span className="text-[10px] font-mono text-slate-500 mt-1 block">Reader corroborations</span>
               </div>
 
-              <div className="p-4 rounded-xl bg-[#0E1118] border border-zinc-800/80">
-                <span className="text-[11px] font-mono text-zinc-400 uppercase font-semibold">🔴 Disputed (Galat)</span>
-                <p className="text-2xl font-bold text-rose-400 mt-1 font-mono">-{analyticsSummary.totalDownvotes}</p>
-                <span className="text-[10px] font-mono text-zinc-400 mt-1 block">Citizen dispute flags</span>
+              <div className="p-4 rounded-xl bg-white border border-slate-200 shadow-sm">
+                <span className="text-[11px] font-mono text-slate-500 uppercase font-semibold">🔴 Disputed (Galat)</span>
+                <p className="text-2xl font-bold text-slate-900 mt-1 font-mono">-{analyticsSummary.totalDownvotes}</p>
+                <span className="text-[10px] font-mono text-slate-500 mt-1 block">Citizen dispute flags</span>
               </div>
 
-              <div className="p-4 rounded-xl bg-[#0E1118] border border-zinc-800/80">
-                <span className="text-[11px] font-mono text-zinc-400 uppercase font-semibold">Authenticity Ratio</span>
-                <p className="text-2xl font-bold text-zinc-100 mt-1 font-mono">{analyticsSummary.globalAuthenticity}%</p>
-                <span className="text-[10px] font-mono text-zinc-400 mt-1 block">Quality threshold</span>
+              <div className="p-4 rounded-xl bg-white border border-slate-200 shadow-sm">
+                <span className="text-[11px] font-mono text-slate-500 uppercase font-semibold">Authenticity Ratio</span>
+                <p className="text-2xl font-bold text-slate-900 mt-1 font-mono">{analyticsSummary.globalAuthenticity}%</p>
+                <span className="text-[10px] font-mono text-slate-500 mt-1 block">Quality threshold</span>
               </div>
             </div>
 
-            {/* Scoreboard Table (Clean Financial Ledger Aesthetic) */}
-            <div className="bg-[#0E1118] border border-zinc-800/80 rounded-2xl overflow-hidden shadow-sm">
-              <div className="px-5 py-3.5 border-b border-zinc-800/80 flex flex-wrap items-center justify-between gap-3 text-xs">
+            {/* Scoreboard Table (Clean Ledger Style) */}
+            <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
+              <div className="px-5 py-3.5 border-b border-slate-200 flex flex-wrap items-center justify-between gap-3 text-xs bg-slate-50/50">
                 <div className="flex items-center gap-2">
-                  <BarChart3 className="w-3.5 h-3.5 text-zinc-400" />
-                  <span className="font-mono uppercase font-semibold text-zinc-300">
+                  <BarChart3 className="w-3.5 h-3.5 text-slate-600" />
+                  <span className="font-mono uppercase font-bold text-slate-800">
                     Dispatch Scoreboard
                   </span>
                 </div>
 
                 <div className="flex items-center gap-2">
                   <div className="relative">
-                    <Search className="w-3 h-3 absolute left-2.5 top-1/2 -translate-y-1/2 text-zinc-500" />
+                    <Search className="w-3 h-3 absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400" />
                     <input
                       type="text"
                       value={searchFilter}
                       onChange={(e) => setSearchFilter(e.target.value)}
                       placeholder="Search title..."
-                      className="pl-7 pr-3 py-1 rounded-lg bg-zinc-900 border border-zinc-800 text-xs text-zinc-200 placeholder-zinc-600 focus:outline-none font-mono"
+                      className="pl-7 pr-3 py-1 rounded-lg bg-white border border-slate-300 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-slate-800 font-mono"
                     />
                   </div>
 
                   <select
                     value={categoryFilter}
                     onChange={(e) => setCategoryFilter(e.target.value)}
-                    className="px-2.5 py-1 rounded-lg bg-zinc-900 border border-zinc-800 text-xs text-zinc-300 focus:outline-none font-mono"
+                    className="px-2.5 py-1 rounded-lg bg-white border border-slate-300 text-xs text-slate-800 focus:outline-none focus:border-slate-800 font-mono"
                   >
                     <option value="ALL">All Categories</option>
                     <option value="Politics">Politics</option>
@@ -709,7 +709,7 @@ export default function EditorStudioPage() {
               <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse text-xs">
                   <thead>
-                    <tr className="border-b border-zinc-800/80 text-[10px] font-mono uppercase text-zinc-400 bg-zinc-900/40">
+                    <tr className="border-b border-slate-200 text-[10px] font-mono uppercase text-slate-600 bg-slate-50">
                       <th className="py-2.5 px-4 font-semibold">Dispatch Title</th>
                       <th className="py-2.5 px-3 font-semibold">Category</th>
                       <th className="py-2.5 px-3 text-center font-semibold">🟢 Right</th>
@@ -719,10 +719,10 @@ export default function EditorStudioPage() {
                       <th className="py-2.5 px-4 text-right font-semibold">Action</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-zinc-800/40 text-xs">
+                  <tbody className="divide-y divide-slate-100 text-xs text-slate-900">
                     {filteredArticles.length === 0 ? (
                       <tr>
-                        <td colSpan={7} className="py-6 text-center text-zinc-500 font-mono">
+                        <td colSpan={7} className="py-6 text-center text-slate-400 font-mono">
                           No matching dispatches.
                         </td>
                       </tr>
@@ -734,43 +734,43 @@ export default function EditorStudioPage() {
                           : (totalVotes > 0 ? Math.round((art.upvotes / totalVotes) * 100) : 100);
 
                         return (
-                          <tr key={art._id} className="hover:bg-zinc-800/20 transition">
-                            <td className="py-3 px-4 max-w-sm truncate text-zinc-200 font-medium">
+                          <tr key={art._id} className="hover:bg-slate-50 transition">
+                            <td className="py-3 px-4 max-w-sm truncate text-slate-900 font-medium">
                               {art.title}
                             </td>
-                            <td className="py-3 px-3 text-zinc-400 font-mono text-[11px]">
+                            <td className="py-3 px-3 text-slate-600 font-mono text-[11px]">
                               {art.category}
                             </td>
-                            <td className="py-3 px-3 text-center font-mono font-medium text-emerald-400">
+                            <td className="py-3 px-3 text-center font-mono font-medium text-emerald-600">
                               {art.upvotes}
                             </td>
-                            <td className="py-3 px-3 text-center font-mono font-medium text-rose-400">
+                            <td className="py-3 px-3 text-center font-mono font-medium text-rose-600">
                               {art.downvotes}
                             </td>
                             <td className="py-3 px-3">
                               <div className="flex items-center gap-2">
-                                <div className="w-14 bg-zinc-900 h-1.5 rounded-full overflow-hidden border border-zinc-800">
+                                <div className="w-14 bg-slate-100 h-1.5 rounded-full overflow-hidden border border-slate-200">
                                   <div
-                                    className={`h-full ${accuracyRate >= 80 ? 'bg-emerald-500' : (accuracyRate >= 60 ? 'bg-zinc-400' : 'bg-rose-500')}`}
+                                    className="h-full bg-slate-800"
                                     style={{ width: `${accuracyRate}%` }}
                                   ></div>
                                 </div>
-                                <span className="font-mono text-[11px] text-zinc-300">{accuracyRate}%</span>
+                                <span className="font-mono text-[11px] text-slate-700 font-semibold">{accuracyRate}%</span>
                               </div>
                             </td>
                             <td className="py-3 px-3 font-mono text-[11px]">
                               {art.evidenceNotesCount > 0 ? (
-                                <span className="text-rose-400">
+                                <span className="text-slate-800 font-bold">
                                   {art.evidenceNotesCount} flags
                                 </span>
                               ) : (
-                                <span className="text-zinc-600">0</span>
+                                <span className="text-slate-400">0</span>
                               )}
                             </td>
                             <td className="py-3 px-4 text-right">
                               <button
                                 onClick={() => setSelectedInspectionArticle(art)}
-                                className="px-2.5 py-1 rounded bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-[11px] font-mono transition"
+                                className="px-2.5 py-1 rounded bg-slate-100 hover:bg-slate-200 text-slate-800 text-[11px] font-mono border border-slate-200 transition font-medium"
                               >
                                 Review
                               </button>
@@ -791,45 +791,45 @@ export default function EditorStudioPage() {
 
       {/* Review Modal */}
       {selectedInspectionArticle && (
-        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-[#0E1118] border border-zinc-800 rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-4">
-            <div className="flex items-center justify-between border-b border-zinc-800 pb-3">
-              <span className="text-xs font-mono font-semibold text-zinc-300 uppercase">
+        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white border border-slate-200 rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-4">
+            <div className="flex items-center justify-between border-b border-slate-200 pb-3">
+              <span className="text-xs font-mono font-bold text-slate-900 uppercase">
                 Dispatch Verification Audit
               </span>
               <button
                 onClick={() => setSelectedInspectionArticle(null)}
-                className="p-1 rounded hover:bg-zinc-800 text-zinc-400 hover:text-white"
+                className="p-1 rounded hover:bg-slate-100 text-slate-500 hover:text-slate-900"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
             <div>
-              <h4 className="text-sm font-semibold text-zinc-100 mb-1">
+              <h4 className="text-sm font-semibold text-slate-900 mb-1">
                 {selectedInspectionArticle.title}
               </h4>
-              <div className="flex items-center gap-3 text-xs font-mono text-zinc-400">
+              <div className="flex items-center gap-3 text-xs font-mono text-slate-600">
                 <span>{selectedInspectionArticle.category}</span>
                 <span>•</span>
-                <span className="text-emerald-400">🟢 {selectedInspectionArticle.upvotes} Right</span>
+                <span className="text-emerald-700 font-bold">🟢 {selectedInspectionArticle.upvotes} Right</span>
                 <span>•</span>
-                <span className="text-rose-400">🔴 {selectedInspectionArticle.downvotes} Disputed</span>
+                <span className="text-rose-700 font-bold">🔴 {selectedInspectionArticle.downvotes} Disputed</span>
               </div>
             </div>
 
-            <div className="p-3.5 rounded-xl bg-zinc-900 border border-zinc-800 text-xs font-mono text-zinc-300">
+            <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-xs font-mono text-slate-700">
               {selectedInspectionArticle.downvotes > 0 ? (
-                <p className="text-zinc-400">Citizen note: Submitted reference links verified against municipal records.</p>
+                <p className="text-slate-600">Citizen note: Submitted reference links verified against municipal records.</p>
               ) : (
-                <p className="text-emerald-400">✓ No discrepancies reported by community fact-checkers.</p>
+                <p className="text-slate-800 font-semibold">✓ No discrepancies reported by community fact-checkers.</p>
               )}
             </div>
 
             <div className="flex items-center justify-end gap-2 pt-2">
               <Link
                 href={`/?search=${encodeURIComponent(selectedInspectionArticle.title.slice(0, 20))}&view=public`}
-                className="px-3.5 py-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs font-medium transition"
+                className="px-3.5 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-medium border border-slate-200 transition"
               >
                 View in Reader
               </Link>
@@ -839,7 +839,7 @@ export default function EditorStudioPage() {
                   setSelectedInspectionArticle(null);
                   setTimeout(() => setToastMessage(null), 3000);
                 }}
-                className="px-3.5 py-1.5 rounded-lg bg-zinc-100 hover:bg-white text-zinc-950 text-xs font-semibold transition"
+                className="px-3.5 py-1.5 rounded-lg bg-slate-900 hover:bg-black text-white text-xs font-semibold transition"
               >
                 Acknowledge
               </button>
