@@ -191,13 +191,18 @@ export default function EditorStudioPage() {
           metro: metroHub || undefined,
           sources: [{ name: sourceName.trim() || 'Primary Wire', url: sourceUrl.trim(), stance: 'CORROBORATING' }],
           trustScore,
-          author: currentEditor.name || 'TruthPulse Editorial Bureau'
+          author: currentEditor.name || 'TruthPulse Editorial Bureau',
+          isPinned: true
         })
       });
 
       const data = await res.json();
       if (data.success) {
-        setToastMessage('Article dispatched and cryptographically sealed.');
+        setToastMessage('Story dispatched! Live at top of Front Page.');
+        try {
+          localStorage.setItem('truthpulse_refresh_feed', Date.now().toString());
+          window.dispatchEvent(new Event('truthpulse_refresh'));
+        } catch {}
         setTitle('');
         setSummary('');
         setBullets(['', '', '']);
@@ -313,11 +318,17 @@ export default function EditorStudioPage() {
         </div>
       </header>
 
-      {/* Toast Notification (Clean Neutral Notification) */}
+      {/* Toast Notification (Clean Neutral Notification with Quick Front Page Link) */}
       {toastMessage && (
-        <div className="fixed top-14 right-6 z-50 px-4 py-2.5 rounded-xl bg-white border border-slate-300 text-slate-900 text-xs font-mono shadow-2xl flex items-center gap-2">
+        <div className="fixed top-14 right-6 z-50 px-4 py-2.5 rounded-xl bg-white border border-slate-300 text-slate-900 text-xs font-mono shadow-2xl flex items-center gap-2.5 animate-fadeIn">
           <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
           <span>{toastMessage}</span>
+          <Link
+            href="/?view=public&edition=National&category=Home"
+            className="ml-2 px-2.5 py-1 rounded-lg bg-slate-900 hover:bg-black text-white font-sans font-semibold text-[11px] transition shadow-sm"
+          >
+            Open Front Page ↗
+          </Link>
         </div>
       )}
 

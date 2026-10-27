@@ -6,6 +6,10 @@ import { generateContentHash } from '@/lib/crypto';
 import { bot4VerificationAuditor } from '@/lib/agents';
 import { seedDatabase } from '@/lib/seed';
 import { FALLBACK_ARTICLES, filterFallbackArticles, METRO_CLUSTERS_MAP } from '@/lib/fallbackArticles';
+import { METROPOLITAN_HUBS } from '@/lib/metroHubs';
+
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
@@ -119,29 +123,52 @@ export async function GET(req: NextRequest) {
         .limit(50);
 
       if (articles && articles.length > 0) {
-        return NextResponse.json({ success: true, count: articles.length, data: articles, isDatabaseConnected: true });
+        return NextResponse.json(
+          { success: true, count: articles.length, data: articles, isDatabaseConnected: true },
+          {
+            headers: {
+              'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0',
+              'CDN-Cache-Control': 'no-store',
+              'Vercel-CDN-Cache-Control': 'no-store'
+            }
+          }
+        );
       }
     }
 
     // High-Performance In-Memory Resilient Fallback (Zero downtime on Vercel without MongoDB Atlas)
     const fallbackData = filterFallbackArticles({ edition, category, state, city, search, status, metro });
-    return NextResponse.json({
-      success: true,
-      count: fallbackData.length,
-      data: fallbackData,
-      isDatabaseConnected: false,
-      message: 'Serving resilient verified dispatch corpus.'
-    });
+    return NextResponse.json(
+      {
+        success: true,
+        count: fallbackData.length,
+        data: fallbackData,
+        isDatabaseConnected: false,
+        message: 'Serving resilient verified dispatch corpus.'
+      },
+      {
+        headers: {
+          'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0'
+        }
+      }
+    );
 
   } catch (error: any) {
     console.warn('⚠️ Serving in-memory verified fallback due to:', error.message);
     const fallbackData = filterFallbackArticles({ edition, category, state, city, search, status, metro });
-    return NextResponse.json({
-      success: true,
-      count: fallbackData.length,
-      data: fallbackData,
-      isDatabaseConnected: false
-    });
+    return NextResponse.json(
+      {
+        success: true,
+        count: fallbackData.length,
+        data: fallbackData,
+        isDatabaseConnected: false
+      },
+      {
+        headers: {
+          'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0'
+        }
+      }
+    );
   }
 }
 
@@ -159,13 +186,15 @@ export async function POST(req: NextRequest) {
       region = 'National',
       state = '',
       city = '',
+      metro = '',
       location,
       sources = [],
       author = 'TruthPulse Contributor',
       imageUrl,
       mediaType = 'IMAGE',
       mediaUrl,
-      civicAction
+      civicAction,
+      isPinned = true
     } = body;
 
     // MANDATORY EDITORIAL GATING CHECK:
@@ -192,20 +221,30 @@ export async function POST(req: NextRequest) {
 
     const contentHash = generateContentHash(title, summary, content || summary);
 
+    // Resolve State/City from Metropolitan Cluster if passed
+    let finalState = state;
+    let finalCity = city;
+    if (metro) {
+      const hub = METROPOLITAN_HUBS.find(h => h.id === metro);
+      if (hub) {
+        if (!finalState) finalState = hub.state;
+        if (!finalCity) finalCity = hub.primaryCity;
+      }
+    }
+
     const articleData = {
-      _id: `art-${Date.now()}`,
       title,
       summary,
       bullets: bullets.length > 0 ? bullets : [summary.slice(0, 70)],
       content: content || summary,
       category,
       region: region === 'International' ? 'International' : 'National',
-      state: state || location?.state || '',
-      city: city || location?.city || '',
+      state: finalState || location?.state || '',
+      city: finalCity || location?.city || '',
       location: location || {
-        regionType: region === 'International' ? 'INTERNATIONAL' : (city ? 'CITY' : (state ? 'STATE' : 'NATIONAL')),
-        state: state || '',
-        city: city || ''
+        regionType: region === 'International' ? 'INTERNATIONAL' : (finalCity ? 'CITY' : (finalState ? 'STATE' : 'NATIONAL')),
+        state: finalState || '',
+        city: finalCity || ''
       },
       sources,
       trustScore: audit.trustScore,
@@ -215,15 +254,25 @@ export async function POST(req: NextRequest) {
       discrepancyAlert: audit.discrepancyAlert,
       contentHash,
       status: 'PUBLISHED',
+      isPinned: Boolean(isPinned),
       author,
       imageUrl: imageUrl || 'https://images.unsplash.com/photo-1585829365295-ab7cd400c167?w=1200',
       mediaType,
       mediaUrl,
-      civicAction,
-      createdAt: new Date().toISOString()
+      civicAction
     };
 
     if (conn && conn.connection.readyState === 1) {
+      // Unpin older articles so the latest editor dispatch is exclusively #1 at the top of the feed
+      if (articleData.isPinned) {
+        try {
+          await Article.updateMany({ isPinned: true }, { $set: { isPinned: false } });
+        } catch (unpinErr) {
+          console.warn('Unpin older articles note:', unpinErr);
+        }
+      }
+
+      // Create new article in MongoDB without manual string _id so MongoDB generates valid ObjectId
       const newArticle = await Article.create(articleData);
 
       // Reward contributor TruthCredits
@@ -253,12 +302,17 @@ export async function POST(req: NextRequest) {
     }
 
     // In-memory publish fallback
-    FALLBACK_ARTICLES.unshift(articleData as any);
+    const fallbackArticle = {
+      _id: `art-${Date.now()}`,
+      ...articleData,
+      createdAt: new Date().toISOString()
+    };
+    FALLBACK_ARTICLES.unshift(fallbackArticle as any);
 
     return NextResponse.json({
       success: true,
       message: 'Article published to live verified registry! +25 TruthCredits awarded.',
-      data: articleData
+      data: fallbackArticle
     });
 
   } catch (error: any) {

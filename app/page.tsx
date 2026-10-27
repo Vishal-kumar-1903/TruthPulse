@@ -186,8 +186,16 @@ function NewsPortalContent() {
       if (searchQuery.trim()) {
         params.set('search', searchQuery.trim());
       }
+      // Anti-cache busting token to guarantee fresh live editor dispatches
+      params.set('_t', Date.now().toString());
 
-      const res = await fetch(`/api/articles?${params.toString()}`);
+      const res = await fetch(`/api/articles?${params.toString()}`, {
+        cache: 'no-store',
+        headers: {
+          'Pragma': 'no-cache',
+          'Cache-Control': 'no-cache'
+        }
+      });
       const data = await res.json();
       if (data.success && data.data && data.data.length > 0) {
         setArticles(data.data);
@@ -202,6 +210,26 @@ function NewsPortalContent() {
 
   useEffect(() => {
     fetchArticles();
+
+    // Listen to real-time storage sync when stories are published in other tabs/windows
+    const handleStorage = (e: StorageEvent) => {
+      if (e.key === 'truthpulse_refresh_feed') {
+        fetchArticles();
+      }
+    };
+    const handleCustomRefresh = () => fetchArticles();
+
+    window.addEventListener('storage', handleStorage);
+    window.addEventListener('truthpulse_refresh', handleCustomRefresh);
+
+    // Auto-poll every 15s to automatically surface newly dispatched editor articles on frontpage
+    const interval = setInterval(fetchArticles, 15000);
+
+    return () => {
+      window.removeEventListener('storage', handleStorage);
+      window.removeEventListener('truthpulse_refresh', handleCustomRefresh);
+      clearInterval(interval);
+    };
   }, [currentEdition, currentCategory, currentState, currentCity, currentMetro, searchQuery]);
 
   // Navigation handlers with instant optimistic feedback
