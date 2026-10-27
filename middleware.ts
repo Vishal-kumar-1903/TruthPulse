@@ -25,16 +25,7 @@ export function middleware(request: NextRequest) {
 
   const isEditor = userRole === 'EDITOR' || userRole === 'CHIEF_EDITOR' || userRole === 'ADMIN';
 
-  // 2. Editor visits Homepage ('/'):
-  // If not explicitly requesting public viewer mode (?view=public), auto-route to /studio
-  if (pathname === '/' && isEditor) {
-    const hasPublicOverride = request.nextUrl.searchParams.get('view') === 'public';
-    if (!hasPublicOverride) {
-      return NextResponse.redirect(new URL('/studio', request.url));
-    }
-  }
-
-  // 3. Non-editor attempts to access /studio:
+  // 2. Route Protection: Non-editor attempts to access /studio:
   // Redirect to homepage with a prompt to authenticate as an editor
   if (pathname.startsWith('/studio')) {
     if (!isEditor) {
@@ -48,9 +39,8 @@ export function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     /*
-     * Match root and studio routes, avoiding internal assets
+     * Match studio routes for role-based protection
      */
-    '/',
     '/studio/:path*'
   ],
 };

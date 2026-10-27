@@ -228,7 +228,7 @@ export default function EditorStudioPage() {
     } catch {
       // Ignore
     }
-    router.push('/?view=public');
+    router.push('/');
   };
 
   // Filtered Articles for Analytics
@@ -250,7 +250,7 @@ export default function EditorStudioPage() {
           {/* Left: Prominent Live Portal Switcher & Workspace Label */}
           <div className="flex items-center gap-3">
             <Link
-              href="/?view=public"
+              href="/"
               className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-medium border border-slate-300 transition active:scale-95 group"
               title="Switch to public reader website without ending your editor session"
             >
@@ -324,7 +324,7 @@ export default function EditorStudioPage() {
           <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
           <span>{toastMessage}</span>
           <Link
-            href="/?view=public&edition=National&category=Home"
+            href="/"
             className="ml-2 px-2.5 py-1 rounded-lg bg-slate-900 hover:bg-black text-white font-sans font-semibold text-[11px] transition shadow-sm"
           >
             Open Front Page ↗
@@ -835,7 +835,7 @@ export default function EditorStudioPage() {
 
             <div className="flex items-center justify-end gap-2 pt-2">
               <Link
-                href={`/?search=${encodeURIComponent(selectedInspectionArticle.title.slice(0, 20))}&view=public`}
+                href={`/?search=${encodeURIComponent(selectedInspectionArticle.title.slice(0, 20))}`}
                 className="px-3.5 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-medium border border-slate-200 transition"
               >
                 View in Reader
