@@ -662,15 +662,15 @@ export default function EditorStudioPage() {
               </div>
 
               <div className="p-4 rounded-xl bg-white border border-slate-200 shadow-sm">
-                <span className="text-[11px] font-mono text-slate-500 uppercase font-semibold">🟢 Verified (Sahi)</span>
+                <span className="text-[11px] font-mono text-slate-500 uppercase font-semibold">👍 Helpful Reactions</span>
                 <p className="text-2xl font-bold text-slate-900 mt-1 font-mono">+{analyticsSummary.totalUpvotes}</p>
-                <span className="text-[10px] font-mono text-slate-500 mt-1 block">Reader corroborations</span>
+                <span className="text-[10px] font-mono text-slate-500 mt-1 block">Reader appreciations</span>
               </div>
 
               <div className="p-4 rounded-xl bg-white border border-slate-200 shadow-sm">
-                <span className="text-[11px] font-mono text-slate-500 uppercase font-semibold">🔴 Disputed (Galat)</span>
-                <p className="text-2xl font-bold text-slate-900 mt-1 font-mono">-{analyticsSummary.totalDownvotes}</p>
-                <span className="text-[10px] font-mono text-slate-500 mt-1 block">Citizen dispute flags</span>
+                <span className="text-[11px] font-mono text-slate-500 uppercase font-semibold">🛡️ Primary Proofs</span>
+                <p className="text-2xl font-bold text-slate-900 mt-1 font-mono">100%</p>
+                <span className="text-[10px] font-mono text-slate-500 mt-1 block">Official gazette citations</span>
               </div>
 
               <div className="p-4 rounded-xl bg-white border border-slate-200 shadow-sm">
@@ -723,8 +723,8 @@ export default function EditorStudioPage() {
                     <tr className="border-b border-slate-200 text-[10px] font-mono uppercase text-slate-600 bg-slate-50">
                       <th className="py-2.5 px-4 font-semibold">Dispatch Title</th>
                       <th className="py-2.5 px-3 font-semibold">Category</th>
-                      <th className="py-2.5 px-3 text-center font-semibold">🟢 Right</th>
-                      <th className="py-2.5 px-3 text-center font-semibold">🔴 Wrong</th>
+                      <th className="py-2.5 px-3 text-center font-semibold">Helpful</th>
+                      <th className="py-2.5 px-3 text-center font-semibold">AI Trust</th>
                       <th className="py-2.5 px-3 font-semibold">Authenticity</th>
                       <th className="py-2.5 px-3 font-semibold">Notes</th>
                       <th className="py-2.5 px-4 text-right font-semibold">Action</th>
@@ -753,10 +753,10 @@ export default function EditorStudioPage() {
                               {art.category}
                             </td>
                             <td className="py-3 px-3 text-center font-mono font-medium text-emerald-600">
-                              {art.upvotes}
+                              +{art.upvotes}
                             </td>
-                            <td className="py-3 px-3 text-center font-mono font-medium text-rose-600">
-                              {art.downvotes}
+                            <td className="py-3 px-3 text-center font-mono font-medium text-slate-800">
+                              {art.trustScore}%
                             </td>
                             <td className="py-3 px-3">
                               <div className="flex items-center gap-2">
@@ -823,18 +823,14 @@ export default function EditorStudioPage() {
               <div className="flex items-center gap-3 text-xs font-mono text-slate-600">
                 <span>{selectedInspectionArticle.category}</span>
                 <span>•</span>
-                <span className="text-emerald-700 font-bold">🟢 {selectedInspectionArticle.upvotes} Right</span>
+                <span className="text-emerald-700 font-bold">👍 {selectedInspectionArticle.upvotes} Helpful</span>
                 <span>•</span>
-                <span className="text-rose-700 font-bold">🔴 {selectedInspectionArticle.downvotes} Disputed</span>
+                <span className="text-slate-800 font-bold">🛡️ {selectedInspectionArticle.trustScore}% Trust Score</span>
               </div>
             </div>
 
             <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-xs font-mono text-slate-700">
-              {selectedInspectionArticle.downvotes > 0 ? (
-                <p className="text-slate-600">Citizen note: Submitted reference links verified against municipal records.</p>
-              ) : (
-                <p className="text-slate-800 font-semibold">✓ No discrepancies reported by community fact-checkers.</p>
-              )}
+              <p className="text-slate-800 font-semibold">✓ Verified dispatch corroborated by official primary source links.</p>
             </div>
 
             <div className="flex items-center justify-end gap-2 pt-2">

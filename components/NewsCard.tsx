@@ -122,9 +122,6 @@ export default function NewsCard({
   const [evidenceUrl, setEvidenceUrl] = useState('');
   const [submittingComment, setSubmittingComment] = useState(false);
 
-  // 3 flags condition for Questionable / Flagged alert tag
-  const isFlagged = downvotes >= 3;
-
   // 1-Click TTS Audio Narration State
   const [isPlayingAudio, setIsPlayingAudio] = useState(false);
 
@@ -205,10 +202,11 @@ export default function NewsCard({
   };
 
   // ROLE-GATED GREEN THUMB VOTE (Sahi News / Verified)
-  const handleGreenThumb = async (e: React.MouseEvent) => {
+  // HELPFUL APPRECIATION VOTE (Replaces binary Right/Wrong judging)
+  const handleHelpfulVote = async (e: React.MouseEvent) => {
     e.stopPropagation();
     if (!currentUser) {
-      onRequireAuth('Please sign in with a verified account to cast your Sahi News (Green Thumb) credibility vote.');
+      onRequireAuth('Please sign in to mark this dispatch as helpful.');
       return;
     }
 
@@ -220,12 +218,8 @@ export default function NewsCard({
       setUserVote(null);
       setUpvotes((prev) => Math.max(0, prev - 1));
     } else {
-      if (userVote === 'RED') {
-        setDownvotes((prev) => Math.max(0, prev - 1));
-      }
       setUserVote('GREEN');
       setUpvotes((prev) => prev + 1);
-      if (downvotes < 3) setIsVerified(true);
     }
 
     try {
@@ -242,64 +236,10 @@ export default function NewsCard({
       const data = await res.json();
       if (data.success && data.data) {
         setUpvotes(data.data.upvotes);
-        setDownvotes(data.data.downvotes);
-        setIsVerified(data.data.isVerified);
-        setTrustScore(data.data.trustScore);
         setUserVote(data.data.userVote);
       }
     } catch (err) {
-      console.error('Failed to vote green:', err);
-    } finally {
-      setSubmittingVote(false);
-    }
-  };
-
-  // ROLE-GATED RED THUMB VOTE (Fake News / Misleading)
-  const handleRedThumb = async (e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (!currentUser) {
-      onRequireAuth('Please sign in to dispute or flag this story as fake / misleading.');
-      return;
-    }
-
-    if (submittingVote) return;
-    setSubmittingVote(true);
-
-    // Optimistic UI state update
-    if (userVote === 'RED') {
-      setUserVote(null);
-      setDownvotes((prev) => Math.max(0, prev - 1));
-    } else {
-      if (userVote === 'GREEN') {
-        setUpvotes((prev) => Math.max(0, prev - 1));
-      }
-      setUserVote('RED');
-      const newDown = downvotes + 1;
-      setDownvotes(newDown);
-      if (newDown >= 3) setIsVerified(false);
-    }
-
-    try {
-      const res = await fetch(`/api/articles/${article._id}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          action: 'VOTE',
-          type: 'RED',
-          userId: currentUser.id,
-          userName: currentUser.name
-        })
-      });
-      const data = await res.json();
-      if (data.success && data.data) {
-        setUpvotes(data.data.upvotes);
-        setDownvotes(data.data.downvotes);
-        setIsVerified(data.data.isVerified);
-        setTrustScore(data.data.trustScore);
-        setUserVote(data.data.userVote);
-      }
-    } catch (err) {
-      console.error('Failed to vote red:', err);
+      console.error('Failed to submit helpful reaction:', err);
     } finally {
       setSubmittingVote(false);
     }
@@ -364,12 +304,8 @@ export default function NewsCard({
     : article.title;
 
   return (
-    <div className={`bg-white dark:bg-slate-900 border rounded-2xl sm:rounded-3xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 group font-sans w-full max-w-full ${
+    <div className={`bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 rounded-2xl sm:rounded-3xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 group font-sans w-full max-w-full ${
       isHero ? 'grid grid-cols-1 lg:grid-cols-12 gap-0' : 'flex flex-col justify-between'
-    } ${
-      isFlagged 
-        ? 'border-red-500/80 ring-2 ring-red-500/20' 
-        : 'border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700'
     }`}>
       
       {/* 1. COVER DYNAMIC MEDIA (VIDEO LOOP / LOTTIE / KEN-BURNS) & BADGES */}
@@ -431,24 +367,12 @@ export default function NewsCard({
           </button>
         </div>
 
-        {/* Flagged / Verified Status Banner */}
-        {isFlagged ? (
-          <div className="absolute bottom-2 left-3 right-3 py-1 px-2.5 rounded-lg bg-red-600/95 text-white text-[11px] font-bold flex items-center justify-between shadow-md backdrop-blur-sm animate-pulse">
-            <span className="flex items-center gap-1">
-              <AlertTriangle className="w-3.5 h-3.5 shrink-0" />
-              <span>⚠️ Questionable / Flagged News</span>
-            </span>
-            <span className="text-[10px] font-mono bg-red-800 px-1.5 py-0.2 rounded">
-              {downvotes} Flags
-            </span>
+        {/* Verified Status Banner */}
+        {isVerified && (
+          <div className="absolute bottom-2 left-3 py-0.5 px-2 rounded-md bg-emerald-600/90 text-white text-[10px] font-bold flex items-center gap-1 shadow-sm backdrop-blur-sm">
+            <CheckCircle2 className="w-3 h-3" />
+            <span>{getUIText('verifiedByEditor', currentLang)}</span>
           </div>
-        ) : (
-          isVerified && (
-            <div className="absolute bottom-2 left-3 py-0.5 px-2 rounded-md bg-emerald-600/90 text-white text-[10px] font-bold flex items-center gap-1 shadow-sm backdrop-blur-sm">
-              <CheckCircle2 className="w-3 h-3" />
-              <span>{getUIText('verifiedByEditor', currentLang)}</span>
-            </div>
-          )
         )}
       </div>
 
@@ -557,49 +481,28 @@ export default function NewsCard({
           )}
         </div>
 
-        {/* 3. CARD FOOTER: ROLE-GATED VOTING & ACTION BUTTONS */}
+        {/* 3. CARD FOOTER: HELPFUL APPRECIATION & EDITORIAL VERIFICATION ACTIONS */}
         <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex flex-col gap-2 text-xs w-full">
           
           <div className="flex flex-wrap items-center justify-between gap-2 w-full">
-            {/* Reaction Buttons */}
+            {/* Reaction: Helpful Appreciation (Non-judgmental) */}
             <div className="flex items-center gap-1.5 sm:gap-2">
-              
-              {/* GREEN THUMB: Sahi News (Role-Gated) */}
               <button
-                onClick={handleGreenThumb}
+                onClick={handleHelpfulVote}
                 disabled={submittingVote}
-                className={`flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-xl text-[11px] sm:text-xs font-bold transition duration-150 shrink-0 ${
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] sm:text-xs font-bold transition duration-150 shrink-0 ${
                   userVote === 'GREEN'
-                    ? 'bg-emerald-500 text-white shadow-md shadow-emerald-500/20'
-                    : 'bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 border border-emerald-500/30'
+                    ? 'bg-emerald-600 text-white shadow-sm'
+                    : 'bg-slate-100 hover:bg-slate-200 dark:bg-slate-850 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-800'
                 }`}
-                title={currentUser ? 'Cast Sahi News Vote (Toggle)' : 'Login required to vote'}
+                title={currentUser ? 'Mark as Helpful / Informative' : 'Sign in to appreciate this story'}
               >
-                <ThumbsUp className={`w-3.5 h-3.5 ${userVote === 'GREEN' ? 'fill-current' : ''}`} />
-                <span>{getUIText('sahiNews', currentLang)}</span>
-                <span className="font-mono text-[10px] sm:text-[11px] px-1 py-0.2 rounded bg-emerald-600/20">
+                <ThumbsUp className={`w-3.5 h-3.5 ${userVote === 'GREEN' ? 'fill-current text-white' : 'text-emerald-500'}`} />
+                <span>Helpful</span>
+                <span className="font-mono text-[10px] sm:text-[11px] px-1.5 py-0.2 rounded bg-black/5 dark:bg-white/10 font-bold">
                   {upvotes}
                 </span>
               </button>
-
-              {/* RED THUMB: Fake News (Role-Gated) */}
-              <button
-                onClick={handleRedThumb}
-                disabled={submittingVote}
-                className={`flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-xl text-[11px] sm:text-xs font-bold transition duration-150 shrink-0 ${
-                  userVote === 'RED'
-                    ? 'bg-red-600 text-white shadow-md shadow-red-600/20'
-                    : 'bg-red-500/10 hover:bg-red-500/20 text-red-700 dark:text-red-400 border border-red-500/30'
-                }`}
-                title={currentUser ? 'Cast Fake News Flag (Toggle)' : 'Login required to flag'}
-              >
-                <ThumbsDown className={`w-3.5 h-3.5 ${userVote === 'RED' ? 'fill-current' : ''}`} />
-                <span>{getUIText('fakeNews', currentLang)}</span>
-                <span className="font-mono text-[10px] sm:text-[11px] px-1 py-0.2 rounded bg-red-600/20">
-                  {downvotes}
-                </span>
-              </button>
-
             </div>
 
             {/* Right Actions: Community Notes, Micro-Tip, Comments, Crypto Seal & Share */}
