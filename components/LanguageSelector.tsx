@@ -29,9 +29,9 @@ export default function LanguageSelector({
   if (variant === 'drawer') {
     return (
       <div className="space-y-1.5">
-        <div className="flex items-center gap-1.5 px-2 mb-2 text-slate-400">
-          <Globe className="w-3.5 h-3.5 text-red-500" />
-          <span className="text-[10px] font-mono font-bold uppercase tracking-wider">
+        <div className="flex items-center gap-1.5 px-1 mb-2 text-slate-500">
+          <Globe className="w-3.5 h-3.5 text-red-600" />
+          <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-slate-600">
             Language / भाषा
           </span>
         </div>
@@ -43,19 +43,21 @@ export default function LanguageSelector({
                 key={lang.code}
                 type="button"
                 onClick={() => handleSelect(lang.code)}
-                className={`flex items-center justify-between px-2.5 py-2 rounded-xl text-xs font-bold transition ${
+                className={`flex items-center justify-between px-2.5 py-2 rounded-xl text-xs font-semibold transition ${
                   isSelected
-                    ? 'bg-red-600/20 text-red-400 border border-red-500/40 shadow-sm'
-                    : 'bg-slate-900 text-slate-300 hover:bg-slate-850 hover:text-white border border-slate-800'
+                    ? 'bg-red-50 text-red-700 border border-red-300 shadow-sm font-bold'
+                    : 'bg-white text-slate-700 hover:bg-slate-100 border border-slate-200'
                 }`}
               >
-                <span className="flex items-center gap-2 truncate">
-                  <span className="w-5 h-5 rounded-md bg-slate-800 border border-slate-700 text-[10px] font-mono flex items-center justify-center text-slate-300 shrink-0">
+                <span className="flex items-center gap-1.5 truncate">
+                  <span className={`w-5 h-5 rounded-md border text-[10px] font-mono flex items-center justify-center shrink-0 ${
+                    isSelected ? 'bg-red-100 border-red-300 text-red-700 font-bold' : 'bg-slate-100 border-slate-200 text-slate-600'
+                  }`}>
                     {lang.shortCode}
                   </span>
                   <span className="truncate">{lang.nativeName}</span>
                 </span>
-                {isSelected && <Check className="w-3.5 h-3.5 shrink-0 text-red-500" />}
+                {isSelected && <Check className="w-3.5 h-3.5 shrink-0 text-red-600" />}
               </button>
             );
           })}
