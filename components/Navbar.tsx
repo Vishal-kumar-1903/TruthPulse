@@ -172,24 +172,34 @@ export default function Navbar({
             
             {/* Search Input (Desktop lg+) */}
             <form onSubmit={handleSearchSubmit} className="relative hidden lg:block">
-              <Search className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+              <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
               <input
                 type="text"
-                placeholder={getUIText('searchPlaceholder', currentLang)}
+                placeholder={getUIText('searchPlaceholder', currentLang) || 'Search by city, title, topic or keywords...'}
                 value={searchInput}
                 onChange={(e) => setSearchInput(e.target.value)}
-                className="pl-8 pr-3 py-1 rounded-full text-xs bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 focus:outline-none focus:border-red-500 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 w-24 xl:w-36 focus:w-44 transition-all"
+                className="pl-9 pr-8 py-1.5 rounded-full text-xs bg-slate-50 hover:bg-white focus:bg-white dark:bg-slate-900 dark:focus:bg-slate-950 border border-slate-200 hover:border-slate-300 dark:border-slate-800 focus:outline-none focus:border-red-500 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 w-52 xl:w-72 2xl:w-84 focus:w-80 2xl:focus:w-96 transition-all shadow-inner"
               />
+              {searchInput && (
+                <button
+                  type="button"
+                  onClick={() => { setSearchInput(''); onSearch(''); }}
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-0.5 rounded-full"
+                  title="Clear search"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              )}
             </form>
 
             {/* EDITOR STUDIO TRIGGER PILL (FOR EDITOR/ADMIN ROLE) */}
             {currentUser && (currentUser.role === 'CHIEF_EDITOR' || currentUser.role === 'ADMIN' || (currentUser.role as string) === 'EDITOR') && (
               <Link
                 href="/studio"
-                className="hidden md:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-zinc-900 hover:bg-zinc-800 text-zinc-200 font-mono text-[10px] sm:text-[11px] font-semibold tracking-wide transition shadow-sm shrink-0 border border-zinc-700/80"
+                className="hidden md:flex items-center gap-1.5 px-3 py-1 rounded-full bg-white hover:bg-slate-50 text-slate-900 font-mono text-[11px] font-bold tracking-wide transition shadow-sm shrink-0 border border-emerald-500/50 hover:border-emerald-600 ring-1 ring-emerald-500/20"
                 title="Open Dedicated Editor Workstation"
               >
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
                 <span>STUDIO</span>
               </Link>
             )}
@@ -329,72 +339,115 @@ export default function Navbar({
             <div className="relative shrink-0 z-50">
               {currentUser ? (
                 <div>
-                  <button
-                    type="button"
-                    onClick={() => setShowProfileMenu(!showProfileMenu)}
-                    className="flex items-center gap-1.5 pl-1.5 pr-2.5 py-1 rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-900 dark:hover:bg-slate-850 border border-slate-200 dark:border-slate-800 transition shadow-sm shrink-0 group"
-                    title={`Logged in as ${currentUser.name}`}
-                  >
-                    <div className="w-6 h-6 rounded-full bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 font-bold text-xs flex items-center justify-center shrink-0 shadow-sm">
-                      {currentUser.name.charAt(0).toUpperCase()}
-                    </div>
-                    <span className="inline-block text-xs font-semibold text-slate-800 dark:text-slate-200 max-w-[85px] sm:max-w-[110px] truncate">
-                      {currentUser.name.split(' ')[0]}
-                    </span>
-                    <ChevronDown className="w-3.5 h-3.5 text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-200 transition-colors shrink-0" />
-                  </button>
-
-                  {/* Profile Dropdown */}
-                  {showProfileMenu && (
-                    <>
-                      <div 
-                        className="fixed inset-0 z-[90] bg-black/20 backdrop-blur-[1px]" 
-                        onClick={() => setShowProfileMenu(false)} 
-                      />
-                      <div className="absolute right-0 mt-2 w-56 max-w-[calc(100vw-1.5rem)] rounded-2xl bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 p-2.5 shadow-2xl z-[100] text-xs space-y-1 animate-fadeIn">
-                        <div className="p-2 border-b border-slate-100 dark:border-slate-850">
-                          <div className="font-bold text-slate-900 dark:text-white truncate">{currentUser.name}</div>
-                          <div className="text-[10px] text-slate-500 font-mono truncate">{currentUser.email}</div>
-                          <div className="mt-1 flex items-center gap-1 text-[11px] font-mono text-amber-500 font-bold">
-                            <Coins className="w-3 h-3 shrink-0" />
-                            <span>{currentUser.truthCredits} Credits</span>
-                          </div>
-                        </div>
-
-                        {(currentUser.role === 'CHIEF_EDITOR' || currentUser.role === 'ADMIN' || (currentUser.role as string) === 'EDITOR') && (
-                          <Link
-                            href="/studio"
-                            onClick={() => setShowProfileMenu(false)}
-                            className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-zinc-900 dark:text-zinc-100 hover:bg-slate-100 dark:hover:bg-slate-900 font-semibold transition"
-                          >
-                            <Sparkles className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
-                            <span>Editor Studio Desk</span>
-                          </Link>
-                        )}
-
-                        <Link
-                          href="/admin"
-                          onClick={() => setShowProfileMenu(false)}
-                          className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-900 font-semibold transition"
-                        >
-                          <SlidersHorizontal className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                          <span>Admin Console</span>
-                        </Link>
-
+                  {(() => {
+                    const isEditor = currentUser.role === 'CHIEF_EDITOR' || currentUser.role === 'ADMIN' || (currentUser.role as string) === 'EDITOR';
+                    return (
+                      <>
                         <button
                           type="button"
-                          onClick={() => {
-                            onLogout();
-                            setShowProfileMenu(false);
-                          }}
-                          className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 font-bold transition"
+                          onClick={() => setShowProfileMenu(!showProfileMenu)}
+                          className={`flex items-center gap-1.5 pl-1.5 pr-2.5 py-1 rounded-full transition shadow-sm shrink-0 group ${
+                            isEditor
+                              ? 'bg-emerald-50 hover:bg-emerald-100/80 dark:bg-emerald-950/40 dark:hover:bg-emerald-900/50 border border-emerald-300 dark:border-emerald-700/60'
+                              : 'bg-slate-100 hover:bg-slate-200 dark:bg-slate-900 dark:hover:bg-slate-850 border border-slate-200 dark:border-slate-800'
+                          }`}
+                          title={`Logged in as ${currentUser.name} (${currentUser.role})`}
                         >
-                          <LogOut className="w-3.5 h-3.5 shrink-0" />
-                          <span>Log Out</span>
+                          <div className={`w-6 h-6 rounded-full font-bold text-xs flex items-center justify-center shrink-0 shadow-sm ${
+                            isEditor ? 'bg-emerald-600 text-white' : 'bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900'
+                          }`}>
+                            {currentUser.name.charAt(0).toUpperCase()}
+                          </div>
+                          <span className="inline-block text-xs font-semibold text-slate-800 dark:text-slate-200 max-w-[85px] sm:max-w-[110px] truncate">
+                            {currentUser.name.split(' ')[0]}
+                          </span>
+                          {isEditor ? (
+                            <span className="hidden xl:inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[9px] font-mono font-bold bg-emerald-600 text-white uppercase tracking-wider">
+                              <ShieldCheck className="w-2.5 h-2.5" />
+                              <span>Bureau</span>
+                            </span>
+                          ) : (
+                            <span className="hidden xl:inline-block px-1.5 py-0.5 rounded text-[9px] font-mono font-bold bg-blue-600 text-white uppercase tracking-wider">
+                              Reader
+                            </span>
+                          )}
+                          <ChevronDown className="w-3.5 h-3.5 text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-200 transition-colors shrink-0" />
                         </button>
-                      </div>
-                    </>
-                  )}
+
+                        {/* Profile Dropdown */}
+                        {showProfileMenu && (
+                          <>
+                            <div 
+                              className="fixed inset-0 z-[90] bg-black/20 backdrop-blur-[1px]" 
+                              onClick={() => setShowProfileMenu(false)} 
+                            />
+                            <div className="absolute right-0 mt-2 w-64 max-w-[calc(100vw-1.5rem)] rounded-2xl bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 p-2.5 shadow-2xl z-[100] text-xs space-y-2 animate-fadeIn">
+                              
+                              {/* Distinct Role Header Card */}
+                              <div className={`p-3 rounded-xl border ${
+                                isEditor 
+                                  ? 'bg-emerald-50/70 dark:bg-emerald-950/30 border-emerald-200 dark:border-emerald-800/50' 
+                                  : 'bg-blue-50/70 dark:bg-blue-950/30 border-blue-200 dark:border-blue-800/50'
+                              }`}>
+                                <div className="flex items-center justify-between mb-1">
+                                  <div className="font-bold text-slate-900 dark:text-white truncate text-sm">{currentUser.name}</div>
+                                  <span className={`px-2 py-0.5 rounded text-[9px] font-mono font-black uppercase tracking-wider ${
+                                    isEditor
+                                      ? 'bg-emerald-600 text-white'
+                                      : 'bg-blue-600 text-white'
+                                  }`}>
+                                    {isEditor ? 'VERIFIED BUREAU' : 'CITIZEN READER'}
+                                  </span>
+                                </div>
+                                <div className="text-[10px] text-slate-500 font-mono truncate">{currentUser.email}</div>
+                                <div className="mt-2 flex items-center justify-between pt-1.5 border-t border-slate-200/60 dark:border-slate-800/60 text-[11px] font-mono">
+                                  <span className="text-amber-600 dark:text-amber-400 font-bold flex items-center gap-1">
+                                    <Coins className="w-3 h-3 shrink-0" />
+                                    <span>{currentUser.truthCredits} Credits</span>
+                                  </span>
+                                  <span className={`font-bold text-[10px] ${isEditor ? 'text-emerald-600' : 'text-blue-600'}`}>
+                                    {isEditor ? 'Editorial Passkey' : 'Citizen Voter'}
+                                  </span>
+                                </div>
+                              </div>
+
+                              {isEditor && (
+                                <Link
+                                  href="/studio"
+                                  onClick={() => setShowProfileMenu(false)}
+                                  className="w-full flex items-center gap-2 px-3 py-2 rounded-xl bg-slate-900 text-white hover:bg-slate-800 font-bold transition shadow-sm"
+                                >
+                                  <Sparkles className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                                  <span>Open Editor Studio Desk</span>
+                                </Link>
+                              )}
+
+                              <Link
+                                href="/admin"
+                                onClick={() => setShowProfileMenu(false)}
+                                className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-900 font-semibold transition"
+                              >
+                                <SlidersHorizontal className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                                <span>Admin Console</span>
+                              </Link>
+
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  onLogout();
+                                  setShowProfileMenu(false);
+                                }}
+                                className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 font-bold transition"
+                              >
+                                <LogOut className="w-3.5 h-3.5 shrink-0" />
+                                <span>Log Out</span>
+                              </button>
+                            </div>
+                          </>
+                        )}
+                      </>
+                    );
+                  })()}
                 </div>
               ) : (
                 <button

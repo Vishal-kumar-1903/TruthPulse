@@ -116,22 +116,22 @@ export default function NewsFeed({
   return (
     <div className="w-full max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-6 font-sans overflow-x-hidden">
       
-      {/* 1. TOP BREAKING NEWS TICKER BANNER */}
-      <div className="mb-6 rounded-2xl border border-red-600/30 dark:border-red-500/20 bg-slate-900 text-white p-0.5 shadow-sm overflow-hidden w-full">
-        <div className="bg-slate-950 rounded-[14px] px-3.5 py-2.5 flex items-center gap-3 w-full">
+      {/* 1. TOP BREAKING NEWS TICKER BANNER (CRISP WHITE THEME) */}
+      <div className="mb-6 rounded-2xl border-2 border-red-500/30 bg-white text-slate-900 p-0.5 shadow-sm overflow-hidden w-full">
+        <div className="bg-red-50/40 rounded-[14px] px-3.5 py-2.5 flex items-center gap-3 w-full border border-red-100/60">
           
-          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-red-600 text-white font-black text-[11px] uppercase tracking-wider shrink-0 animate-pulse">
+          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-red-600 text-white font-black text-[11px] uppercase tracking-wider shrink-0 shadow-sm animate-pulse">
             <Radio className="w-3.5 h-3.5" />
             <span>{getUIText('breakingNews', currentLang)}</span>
           </div>
 
           <div className="flex-1 overflow-hidden min-w-0">
-            <p className="text-xs sm:text-sm font-bold text-slate-100 truncate hover:text-red-400 transition cursor-pointer">
+            <p className="text-xs sm:text-sm font-bold text-slate-900 truncate hover:text-red-600 transition cursor-pointer">
               {breakingHeadline}
             </p>
           </div>
 
-          <div className="hidden md:flex items-center gap-1.5 text-[11px] font-mono text-slate-400 shrink-0">
+          <div className="hidden md:flex items-center gap-1.5 text-[11px] font-mono text-slate-600 shrink-0">
             <span className={`w-2 h-2 rounded-full ${sseConnected ? 'bg-emerald-500 animate-ping' : 'bg-amber-500'}`}></span>
             <span>{getUIText('realTimeWire', currentLang)}</span>
           </div>

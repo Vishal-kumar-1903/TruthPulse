@@ -363,17 +363,17 @@ export default function BreakingShorts({
       </div>
 
       {/* =========================================================================
-          MAIN SHORTS REEL ENGINE (RESPONSIVE PC & MOBILE CARD)
+          MAIN SHORTS REEL ENGINE (RESPONSIVE PC & MOBILE CARD - CRISP WHITE THEME)
          ========================================================================= */}
       <div
-        className="relative overflow-hidden rounded-3xl bg-slate-950 border border-slate-800 text-white shadow-2xl transition-all select-none group w-full"
+        className="relative overflow-hidden rounded-3xl bg-white border border-slate-200 text-slate-900 shadow-xl transition-all select-none group w-full"
         onMouseEnter={() => setIsPaused(true)}
         onMouseLeave={() => setIsPaused(false)}
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
       >
         
-        {/* Background Visual Layer with High-Res Image & Dramatic Gradients */}
+        {/* Background Visual Layer with High-Res Image & Clean White Gradients */}
         <div className="absolute inset-0 z-0">
           <AnimatedMedia
             key={activeShort.id}
@@ -384,10 +384,10 @@ export default function BreakingShorts({
             category={activeShort.category}
             isReel={true}
             showBadge={false}
-            className="w-full h-full object-cover opacity-35 scale-105 group-hover:scale-100 transition-transform duration-1000 ease-out"
+            className="w-full h-full object-cover opacity-20 scale-105 group-hover:scale-100 transition-transform duration-1000 ease-out"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/80 to-slate-950/40 pointer-events-none"></div>
-          <div className="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-950/60 to-transparent pointer-events-none"></div>
+          <div className="absolute inset-0 bg-gradient-to-t from-white via-white/90 to-white/70 pointer-events-none"></div>
+          <div className="absolute inset-0 bg-gradient-to-r from-white via-white/80 to-transparent pointer-events-none"></div>
         </div>
 
         {/* 1. TOP SEGMENTED PROGRESS BARS (WhatsApp/Instagram Story Style) */}
@@ -401,7 +401,7 @@ export default function BreakingShorts({
               return (
                 <div
                   key={idx}
-                  className="h-1 flex-1 bg-white/20 rounded-full overflow-hidden cursor-pointer backdrop-blur-sm"
+                  className="h-1.5 flex-1 bg-slate-200 rounded-full overflow-hidden cursor-pointer"
                   onClick={() => {
                     setProgress(0);
                     setCurrentIndex(idx);
@@ -409,7 +409,7 @@ export default function BreakingShorts({
                   title={`Story ${idx + 1}`}
                 >
                   <div
-                    className="h-full bg-gradient-to-r from-red-500 to-amber-400 rounded-full transition-all duration-100 ease-linear"
+                    className="h-full bg-gradient-to-r from-red-600 to-amber-500 rounded-full transition-all duration-100 ease-linear"
                     style={{ width: segmentFill }}
                   />
                 </div>
@@ -423,19 +423,19 @@ export default function BreakingShorts({
           
           <div className="flex items-center gap-2">
             {/* Reel Badge (BREAKING / ALERT / FACT-CHECK) */}
-            <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-black tracking-wider uppercase shadow-md ${getBadgeStyle(activeShort.badge)}`}>
+            <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-black tracking-wider uppercase shadow-sm ${getBadgeStyle(activeShort.badge)}`}>
               <Radio className="w-3 h-3 animate-pulse" />
               <span>{activeShort.badge}</span>
             </span>
 
             {/* Location Tag */}
-            <span className="flex items-center gap-1 text-[11px] font-bold text-slate-300 bg-black/40 px-2 py-0.5 rounded-md backdrop-blur-sm border border-white/10 max-w-[110px] sm:max-w-none truncate">
-              <MapPin className="w-3 h-3 text-red-400 shrink-0" />
+            <span className="flex items-center gap-1 text-[11px] font-bold text-slate-700 bg-white/90 px-2.5 py-0.5 rounded-md border border-slate-200 shadow-sm max-w-[120px] sm:max-w-none truncate">
+              <MapPin className="w-3 h-3 text-red-600 shrink-0" />
               <span className="truncate">{activeShort.location}</span>
             </span>
 
             {/* Time Ago */}
-            <span className="hidden sm:flex items-center gap-1 text-[11px] font-mono text-slate-400">
+            <span className="hidden sm:flex items-center gap-1 text-[11px] font-mono text-slate-500 font-semibold">
               <Clock className="w-3 h-3" />
               <span>{activeShort.timeAgo}</span>
             </span>
@@ -451,16 +451,16 @@ export default function BreakingShorts({
                 setProgress(0);
                 setDurationSec((prev) => (prev === 5 ? 8 : (prev === 8 ? 3 : 5)));
               }}
-              className="px-2 py-0.5 rounded-full bg-white/10 hover:bg-white/20 text-slate-200 hover:text-white text-[10px] font-mono font-bold transition flex items-center gap-1 border border-white/10"
+              className="px-2.5 py-0.5 rounded-full bg-white hover:bg-slate-100 text-slate-700 text-[10px] font-mono font-bold transition flex items-center gap-1 border border-slate-200 shadow-sm"
               title="Click to toggle reel transition speed (5s / 8s / 3s)"
             >
-              <Clock className="w-2.5 h-2.5 text-amber-400" />
+              <Clock className="w-2.5 h-2.5 text-amber-500" />
               <span>{durationSec}s</span>
             </button>
 
             {/* Pause Status Indicator */}
             {isPaused && (
-              <span className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 text-[10px] font-mono border border-amber-500/30 animate-pulse">
+              <span className="flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-amber-50 text-amber-700 text-[10px] font-mono border border-amber-300 animate-pulse font-bold">
                 <Pause className="w-2.5 h-2.5" />
                 <span>PAUSED</span>
               </span>
@@ -469,10 +469,10 @@ export default function BreakingShorts({
             {/* 1-Click TTS Audio Readout Toggle */}
             <button
               onClick={toggleAudio}
-              className={`p-1.5 rounded-full transition flex items-center gap-1 text-[11px] font-bold ${
+              className={`p-1.5 rounded-full transition flex items-center gap-1 text-[11px] font-bold shadow-sm ${
                 isAudioOn
-                  ? 'bg-red-600 text-white shadow-md shadow-red-600/30'
-                  : 'bg-white/10 hover:bg-white/20 text-slate-300'
+                  ? 'bg-red-600 text-white'
+                  : 'bg-white hover:bg-slate-100 text-slate-700 border border-slate-200'
               }`}
               title={isAudioOn ? 'Mute AI Voiceover' : 'Turn ON AI Voiceover Readout'}
             >
@@ -486,7 +486,7 @@ export default function BreakingShorts({
                 e.stopPropagation();
                 setIsPaused(!isPaused);
               }}
-              className="p-1.5 rounded-full bg-white/10 hover:bg-white/20 text-slate-300 transition"
+              className="p-1.5 rounded-full bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 transition shadow-sm"
               title={isPaused ? 'Resume Auto-Play' : 'Pause Reel'}
             >
               {isPaused ? <Play className="w-3.5 h-3.5" /> : <Pause className="w-3.5 h-3.5" />}
@@ -502,33 +502,33 @@ export default function BreakingShorts({
           className="relative z-10 p-5 sm:p-7 min-h-[170px] sm:min-h-[190px] flex flex-col justify-center cursor-pointer"
         >
           {/* Headline */}
-          <h3 className="text-base sm:text-xl md:text-2xl font-black text-white leading-snug tracking-tight mb-2 drop-shadow-md">
+          <h3 className="text-base sm:text-xl md:text-2xl font-black text-slate-900 leading-snug tracking-tight mb-2">
             {translatedHeadline}
           </h3>
 
           {/* Under 30-word Ultra-Crisp Snippet */}
-          <p className="text-xs sm:text-sm text-slate-200 leading-relaxed max-w-3xl drop-shadow line-clamp-2 sm:line-clamp-none">
+          <p className="text-xs sm:text-sm text-slate-700 leading-relaxed max-w-3xl line-clamp-2 sm:line-clamp-none">
             {translatedSnippet}
           </p>
 
-          <div className="mt-2 text-[10px] font-mono text-slate-400 flex items-center gap-2">
-            <span>Wire Attribution: <strong className="text-slate-200">{activeShort.source}</strong></span>
+          <div className="mt-2 text-[10px] font-mono text-slate-500 flex items-center gap-2">
+            <span>Wire Attribution: <strong className="text-slate-800">{activeShort.source}</strong></span>
             <span>•</span>
-            <span className="text-emerald-400 font-bold">{activeShort.trustScore}% Verified Authenticity</span>
+            <span className="text-emerald-600 font-bold">{activeShort.trustScore}% Verified Authenticity</span>
           </div>
         </div>
 
         {/* 4. BOTTOM INTERACTIVE BAR & THUMB CONTROLS */}
-        <div className="relative z-20 px-3 sm:px-6 py-2.5 sm:py-3 border-t border-white/10 bg-slate-950/70 backdrop-blur-md flex flex-wrap items-center justify-between gap-2 text-xs">
+        <div className="relative z-20 px-3 sm:px-6 py-2.5 sm:py-3 border-t border-slate-200 bg-slate-50 flex flex-wrap items-center justify-between gap-2 text-xs">
           
           {/* Quick Fact-Check & Verification Status */}
           <div className="flex items-center gap-2">
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 text-[11px] font-bold">
-              <ShieldCheck className="w-3.5 h-3.5" />
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-[11px] font-bold">
+              <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
               <span>Multi-Agent Audited</span>
             </span>
 
-            <span className="hidden sm:inline-flex items-center gap-1 text-[11px] font-mono text-slate-400">
+            <span className="hidden sm:inline-flex items-center gap-1 text-[11px] font-mono text-slate-500">
               <span>Short {currentIndex + 1} of {shorts.length}</span>
             </span>
           </div>
@@ -537,26 +537,26 @@ export default function BreakingShorts({
           <div className="flex items-center gap-2">
             
             {/* Manual Skip Controls (Desktop & Mobile) */}
-            <div className="flex items-center bg-white/10 rounded-xl p-0.5 border border-white/10">
+            <div className="flex items-center bg-white rounded-xl p-0.5 border border-slate-200 shadow-sm">
               <button
                 onClick={(e) => {
                   e.stopPropagation();
                   goToPrev();
                 }}
-                className="p-1 rounded-lg hover:bg-white/20 text-slate-300 hover:text-white transition"
+                className="p-1 rounded-lg hover:bg-slate-100 text-slate-600 hover:text-slate-900 transition"
                 title="Previous Short (Left Arrow)"
               >
                 <ChevronLeft className="w-4 h-4" />
               </button>
 
-              <div className="h-3 w-px bg-white/20"></div>
+              <div className="h-3 w-px bg-slate-200"></div>
 
               <button
                 onClick={(e) => {
                   e.stopPropagation();
                   goToNext();
                 }}
-                className="p-1 rounded-lg hover:bg-white/20 text-slate-300 hover:text-white transition"
+                className="p-1 rounded-lg hover:bg-slate-100 text-slate-600 hover:text-slate-900 transition"
                 title="Next Short (Right Arrow)"
               >
                 <ChevronRight className="w-4 h-4" />
@@ -566,7 +566,7 @@ export default function BreakingShorts({
             {/* Share Button */}
             <button
               onClick={handleShare}
-              className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-slate-200 text-xs font-semibold transition"
+              className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-white hover:bg-slate-100 text-slate-700 text-xs font-semibold transition border border-slate-200 shadow-sm"
               title="Share Short"
             >
               <Share2 className="w-3.5 h-3.5" />
@@ -580,7 +580,7 @@ export default function BreakingShorts({
                   e.stopPropagation();
                   onOpenReels(currentIndex);
                 }}
-                className="inline-flex items-center gap-1.5 px-3 sm:px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-amber-500 via-rose-500 to-red-600 hover:from-amber-400 hover:to-red-500 text-white text-xs font-black tracking-wide transition shadow-lg shadow-red-600/30 animate-pulse"
+                className="inline-flex items-center gap-1.5 px-3 sm:px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-amber-500 via-rose-500 to-red-600 hover:from-amber-400 hover:to-red-500 text-white text-xs font-black tracking-wide transition shadow-md shadow-red-600/30 animate-pulse"
                 title="Enter Immersive Vertical Swipe Reels Mode"
               >
                 <Flame className="w-3.5 h-3.5 fill-current" />
@@ -600,7 +600,7 @@ export default function BreakingShorts({
                   if (el) el.scrollIntoView({ behavior: 'smooth' });
                 }
               }}
-              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold transition border border-slate-700 shadow-sm"
+              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition shadow-sm"
             >
               <span>Read Full</span>
               <ArrowUpRight className="w-3.5 h-3.5" />
