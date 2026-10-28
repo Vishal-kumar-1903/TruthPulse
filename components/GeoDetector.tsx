@@ -14,6 +14,7 @@ import {
   LocateFixed
 } from 'lucide-react';
 import { METROPOLITAN_HUBS, findMetroByCityOrState } from '@/lib/metroHubs';
+import { SupportedLanguage, getUIText } from '@/lib/translations';
 
 export interface IndianStateData {
   state: string;
@@ -63,6 +64,7 @@ interface GeoDetectorProps {
   currentMetro?: string;
   onLocationChange: (state: string, city?: string, metro?: string) => void;
   onClearLocation: () => void;
+  currentLang?: SupportedLanguage;
 }
 
 export default function GeoDetector({
@@ -70,7 +72,8 @@ export default function GeoDetector({
   currentCity,
   currentMetro,
   onLocationChange,
-  onClearLocation
+  onClearLocation,
+  currentLang = 'hi'
 }: GeoDetectorProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -213,7 +216,7 @@ export default function GeoDetector({
             <div className="truncate">
               {activeMetro ? (
                 <span className="text-slate-800 dark:text-slate-200 font-medium">
-                  Showing verified dispatches for Metro Hub:{' '}
+                  {getUIText('showingDispatchesFor', currentLang)} {getUIText('metroHub', currentLang)}{' '}
                   <strong className="text-red-600 dark:text-red-400 font-bold">
                     {activeMetro.name}
                   </strong>{' '}
@@ -226,7 +229,7 @@ export default function GeoDetector({
                 </span>
               ) : isLocationActive ? (
                 <span className="text-slate-800 dark:text-slate-200 font-medium">
-                  Showing verified dispatches for{' '}
+                  {getUIText('showingDispatchesFor', currentLang)}{' '}
                   <strong className="text-red-600 dark:text-red-400 font-bold">
                     {currentCity ? `${currentCity}, ` : ''}{currentState !== 'All India' ? currentState : (detectedState || 'National')}
                   </strong>
@@ -236,7 +239,7 @@ export default function GeoDetector({
                 </span>
               ) : (
                 <span className="text-slate-700 dark:text-slate-300">
-                  <strong className="text-red-600 dark:text-red-400 font-bold">Hyper-Local News:</strong> Detect your location to route instant Raigarh, Raipur, Delhi NCR, or State investigative briefs.
+                  <strong className="text-red-600 dark:text-red-400 font-bold">{getUIText('hyperLocalNews', currentLang)}</strong> Detect your location to route instant Raigarh, Raipur, Delhi NCR, or State investigative briefs.
                 </span>
               )}
             </div>
@@ -256,7 +259,7 @@ export default function GeoDetector({
               ) : (
                 <>
                   <Navigation className="w-3 h-3" />
-                  <span>{isLocationActive ? 'Re-Detect' : 'Detect My Location'}</span>
+                  <span>{isLocationActive ? (currentLang === 'hi' ? 'पुनः पहचानें' : 'Re-Detect') : getUIText('detectLocation', currentLang)}</span>
                 </>
               )}
             </button>
@@ -265,7 +268,7 @@ export default function GeoDetector({
               onClick={() => setIsModalOpen(true)}
               className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 font-medium text-[11px] transition-all"
             >
-              <span>Directory</span>
+              <span>{getUIText('directory', currentLang)}</span>
               <ChevronRight className="w-3 h-3" />
             </button>
 

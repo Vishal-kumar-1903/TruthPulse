@@ -67,7 +67,7 @@ function NewsPortalContent() {
 
   // User & Portal Preferences
   const [darkMode, setDarkMode] = useState<boolean>(false);
-  const [currentLang, setCurrentLang] = useState<SupportedLanguage>('en');
+  const [currentLang, setCurrentLang] = useState<SupportedLanguage>('hi');
   const [currentUser, setCurrentUser] = useState<AuthUser | null>(null);
 
   // Centralized Modal Manager Hook
@@ -77,7 +77,11 @@ function NewsPortalContent() {
   useEffect(() => {
     try {
       const savedLang = localStorage.getItem('truthpulse_lang') as SupportedLanguage;
-      if (savedLang) setCurrentLang(savedLang);
+      if (savedLang) {
+        setCurrentLang(savedLang);
+      } else {
+        setCurrentLang('hi');
+      }
       const savedUser = localStorage.getItem('truthpulse_user');
       if (savedUser) setCurrentUser(JSON.parse(savedUser));
       const savedGeo = localStorage.getItem('truthpulse_geo');
@@ -379,6 +383,7 @@ function NewsPortalContent() {
             currentState={currentState}
             currentCity={currentCity}
             currentMetro={currentMetro}
+            currentLang={currentLang}
             onLocationChange={(st, ct, mt) => {
               setCurrentState(st);
               setCurrentCity(ct || '');
@@ -555,6 +560,7 @@ function NewsPortalContent() {
         }}
         onOpenMenu={modals.sidebar.open}
         activeTab="feed"
+        currentLang={currentLang}
       />
 
     </div>

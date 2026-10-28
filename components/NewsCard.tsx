@@ -27,7 +27,7 @@ import {
   VolumeX
 } from 'lucide-react';
 import { AuthUser } from './AuthModal';
-import { SupportedLanguage, translateHeadline, getUIText } from '@/lib/translations';
+import { SupportedLanguage, SUPPORTED_LANGUAGES, getUIText, useTranslatedArticle } from '@/lib/translations';
 import AnimatedMedia from './AnimatedMedia';
 
 export type MediaType = 'IMAGE' | 'VIDEO_LOOP' | 'LOTTIE_ANIMATION';
@@ -122,6 +122,9 @@ export default function NewsCard({
   const [evidenceUrl, setEvidenceUrl] = useState('');
   const [submittingComment, setSubmittingComment] = useState(false);
 
+  // Dynamic Auto-Translation Hook (instantly checks cache/dict, auto-translates in background)
+  const { title: displayTitle, summary: displaySummary, bullets: displayBullets } = useTranslatedArticle(article, currentLang);
+
   // 1-Click TTS Audio Narration State
   const [isPlayingAudio, setIsPlayingAudio] = useState(false);
 
@@ -147,18 +150,22 @@ export default function NewsCard({
     }
 
     window.speechSynthesis.cancel();
-    const textToRead = `${displayTitle}. ${article.summary}`;
+    const textToRead = `${displayTitle}। ${displaySummary}`;
     const utterance = new SpeechSynthesisUtterance(textToRead);
-    utterance.rate = 1.05;
+    utterance.rate = 1.0;
     utterance.pitch = 1.0;
 
+    const langObj = SUPPORTED_LANGUAGES.find(l => l.code === currentLang);
+    const speechCode = langObj?.speechCode || 'en-IN';
+    utterance.lang = speechCode;
+
     const voices = window.speechSynthesis.getVoices();
-    if (currentLang === 'hi') {
-      const hiVoice = voices.find(v => v.lang.includes('hi') || v.lang.includes('Hindi'));
-      if (hiVoice) utterance.voice = hiVoice;
-    } else {
-      const inVoice = voices.find(v => v.lang.includes('en-IN') || v.lang.includes('en_IN'));
-      if (inVoice) utterance.voice = inVoice;
+    const matchedVoice = voices.find(v => 
+      v.lang.toLowerCase().includes(currentLang) || 
+      v.lang.replace('_', '-').toLowerCase().includes(speechCode.toLowerCase())
+    );
+    if (matchedVoice) {
+      utterance.voice = matchedVoice;
     }
 
     utterance.onstart = () => setIsPlayingAudio(true);
@@ -168,17 +175,17 @@ export default function NewsCard({
     window.speechSynthesis.speak(utterance);
   };
 
-  // Compute time ago
+  // Compute time ago with language support
   const getTimeAgo = (dateString?: string) => {
-    if (!dateString) return 'Just now';
+    if (!dateString) return getUIText('justNow', currentLang);
     const seconds = Math.floor((new Date().getTime() - new Date(dateString).getTime()) / 1000);
-    if (seconds < 60) return 'Just now';
+    if (seconds < 60) return getUIText('justNow', currentLang);
     const minutes = Math.floor(seconds / 60);
-    if (minutes < 60) return `${minutes}m ago`;
+    if (minutes < 60) return `${minutes} ${getUIText('minAgo', currentLang)}`;
     const hours = Math.floor(minutes / 60);
-    if (hours < 24) return `${hours}h ago`;
+    if (hours < 24) return `${hours} ${getUIText('hourAgo', currentLang)}`;
     const days = Math.floor(hours / 24);
-    return `${days}d ago`;
+    return `${days} ${getUIText('dayAgo', currentLang)}`;
   };
 
   // Color-coded category badge styling
@@ -299,10 +306,6 @@ export default function NewsCard({
     ? `${article.city}, ${article.state || ''}` 
     : article.state || article.location?.city || article.location?.state || article.region || 'India';
 
-  const displayTitle = currentLang && currentLang !== 'en' 
-    ? translateHeadline(article.title, currentLang) 
-    : article.title;
-
   return (
     <div className={`bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 rounded-2xl sm:rounded-3xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 group font-sans w-full max-w-full ${
       isHero ? 'grid grid-cols-1 lg:grid-cols-12 gap-0' : 'flex flex-col justify-between'
@@ -363,7 +366,7 @@ export default function NewsCard({
             title="Toggle Observer Mode / Investigator Mode"
           >
             {viewMode === 'OBSERVER' ? <Eye className="w-3 h-3 text-emerald-400" /> : <Cpu className="w-3 h-3 text-cyan-400" />}
-            <span>{viewMode === 'OBSERVER' ? 'Observer' : 'Evidence'}</span>
+            <span>{viewMode === 'OBSERVER' ? getUIText('observer', currentLang).split(' ')[0] : getUIText('evidence', currentLang).split(' ')[0]}</span>
           </button>
         </div>
 
@@ -412,7 +415,7 @@ export default function NewsCard({
               {isPlayingAudio ? (
                 <>
                   <VolumeX className="w-3.5 h-3.5 shrink-0" />
-                  <span>Playing...</span>
+                  <span>{getUIText('playingAudio', currentLang)}</span>
                   <span className="flex items-center gap-0.5 ml-1">
                     <span className="w-1 h-2 bg-white rounded-full animate-bounce"></span>
                     <span className="w-1 h-3 bg-white rounded-full animate-bounce [animation-delay:0.15s]"></span>
@@ -422,13 +425,13 @@ export default function NewsCard({
               ) : (
                 <>
                   <Volume2 className="w-3.5 h-3.5 text-red-500 shrink-0" />
-                  <span>Listen in 20s</span>
+                  <span>{getUIText('listenAudio', currentLang)}</span>
                 </>
               )}
             </button>
 
             <span className="text-[10px] font-mono text-slate-400">
-              ⚡ 60 Words
+              {getUIText('words60', currentLang)}
             </span>
           </div>
 
@@ -436,12 +439,12 @@ export default function NewsCard({
           {viewMode === 'OBSERVER' ? (
             <div>
               <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed line-clamp-3 mb-3">
-                {article.summary}
+                {displaySummary}
               </p>
 
-              {article.bullets && article.bullets.length > 0 && (
+              {displayBullets && displayBullets.length > 0 && (
                 <ul className="space-y-1 mb-4 text-[11px] text-slate-500 dark:text-slate-400 font-sans border-l-2 border-red-500/30 pl-2.5">
-                  {article.bullets.slice(0, 3).map((b, i) => (
+                  {displayBullets.slice(0, 3).map((b, i) => (
                     <li key={i} className="line-clamp-1">• {b}</li>
                   ))}
                 </ul>
@@ -498,7 +501,7 @@ export default function NewsCard({
                 title={currentUser ? 'Mark as Helpful / Informative' : 'Sign in to appreciate this story'}
               >
                 <ThumbsUp className={`w-3.5 h-3.5 ${userVote === 'GREEN' ? 'fill-current text-white' : 'text-emerald-500'}`} />
-                <span>Helpful</span>
+                <span>{getUIText('helpful', currentLang)}</span>
                 <span className="font-mono text-[10px] sm:text-[11px] px-1.5 py-0.2 rounded bg-black/5 dark:bg-white/10 font-bold">
                   {upvotes}
                 </span>

@@ -175,7 +175,7 @@ export default function Navbar({
               <Search className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
               <input
                 type="text"
-                placeholder="Search verified news..."
+                placeholder={getUIText('searchPlaceholder', currentLang)}
                 value={searchInput}
                 onChange={(e) => setSearchInput(e.target.value)}
                 className="pl-8 pr-3 py-1 rounded-full text-xs bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 focus:outline-none focus:border-red-500 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 w-24 xl:w-36 focus:w-44 transition-all"

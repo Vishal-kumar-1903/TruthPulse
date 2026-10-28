@@ -20,6 +20,7 @@ import {
   Clock 
 } from 'lucide-react';
 import AnimatedMedia from './AnimatedMedia';
+import { SupportedLanguage, SUPPORTED_LANGUAGES, useAutoTranslate, getUIText } from '@/lib/translations';
 
 export interface BreakingShort {
   id: string;
@@ -124,12 +125,14 @@ interface BreakingShortsProps {
   shorts?: BreakingShort[];
   onSelectArticle?: (short: BreakingShort) => void;
   onOpenReels?: (index: number) => void;
+  currentLang?: SupportedLanguage;
 }
 
 export default function BreakingShorts({
   shorts = DEFAULT_BREAKING_SHORTS,
   onSelectArticle,
-  onOpenReels
+  onOpenReels,
+  currentLang = 'hi'
 }: BreakingShortsProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [progress, setProgress] = useState(0); // 0 to 100
@@ -144,6 +147,8 @@ export default function BreakingShorts({
   const STEP_PERCENT = 100 / (DURATION_MS / TICK_MS);
 
   const activeShort = shorts[currentIndex] || shorts[0];
+  const translatedHeadline = useAutoTranslate(activeShort.headline, currentLang);
+  const translatedSnippet = useAutoTranslate(activeShort.snippet, currentLang);
 
   // 1. Text-to-Speech (TTS) Voiceover Synthesis
   const speakCurrentShort = useCallback((short: BreakingShort) => {
@@ -151,13 +156,26 @@ export default function BreakingShorts({
     window.speechSynthesis.cancel();
     if (!isAudioOn) return;
 
-    const speechText = `${short.badge}. ${short.headline}. ${short.snippet}`;
+    const langObj = SUPPORTED_LANGUAGES.find(l => l.code === currentLang);
+    const speechCode = langObj?.speechCode || 'en-IN';
+
+    const speechText = `${short.badge}. ${translatedHeadline}. ${translatedSnippet}`;
     const utterance = new SpeechSynthesisUtterance(speechText);
-    utterance.rate = 1.05;
+    utterance.rate = 1.0;
     utterance.pitch = 1.0;
-    utterance.lang = 'en-IN';
+    utterance.lang = speechCode;
+
+    const voices = window.speechSynthesis.getVoices();
+    const matchedVoice = voices.find(v => 
+      v.lang.toLowerCase().includes(currentLang) || 
+      v.lang.replace('_', '-').toLowerCase().includes(speechCode.toLowerCase())
+    );
+    if (matchedVoice) {
+      utterance.voice = matchedVoice;
+    }
+
     window.speechSynthesis.speak(utterance);
-  }, [isAudioOn]);
+  }, [isAudioOn, currentLang, translatedHeadline, translatedSnippet]);
 
   // Handle Audio toggle
   const toggleAudio = (e: React.MouseEvent) => {
@@ -485,12 +503,12 @@ export default function BreakingShorts({
         >
           {/* Headline */}
           <h3 className="text-base sm:text-xl md:text-2xl font-black text-white leading-snug tracking-tight mb-2 drop-shadow-md">
-            {activeShort.headline}
+            {translatedHeadline}
           </h3>
 
           {/* Under 30-word Ultra-Crisp Snippet */}
           <p className="text-xs sm:text-sm text-slate-200 leading-relaxed max-w-3xl drop-shadow line-clamp-2 sm:line-clamp-none">
-            {activeShort.snippet}
+            {translatedSnippet}
           </p>
 
           <div className="mt-2 text-[10px] font-mono text-slate-400 flex items-center gap-2">

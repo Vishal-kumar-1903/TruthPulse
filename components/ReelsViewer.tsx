@@ -26,7 +26,7 @@ import { AuthUser } from './AuthModal';
 import ReelActionSidebar from './ReelActionSidebar';
 import ReelCommentDrawer from './ReelCommentDrawer';
 import AnimatedMedia from './AnimatedMedia';
-import { SupportedLanguage, SUPPORTED_LANGUAGES, translateHeadline, getUIText } from '@/lib/translations';
+import { SupportedLanguage, SUPPORTED_LANGUAGES, translateHeadline, getUIText, useAutoTranslate } from '@/lib/translations';
 
 interface ReelsViewerProps {
   shorts: BreakingShort[];
@@ -73,6 +73,8 @@ export default function ReelsViewer({
   }, [isOpen, initialIndex]);
 
   const activeShort = shorts[activeIndex] || shorts[0];
+  const translatedHeadline = useAutoTranslate(activeShort.headline, currentLang);
+  const translatedSnippet = useAutoTranslate(activeShort.snippet, currentLang);
 
   // 1. Text-to-Speech (TTS) Voiceover
   const speakReel = useCallback((short: BreakingShort) => {
@@ -83,13 +85,23 @@ export default function ReelsViewer({
     const langObj = SUPPORTED_LANGUAGES.find(l => l.code === currentLang);
     const speechCode = langObj?.speechCode || 'en-IN';
 
-    const translatedHeadline = currentLang !== 'en' ? translateHeadline(short.headline, currentLang) : short.headline;
-    const speechText = `${short.badge}. ${translatedHeadline}. ${short.snippet}`;
+    const speechText = `${short.badge}. ${translatedHeadline}. ${translatedSnippet}`;
     const utterance = new SpeechSynthesisUtterance(speechText);
-    utterance.rate = 1.05;
+    utterance.rate = 1.0;
+    utterance.pitch = 1.0;
     utterance.lang = speechCode;
+
+    const voices = window.speechSynthesis.getVoices();
+    const matchedVoice = voices.find(v => 
+      v.lang.toLowerCase().includes(currentLang) || 
+      v.lang.replace('_', '-').toLowerCase().includes(speechCode.toLowerCase())
+    );
+    if (matchedVoice) {
+      utterance.voice = matchedVoice;
+    }
+
     window.speechSynthesis.speak(utterance);
-  }, [isAudioOn, currentLang]);
+  }, [isAudioOn, currentLang, translatedHeadline, translatedSnippet]);
 
   const toggleAudio = useCallback(() => {
     if (isAudioOn) {
@@ -482,13 +494,13 @@ export default function ReelsViewer({
 
             {/* Bold 2-Line Headline */}
             <h2 className="text-base sm:text-lg font-black text-white leading-tight tracking-tight drop-shadow-md line-clamp-2">
-              {currentLang !== 'en' ? translateHeadline(activeShort.headline, currentLang) : activeShort.headline}
+              {translatedHeadline}
             </h2>
 
             {/* 40-Word AI-Synthesized Bullet Takeaway */}
             <div className="p-2.5 rounded-2xl bg-black/60 backdrop-blur-md border border-white/15 text-xs text-slate-200 leading-relaxed shadow-lg">
               <p className="line-clamp-3">
-                {activeShort.snippet}
+                {translatedSnippet}
               </p>
             </div>
 
@@ -506,7 +518,7 @@ export default function ReelsViewer({
                   }}
                   className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-red-600/90 hover:bg-red-600 text-white text-[11px] font-bold shadow-md transition shrink-0"
                 >
-                  <span>Read Article</span>
+                  <span>{getUIText('readArticle', currentLang)}</span>
                   <ArrowUpRight className="w-3 h-3" />
                 </button>
               )}

@@ -56,7 +56,26 @@ export const UI_TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> 
     primarySources: 'Primary Sources',
     multiAgentAudited: 'Multi-Agent Audited',
     tamperProofSha: 'SHA-256 Tamper Proof',
-    searchPlaceholder: 'Search verified news...'
+    searchPlaceholder: 'Search verified news...',
+    helpful: 'Helpful',
+    listenAudio: 'Listen in 20s',
+    playingAudio: 'Playing...',
+    words60: '⚡ 60 Words',
+    justNow: 'Just now',
+    minAgo: 'm ago',
+    hourAgo: 'h ago',
+    dayAgo: 'd ago',
+    news: 'News',
+    metros: 'Metros',
+    menu: 'Menu',
+    detectLocation: 'Detect My Location',
+    directory: 'Directory',
+    clearAll: 'Clear All',
+    activeFilters: 'Active Filters:',
+    dispatchesFound: 'verified dispatches found',
+    metroHub: 'Metro Hub:',
+    showingDispatchesFor: 'Showing verified dispatches for',
+    hyperLocalNews: 'Hyper-Local News:'
   },
   hi: {
     breakingNews: 'ताज़ा ख़बर',
@@ -95,7 +114,26 @@ export const UI_TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> 
     primarySources: 'प्राथमिक स्रोत',
     multiAgentAudited: 'मल्टी-एजेंट ऑडिटेड',
     tamperProofSha: 'SHA-256 छेड़छाड़ मुक्त',
-    searchPlaceholder: 'सत्यापित समाचार खोजें...'
+    searchPlaceholder: 'सत्यापित समाचार खोजें...',
+    helpful: 'उपयोगी',
+    listenAudio: '20 से. में सुनें',
+    playingAudio: 'सुनाई दे रहा है...',
+    words60: '⚡ 60 शब्द',
+    justNow: 'अभी-अभी',
+    minAgo: 'मि. पहले',
+    hourAgo: 'घं. पहले',
+    dayAgo: 'दिन पहले',
+    news: 'समाचार',
+    metros: 'मेट्रो',
+    menu: 'मेन्यू',
+    detectLocation: 'स्थान पहचानें',
+    directory: 'निर्देशिका',
+    clearAll: 'सभी हटाएं',
+    activeFilters: 'सक्रिय फ़िल्टर:',
+    dispatchesFound: 'सत्यापित समाचार मिले',
+    metroHub: 'मेट्रो हब:',
+    showingDispatchesFor: 'के लिए सत्यापित समाचार:',
+    hyperLocalNews: 'स्थानीय समाचार:'
   },
   bn: {
     breakingNews: 'ব্রেকিং নিউজ',
@@ -134,7 +172,26 @@ export const UI_TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> 
     primarySources: 'প্রাথমিক উৎস',
     multiAgentAudited: 'মাল্টি-এজেন্ট নিরীক্ষিত',
     tamperProofSha: 'SHA-256 সুরক্ষিত',
-    searchPlaceholder: 'যাচাইকৃত সংবাদ অনুসন্ধান...'
+    searchPlaceholder: 'যাচাইকৃত সংবাদ অনুসন্ধান...',
+    helpful: 'উপকারী',
+    listenAudio: '২০ সে.-এ শুনুন',
+    playingAudio: 'শুনছেন...',
+    words60: '⚡ ৬০ শব্দ',
+    justNow: 'এইমাত্র',
+    minAgo: 'মি. আগে',
+    hourAgo: 'ঘন্টা আগে',
+    dayAgo: 'দিন আগে',
+    news: 'সংবাদ',
+    metros: 'মেট্রো',
+    menu: 'মেনু',
+    detectLocation: 'অবস্থান নির্ণয়',
+    directory: 'ডিরেক্টরি',
+    clearAll: 'সব মুছুন',
+    activeFilters: 'সক্রিয় ফিল্টার:',
+    dispatchesFound: 'যাচাইকৃত সংবাদ পাওয়া গেছে',
+    metroHub: 'মেট্রো হাব:',
+    showingDispatchesFor: 'এর জন্য যাচাইকৃত সংবাদ:',
+    hyperLocalNews: 'স্থানীয় সংবাদ:'
   },
   mr: {
     breakingNews: 'ताज्या बातम्या',
@@ -173,7 +230,26 @@ export const UI_TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> 
     primarySources: 'प्राथमिक स्रोत',
     multiAgentAudited: 'मल्टी-एजंट ऑडिटेड',
     tamperProofSha: 'SHA-256 सुरक्षित',
-    searchPlaceholder: 'पडताळलेल्या बातम्या शोधा...'
+    searchPlaceholder: 'पडताळलेल्या बातम्या शोधा...',
+    helpful: 'उपयुक्त',
+    listenAudio: '२० से. मध्ये ऐका',
+    playingAudio: 'ऐकवले जात आहे...',
+    words60: '⚡ ६० शब्द',
+    justNow: 'आत्ताच',
+    minAgo: 'मि. पूर्वी',
+    hourAgo: 'तासांपूर्वी',
+    dayAgo: 'दिवसांपूर्वी',
+    news: 'बातम्या',
+    metros: 'मेट्रो',
+    menu: 'मेनू',
+    detectLocation: 'स्थान शोधा',
+    directory: 'निर्देशिका',
+    clearAll: 'सर्व हटवा',
+    activeFilters: 'सक्रिय फिल्टर्स:',
+    dispatchesFound: 'पडताळलेल्या बातम्या सापडल्या',
+    metroHub: 'मेट्रो हब:',
+    showingDispatchesFor: 'साठी पडताळलेल्या बातम्या:',
+    hyperLocalNews: 'स्थानिक बातम्या:'
   },
   te: {
     breakingNews: 'తాజా వార్తలు',
@@ -212,7 +288,26 @@ export const UI_TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> 
     primarySources: 'ప్రాథమిక మూలాలు',
     multiAgentAudited: 'మల్టీ-ఏజెంట్ ఆడిట్',
     tamperProofSha: 'SHA-256 భద్రత',
-    searchPlaceholder: 'వార్తలను శోధించండి...'
+    searchPlaceholder: 'వార్తలను శోధించండి...',
+    helpful: 'ఉపయోగకరం',
+    listenAudio: '20 సెకన్లలో వినండి',
+    playingAudio: 'ప్లే అవుతోంది...',
+    words60: '⚡ 60 పదాలు',
+    justNow: 'ఇప్పుడే',
+    minAgo: 'నిమిషాల క్రితం',
+    hourAgo: 'గంటల క్రితం',
+    dayAgo: 'రోజుల క్రితం',
+    news: 'వార్తలు',
+    metros: 'మెట్రో',
+    menu: 'మెనూ',
+    detectLocation: 'స్థానాన్ని గుర్తించండి',
+    directory: 'డైరెక్టరీ',
+    clearAll: 'అన్నీ తొలగించండి',
+    activeFilters: 'యాక్టివ్ ఫిల్టర్లు:',
+    dispatchesFound: 'వార్తలు కనుగొనబడ్డాయి',
+    metroHub: 'మెట్రో హబ్:',
+    showingDispatchesFor: 'ధృవీకరించబడిన వార్తలు:',
+    hyperLocalNews: 'స్థానిక వార్తలు:'
   },
   ta: {
     breakingNews: 'முக்கிய செய்திகள்',
@@ -251,7 +346,26 @@ export const UI_TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> 
     primarySources: 'முதன்மை ஆதாரங்கள்',
     multiAgentAudited: 'மல்டி-ஏஜென்ட் தணிக்கை',
     tamperProofSha: 'SHA-256 பாதுகாப்பு',
-    searchPlaceholder: 'செய்திகளைத் தேடுங்கள்...'
+    searchPlaceholder: 'செய்திகளைத் தேடுங்கள்...',
+    helpful: 'பயனுள்ளது',
+    listenAudio: '20 விநாடிகளில் கேளுங்கள்',
+    playingAudio: 'ஒலிக்கிறது...',
+    words60: '⚡ 60 வார்த்தைகள்',
+    justNow: 'சற்றுமுன்',
+    minAgo: 'நிமி. முன்பு',
+    hourAgo: 'மணி முன்பு',
+    dayAgo: 'நாட்கள் முன்பு',
+    news: 'செய்திகள்',
+    metros: 'மெட்ரோ',
+    menu: 'பட்டியல்',
+    detectLocation: 'இருப்பிடத்தை கண்டறி',
+    directory: 'அடைவு',
+    clearAll: 'அனைத்தையும் நீக்கு',
+    activeFilters: 'செயலில் உள்ள வடிகட்டிகள்:',
+    dispatchesFound: 'செய்திகள் உள்ளன',
+    metroHub: 'மெட்ரோ மையம்:',
+    showingDispatchesFor: 'சரிபார்க்கப்பட்ட செய்திகள்:',
+    hyperLocalNews: 'உள்ளூர் செய்திகள்:'
   },
   gu: {
     breakingNews: 'તાજા સમાચાર',
@@ -290,26 +404,152 @@ export const UI_TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> 
     primarySources: 'પ્રાથમિક સ્ત્રોતો',
     multiAgentAudited: 'મલ્ટી-એજન્ટ ઓડિટ',
     tamperProofSha: 'SHA-256 સુરક્ષિત',
-    searchPlaceholder: 'ચકાસાયેલ સમાચાર શોધો...'
+    searchPlaceholder: 'ચકાસાયેલ સમાચાર શોધો...',
+    helpful: 'ઉપયોગી',
+    listenAudio: '20 સે.માં સાંભળો',
+    playingAudio: 'સંભળાઈ રહ્યું છે...',
+    words60: '⚡ 60 શબ્દો',
+    justNow: 'હમણાં જ',
+    minAgo: 'મિ. પહેલાં',
+    hourAgo: 'કલાક પહેલાં',
+    dayAgo: 'દિવસ પહેલાં',
+    news: 'સમાચાર',
+    metros: 'મેટ્રો',
+    menu: 'મેનુ',
+    detectLocation: 'સ્થાન શોધો',
+    directory: 'ડિરેક્ટરી',
+    clearAll: 'બધું સાફ કરો',
+    activeFilters: 'સક્રિય ફિલ્ટર:',
+    dispatchesFound: 'ચકાસાયેલ સમાચાર મળ્યા',
+    metroHub: 'મેટ્રો હબ:',
+    showingDispatchesFor: 'માટે ચકાસાયેલ સમાચાર:',
+    hyperLocalNews: 'સ્થાનિક સમાચાર:'
   }
 };
 
-// Common Content Translations dictionary for headlines and summaries
+// Common Content Translations dictionary for headlines, summaries, and bullet points
 const VERNACULAR_PHRASES: Record<SupportedLanguage, Record<string, string>> = {
   en: {},
   hi: {
+    // 1. National Electoral Infrastructure Bill
+    'Parliament Clears Historic Digital Public Infrastructure & Electoral Transparency Bill': 'संसद ने ऐतिहासिक डिजिटल सार्वजनिक बुनियादी ढांचा और चुनावी पारदर्शिता विधेयक पारित किया',
     'Parliament Clears Historic Electoral Transparency & Digital Infrastructure Act': 'संसद ने ऐतिहासिक चुनावी पारदर्शिता और डिजिटल बुनियादी ढांचा कानून पारित किया',
+    'Both houses of Parliament have passed the comprehensive Digital Public Infrastructure and Electoral Transparency Act. The landmark legislation mandates algorithmic traceability for official poll databases and institutes real-time expenditure verification across all national and state assembly constituencies.': 'संसद के दोनों सदनों ने व्यापक डिजिटल सार्वजनिक बुनियादी ढांचा और चुनावी पारदर्शिता अधिनियम पारित कर दिया है। यह ऐतिहासिक कानून चुनावी डेटाबेस के लिए एल्गोरिदमिक ट्रैसेबिलिटी अनिवार्य करता है और सभी निर्वाचन क्षेत्रों में वास्तविक समय में व्यय सत्यापन स्थापित करता है।',
     'Mandatory algorithmic verification and real-time treasury expenditure dashboards codified into national law across all parliamentary constituencies.': 'सभी संसदीय क्षेत्रों में अनिवार्य एल्गोरिदम सत्यापन और रियल-टाइम राजकोषीय व्यय डैशबोर्ड को राष्ट्रीय कानून में शामिल किया गया।',
-    'Raigarh Collector Enforces 48-Hour Stack Emission Telemetry Audit': 'रायगढ़ कलेक्टर ने 48 घंटे के स्टैक एमिशन टेलीमेट्री ऑडिट का आदेश दिया',
-    'Special surveillance squads dispatched along Taraimal industrial corridor to verify continuous electrostatic precipitator uptime across sponge iron rolling mills.': 'स्पंज आयरन रोलिंग मिलों में निरंतर इलेक्ट्रोस्टैटिक प्रीसिपिटेटर अपटाइम की जांच के लिए तराईमाल औद्योगिक क्षेत्र में विशेष निगरानी दस्ते तैनात किए गए।',
-    'Debunked: Fabricated Social Circular Claims Bottled Water Suspension in North India': 'खंडन: उत्तर भारत में बोतलबंद पानी की बिक्री बंद करने का फर्जी सोशल दावा खारिज',
-    'FSSAI confirms routine quality tests ongoing; no sales suspension or production halts have been ordered. Public urged to disregard manipulated video clips.': 'FSSAI ने पुष्टि की कि नियमित गुणवत्ता जांच जारी है; बिक्री रोकने या उत्पादन ठप करने का कोई आदेश नहीं दिया गया। जनता से भ्रामक क्लिप पर विश्वास न करने की अपील।',
+    'Unanimous passage achieved across treasury and opposition benches.': 'सत्तापक्ष और विपक्ष की सर्वसम्मति से विधेयक पारित हुआ।',
+    'Real-time spending dashboards to be linked directly with public treasury registers.': 'रियल-टाइम व्यय डैशबोर्ड सीधे सार्वजनिक राजकोष रजिस्टरों से जोड़े जाएंगे।',
+    'Phased deployment scheduled ahead of upcoming state legislative assembly cycles.': 'आगामी राज्य विधानसभा चुनावों से पहले चरणबद्ध कार्यान्वयन निर्धारित।',
+
+    // 2. Chhattisgarh Solar Subsidies
+    'Chhattisgarh Cabinet Approves Decentralized Solar Irrigation Subsidies for 1.8 Lakh Farmers': 'छत्तीसगढ़ कैबिनेट ने 1.8 लाख किसानों के लिए विकेंद्रीकृत सौर सिंचाई सब्सिडी को मंजूरी दी',
+    'The Chhattisgarh State Cabinet has ratified a ₹1,420 crore decentralized solar microgrid scheme aimed at tribal and marginal agricultural zones across Bastar, Bilaspur, and Raigarh. Under the initiative, eligible cultivators will receive 90 percent capital subsidies for solar-powered submersible pumps.': 'छत्तीसगढ़ राज्य कैबिनेट ने बस्तर, बिलासपुर और रायगढ़ के आदिवासी एवं सीमांत कृषि क्षेत्रों के लिए ₹1,420 करोड़ की विकेंद्रीकृत सौर माइक्रोग्रिड योजना को मंजूरी दी है। इसके तहत पात्र किसानों को सौर सबमर्सिबल पंपों पर 90 प्रतिशत सब्सिडी मिलेगी।',
+    '₹1,420 crore scheme sanctioned for rural and tribal agro-belts.': 'ग्रामीण और आदिवासी कृषि क्षेत्रों के लिए ₹1,420 करोड़ की योजना स्वीकृत।',
+    'Up to 90 percent capital subsidy for 3HP and 5HP solar submersible sets.': '3HP और 5HP सौर सबमर्सिबल सेट पर 90 प्रतिशत तक पूंजीगत सब्सिडी।',
+    'Special nodal deployment centers set up across Raigarh and Bastar collectorates.': 'रायगढ़ और बस्तर कलेक्ट्रेट में विशेष नोडल केंद्र स्थापित।',
+
+    // 3. Maharashtra Urban Flood Resilience
+    'Maharashtra Assembly Passes Comprehensive Coastal Urban Flood Resilience Infrastructure Bill': 'महाराष्ट्र विधानसभा ने व्यापक तटीय शहरी बाढ़ नियंत्रण बुनियादी ढांचा विधेयक पारित किया',
+    'The Maharashtra Legislative Assembly has enacted statutory urban drainage upgrades and storm-water barrier mandates across Mumbai, Thane, and Navi Mumbai. The statutory authority will possess overriding powers to halt unauthorized mangrove reclamation.': 'महाराष्ट्र विधानसभा ने मुंबई, ठाणे और नवी मुंबई में वैधानिक शहरी जल निकासी उन्नयन और वर्षा जल अवरोधक अनिवार्यताओं को लागू किया है। वैधानिक प्राधिकरण के पास अनधिकृत मैंग्रोव कटाई रोकने के विशेष अधिकार होंगे।',
+    'High-velocity storm tunnels approved connecting central Mumbai to Arabian Sea.': 'मध्य मुंबई को अरब सागर से जोड़ने वाली हाई-वेलोसिटी स्टॉर्म सुरंगों को मंजूरी।',
+    'Zero-tolerance mangrove clearance penalties codified into state environmental law.': 'मैंग्रोव कटाई पर ज़ीरो टॉलरेंस दंड राज्य पर्यावरण कानून में शामिल।',
+    'Joint audit squad established with Brihanmumbai Municipal Corporation.': 'बृहन्मुंबई नगर निगम के साथ संयुक्त ऑडिट दल का गठन।',
+
+    // 4. Sensex & Manufacturing PMI
+    'Sensex Surges 780 Points as Indian Manufacturing PMI Hits 16-Year High of 59.4': 'सेंसेक्स में 780 अंकों का उछाल, भारतीय विनिर्माण PMI 16 वर्षों के उच्चतम 59.4 पर पहुंचा',
     'Sensex Rallies 780 Points as Indian Manufacturing PMI Hits 16-Year Record of 59.4': 'सेंसेक्स में 780 अंकों का उछाल, भारतीय विनिर्माण PMI 16 वर्षों के उच्चतम 59.4 पर पहुंचा',
+    'Benchmark equity indices witnessed intense buying momentum as the domestic manufacturing Purchasing Managers Index climbed to a historic 16-year high of 59.4. Capital goods, electronics exports, and domestic automotive production drove broad-based gains.': 'घरेलू विनिर्माण परचेजिंग मैनेजर्स इंडेक्स (PMI) के 16 वर्षों के उच्चतम स्तर 59.4 पर पहुंचने से शेयर बाजार में जोरदार लिवाली देखी गई। पूंजीगत सामान, इलेक्ट्रॉनिक्स और ऑटोमोबाइल उत्पादन ने इस बढ़त का नेतृत्व किया।',
     'Capital goods and electronics exports power secondary desks; foreign institutional desks record net positive buying surpassing ₹4,800 crore in single session.': 'पूंजीगत सामान और इलेक्ट्रॉनिक्स निर्यात ने बाजार को बढ़ावा दिया; विदेशी संस्थागत निवेशकों ने एक ही सत्र में ₹4,800 करोड़ से अधिक की शुद्ध लिवाली दर्ज की।',
-    'Convective Lightning & Squall Advisory Issued for Central Chhattisgarh': 'मध्य छत्तीसगढ़ के लिए आकाशीय बिजली और आंधी-तूफान की चेतावनी जारी',
-    'Raigarh, Bilaspur, and Janjgir placed on alert for 45 km/h gusts and localized cloud-to-ground strikes. Farmers advised to shelter in masonry dwellings.': 'रायगढ़, बिलासपुर और जांजगीर में 45 किमी/घंटा की रफ्तार से हवाएं और बिजली गिरने का अलर्ट। किसानों को सुरक्षित पक्के मकानों में शरण लेने की सलाह।',
+    'Manufacturing PMI registers record reading on robust global and rural demand.': 'मजबूत वैश्विक और ग्रामीण मांग के चलते विनिर्माण PMI रिकॉर्ड स्तर पर।',
+    'Sensex scales past milestone levels propelled by engineering and bank majors.': 'इंजीनियरिंग और बैंकिंग शेयरों की अगुवाई में सेंसेक्स नए स्तर पर।',
+    'FII net inflows touch ₹4,800 crore in single trading session.': 'विदेशी संस्थागत निवेशकों (FII) की शुद्ध लिवाली एक ही सत्र में ₹4,800 करोड़ पहुंची।',
+
+    // 5. Bengaluru DeepTech Capital
+    'Bengaluru DeepTech Ecosystem Secures $4.2 Billion in Sovereign AI & Quantum Compute Capital': 'बेंगलुरु डीप-टेक इकोसिस्टम ने सॉवरेन AI और क्वांटम कंप्यूटिंग में $4.2 बिलियन का निवेश जुटाया',
+    'Karnataka IT ministry reported record venture allocations into domestic semiconductor design, neural silicon chips, and quantum cryptography startups based in Bengaluru. The capital influx follows state partnerships with global research consortia.': 'कर्नाटक आईटी मंत्रालय ने बेंगलुरु स्थित सेमीकंडक्टर डिजाइन, न्यूरल सिलिकॉन चिप्स और क्वांटम क्रिप्टोग्राफी स्टार्टअप्स में रिकॉर्ड उद्यम पूंजी निवेश की जानकारी दी है।',
+    '$4.2 billion deployed across 84 domestic deeptech enterprise ventures.': '84 घरेलू डीप-टेक उद्यमों में $4.2 बिलियन की पूंजी निवेशित।',
+    'State-backed supercomputing cluster opened for university and startup researchers.': 'विश्वविद्यालय और स्टार्टअप शोधकर्ताओं के लिए सुपरकंप्यूटिंग क्लस्टर शुरू।',
+    'New silicon testing laboratory to be commissioned in Whitefield corridor.': 'व्हाइटफील्ड कॉरिडोर में नई सिलिकॉन परीक्षण प्रयोगशाला चालू की जाएगी।',
+
+    // 6. Global Sovereign Green Bonds
+    'Global Sovereign Green Bond Framework Accord Sealed by 42 Nations in Geneva': 'जिनेवा में 42 देशों ने वैश्विक सॉवरेन ग्रीन बॉन्ड समझौते पर हस्ताक्षर किए',
     'Geneva Climate Accord Ratified: 42 Sovereign Nations Back $15B Transition Fund': 'जिनेवा जलवायु समझौता अनुमोदित: 42 देशों ने $15B संक्रमण कोष को दी मंजूरी',
-    'United Nations delegates approve binding satellite registry standards for sovereign green issuances, guaranteeing emergency resilience grants for coastal corridors.': 'संयुक्त राष्ट्र प्रतिनिधियों ने सॉवरेन ग्रीन बॉन्ड के लिए बाध्यकारी उपग्रह रजिस्ट्री मानकों को मंजूरी दी, जिससे तटीय क्षेत्रों के लिए आपातकालीन अनुदान सुनिश्चित होगा।'
+    'Finance ministers and multilateral central bankers concluding high-level deliberations in Geneva have established a standardized disclosure framework for sovereign green bonds. The protocol mandates immutable cross-border registry tracking for green transition projects.': 'जिनेवा में उच्च स्तरीय विचार-विमर्श के बाद वित्त मंत्रियों ने सॉवरेन ग्रीन बॉन्ड के लिए मानकीकृत प्रकटीकरण ढांचा स्थापित किया है। यह हरित परियोजनाओं के लिए सीमा पार पारदर्शी रजिस्ट्री ट्रैकिंग अनिवार्य करता है।',
+    'United Nations delegates approve binding satellite registry standards for sovereign green issuances, guaranteeing emergency resilience grants for coastal corridors.': 'संयुक्त राष्ट्र प्रतिनिधियों ने सॉवरेन ग्रीन बॉन्ड के लिए बाध्यकारी उपग्रह रजिस्ट्री मानकों को मंजूरी दी, जिससे तटीय क्षेत्रों के लिए आपातकालीन अनुदान सुनिश्चित होगा।',
+    'Universal standards established for sovereign environmental bond issuances.': 'सॉवरेन पर्यावरण बॉन्ड जारी करने के लिए सार्वभौमिक मानक स्थापित।',
+    'Mandatory public satellite auditing required for renewable allocations.': 'नवीकरणीय ऊर्जा आवंटन के लिए अनिवार्य सार्वजनिक उपग्रह ऑडिटिंग आवश्यक।',
+    'World Bank commits $15 billion secondary liquidity support guarantee.': 'विश्व बैंक ने $15 बिलियन की द्वितीयक तरलता सहायता गारंटी दी।',
+
+    // 7. Champions Trophy 2026
+    'Champions Trophy 2026: Team India Commences High-Altitude Endurance Camp in Wankhede': 'चैंपियंस ट्रॉफी 2026: टीम इंडिया ने वानखेड़े में उच्च तीव्रता का अनुकूलन शिविर शुरू किया',
+    'The Board of Control for Cricket in India has initiated an intensive 10-day physical and tactical conditioning camp for the national squad ahead of the marquee ICC Champions Trophy. Head coach emphasized athletic workload optimization.': 'भारतीय क्रिकेट कंट्रोल बोर्ड (BCCI) ने चैंपियंस ट्रॉफी से पहले राष्ट्रीय टीम के लिए 10 दिवसीय गहन शारीरिक और रणनीतिक कंडीशनिंग कैंप शुरू किया है।',
+    '15-member main squad and 4 travelling reserves assemble in Mumbai.': '15 सदस्यीय मुख्य दल और 4 रिजर्व खिलाड़ी मुंबई में एकत्रित हुए।',
+    'Biomechanics and GPS athletic trackers integrated into live net practices.': 'नेट अभ्यास में बायोमैकेनिक्स और GPS एथलेटिक ट्रैकर्स का उपयोग शुरू।',
+    'Warm-up fixture schedule against state development XI announced.': 'स्टेट डेवलपमेंट एकादश के खिलाफ अभ्यास मैचों का कार्यक्रम घोषित।',
+
+    // 8. National Games 2026
+    'National Games 2026: Over 8,000 Athletes Assemble in Ahmedabad for Record 38 Sports': 'राष्ट्रीय खेल 2026: रिकॉर्ड 38 खेलों के लिए अहमदाबाद में 8,000 से अधिक एथलीट जुटे',
+    'The 38th National Games kicked off today with a dazzling cultural and athletic inaugural ceremony at the Narendra Modi Stadium complex. Featuring premier Olympians and emerging state prodigies, the games will host high-stakes competitions.': '38वें राष्ट्रीय खेलों का भव्य शुभारंभ आज नरेंद्र मोदी स्टेडियम परिसर में हुआ। शीर्ष ओलंपियनों और उभरती युवा प्रतिभाओं के साथ इन खेलों में रोमांचक मुकाबले होंगे।',
+    'Record participation of 8,200 athletes from 28 states and union territories.': '28 राज्यों और केंद्र शासित प्रदेशों से रिकॉर्ड 8,200 एथलीटों की भागीदारी।',
+    'Automated photo-finish and high-speed electronic scoring deployed across tracks.': 'ट्रैक्स पर स्वचालित फोटो-फिनिश और हाई-स्पीड इलेक्ट्रॉनिक स्कोरिंग लागू।',
+    'Medal winners guaranteed direct national camp induction and sports scholarships.': 'पदक विजेताओं को सीधे राष्ट्रीय कैंप में प्रवेश और खेल छात्रवृत्ति की गारंटी।',
+
+    // 9. Delhi AQI Respite
+    'Western Disturbance Brings Respite to North India: Delhi AQI Improves to Moderate (128)': 'पश्चिमी विक्षोभ से उत्तर भारत को राहत: दिल्ली का AQI सुधरकर \'मध्यम\' (128) पर पहुंचा',
+    'Unseasonal pre-monsoon showers accompanied by gusty westerly winds cleared lingering particulate haze across the National Capital Region. Delhi recorded an average Air Quality Index of 128, marking the cleanest atmospheric reading in three months.': 'तेज पश्चिमी हवाओं और प्री-मानसून फुहारों ने राष्ट्रीय राजधानी क्षेत्र में जमी धुंध को साफ कर दिया। दिल्ली का एक्यूआई सुधरकर 128 दर्ज किया गया, जो पिछले तीन महीनों में सबसे स्वच्छ स्तर है।',
+    'Widespread light rain flushes particulate pollutants across Delhi, Noida, and Gurugram.': 'दिल्ली, नोएडा और गुरुग्राम में हल्की बारिश से प्रदूषण कणों में भारी गिरावट।',
+    'Average AQI drops sharply from 265 (Poor) to 128 (Moderate).': 'औसत AQI 265 (खराब) से तेजी से घटकर 128 (मध्यम) पर पहुंचा।',
+    'Pleasant maximum temperatures hovering around 28°C expected over next 48 hours.': 'अगले 48 घंटों में 28°C के आसपास सुखद अधिकतम तापमान की संभावना।',
+
+    // 10. Raigarh Weather Storm
+    'Meteorological Centre Issues Lightning & Rain Alert for Raigarh and Bilaspur Belts': 'मौसम विभाग ने रायगढ़ और बिलासपुर क्षेत्र के लिए आकाशीय बिजली और बारिश का अलर्ट जारी किया',
+    'Convective Lightning & Squall Advisory Issued for Central Chhattisgarh': 'मध्य छत्तीसगढ़ के लिए आकाशीय बिजली और आंधी-तूफान की चेतावनी जारी',
+    'The Raipur Meteorological Centre has issued a yellow-grade convective storm warning for Raigarh, Bilaspur, and Janjgir-Champa districts. Severe cloud-to-ground lightning strikes and localized squalls reaching 45 km/h are expected across open agricultural fields.': 'रायपुर मौसम विज्ञान केंद्र ने रायगढ़, बिलासपुर और जांजगीर-चांपा जिलों के लिए यलो अलर्ट जारी किया है। खुले कृषि क्षेत्रों में तेज आकाशीय बिजली और 45 किमी/घंटा की गति से आंधी चलने की संभावना है।',
+    'Raigarh, Bilaspur, and Janjgir placed on alert for 45 km/h gusts and localized cloud-to-ground strikes. Farmers advised to shelter in masonry dwellings.': 'रायगढ़, बिलासपुर और जांजगीर में 45 किमी/घंटा की रफ्तार से हवाएं और बिजली गिरने का अलर्ट। किसानों को सुरक्षित पक्के मकानों में शरण लेने की सलाह।',
+    'Convective thunderstorm advisory active for next 36 hours across central belt.': 'मध्य क्षेत्र में अगले 36 घंटों के लिए गरज-चमक के साथ आंधी की चेतावनी जारी।',
+    'Emergency control helplines activated across Raigarh and Bilaspur tehsils.': 'रायगढ़ और बिलासपुर की तहसीलों में आपातकालीन नियंत्रण हेल्पलाइन शुरू।',
+    'Farmers advised to tether livestock and shelter under masonry structures.': 'किसानों को मवेशियों को बांधने और पक्के मकानों में शरण लेने की सलाह।',
+
+    // 11. 71st National Film Awards
+    '71st National Film Awards: Independent Regional Cinema Sweeps Premier Honors in New Delhi': '71वें राष्ट्रीय फिल्म पुरस्कार: नई दिल्ली में स्वतंत्र क्षेत्रीय सिनेमा का दबदबा',
+    'The prestigious 71st National Film Awards jury unveiled this year’s laureates, with regional cinematic masterworks claiming top accolades. Celebrated Marathi and Malayalam independent features clinched Best Feature Film and Best Direction honors.': 'प्रतिष्ठित 71वें राष्ट्रीय फिल्म पुरस्कारों की घोषणा में क्षेत्रीय सिनेमा की उत्कृष्ट कृतियों ने शीर्ष पुरस्कार जीते। मराठी और मलयालम स्वतंत्र फिल्मों ने सर्वश्रेष्ठ फीचर फिल्म और सर्वश्रेष्ठ निर्देशन का सम्मान हासिल किया।',
+    'Regional Indian features dominate premier artistic and technical award categories.': 'प्रमुख कलात्मक और तकनीकी पुरस्कार श्रेणियों में भारतीय क्षेत्रीय फिल्मों का दबदबा।',
+    'Dadasaheb Phalke lifetime achievement honor bestowed upon veteran auteur.': 'दिग्गज फिल्मकार को दादा साहेब फाल्के लाइफटाइम अचीवमेंट पुरस्कार से सम्मानित किया गया।',
+    'Special jury citation awards dedicated to emerging indie storytellers.': 'उभरते स्वतंत्र फिल्म निर्माताओं को विशेष जूरी प्रशस्ति पुरस्कार समर्पित।',
+
+    // 12. Cannes Classics
+    'Cannes Film Festival 2026: Three Indian Restored Classics Selected for Official Premiere': 'कान्स फिल्म महोत्सव 2026: तीन भारतीय क्लासिक फिल्मों के रीस्टोर्ड प्रिंट्स प्रीमियर के लिए चयनित',
+    'In an unprecedented tribute to Indian cinematic heritage, the Cannes Film Festival has selected three meticulously restored 4K prints of classic masterworks from Satyajit Ray, Mrinal Sen, and Ritwik Ghatak for the Cannes Classics official roster.': 'भारतीय सिनेमाई विरासत के प्रति ऐतिहासिक सम्मान व्यक्त करते हुए कान्स फिल्म महोत्सव ने सत्यजीत रे, मृणाल सेन और ऋत्विक घटक की क्लासिक कृतियों के 4K रीस्टोर्ड प्रिंट्स को आधिकारिक प्रीमियर के लिए चुना है।',
+    'Three historic Indian celluloid gems restored from archival camera negatives.': 'संग्रहीत कैमरा निगेटिव से तीन ऐतिहासिक भारतीय सेल्यूलॉयड फिल्में रीस्टोर की गईं।',
+    'Official red-carpet gala premiere scheduled at Palais des Festivals.': 'पाले दे फेस्टीवल में आधिकारिक रेड-कार्पेट गाला प्रीमियर का आयोजन।',
+    'International distribution agreements inked across European art-house circuits.': 'यूरोपीय आर्ट-हाउस सिनेमाघरों में अंतर्राष्ट्रीय वितरण समझौतों पर हस्ताक्षर।',
+
+    // 13. National Genomic Biobank
+    'Union Health Ministry Expands National Genomic Biobank to 500 Tertiary Medical Centers': 'केंद्रीय स्वास्थ्य मंत्रालय ने राष्ट्रीय जीनोमिक बायोबैंक का 500 तृतीयक चिकित्सा केंद्रों में विस्तार किया',
+    'Under the ambitious National Precision Medicine Mission, the Union Ministry of Health has scaled clinical genomic sequencing across 500 AIIMS institutions and state government medical colleges. The project aims to map localized genetic disease markers.': 'महत्वाकांक्षी राष्ट्रीय प्रिसिजन मेडिसिन मिशन के तहत केंद्रीय स्वास्थ्य मंत्रालय ने 500 एम्स संस्थानों और मेडिकल कॉलेजों में क्लिनिकल जीनोमिक सीक्वेंसिंग का विस्तार किया है।',
+    '500 tertiary medical teaching hospitals onboarded onto central genomics grid.': '500 तृतीयक चिकित्सा शिक्षण अस्पताल केंद्रीय जीनोमिक्स ग्रिड से जुड़े।',
+    'Targeted immunotherapy drug costs projected to decline by up to 60 percent.': 'लक्षित इम्यूनोथेरेपी दवाओं की लागत में 60 प्रतिशत तक की कमी आने का अनुमान।',
+    'Strict statutory data privacy protocols codified to safeguard patient genetic data.': 'मरीजों के जेनेटिक डेटा की सुरक्षा के लिए कड़े वैधानिक डेटा गोपनीयता नियम लागू।',
+
+    // 14. Raigarh Tele-ICU Network
+    'Raigarh District Hospital Operationalizes 24x7 High-Precision Tele-ICU Network for Rural Centers': 'रायगढ़ जिला अस्पताल ने ग्रामीण केंद्रों के लिए 24x7 टेली-ICU नेटवर्क शुरू किया',
+    'The Raigarh District Administration and Chief Medical Health Office have launched a hub-and-spoke Tele-ICU command center. Critical cardiac and respiratory patients will receive continuous real-time monitoring.': 'दूरदराज के ग्रामीण क्षेत्रों में विशेषज्ञ गहन चिकित्सा सुविधा उपलब्ध कराने के लिए रायगढ़ जिला प्रशासन ने टेली-ICU कमांड सेंटर शुरू किया है। गंभीर रोगियों की चौबीसों घंटे निगरानी होगी।',
+    'To bridge specialized intensive care access across remote rural blocks, the Raigarh District Administration and Chief Medical Health Office have launched a hub-and-spoke Tele-ICU command center. Critical cardiac and respiratory patients will receive continuous real-time monitoring.': 'दूरदराज के ग्रामीण क्षेत्रों में विशेषज्ञ गहन चिकित्सा सुविधा उपलब्ध कराने के लिए रायगढ़ जिला प्रशासन ने हब-एंड-स्पोक टेली-ICU नेटवर्क शुरू किया है। गंभीर हृदय और श्वसन रोगियों की निरंतर निगरानी की जाएगी।',
+    'Hub-and-spoke Tele-ICU links 14 remote community health posts to district hospital.': 'हब-एंड-स्पोक टेली-ICU 14 दूरस्थ स्वास्थ्य केंद्रों को जिला अस्पताल से जोड़ता है।',
+    'Real-time automated biometric telemetry alerts critical care doctors to patient distress.': 'स्वचालित बायोमेट्रिक टेलीमेट्री डॉक्टरों को मरीज की स्थिति पर तुरंत अलर्ट करती है।',
+    'Over 60 percent reduction in emergency referral transport mortality projected.': 'आपातकालीन रेफरल परिवहन मृत्यु दर में 60 प्रतिशत से अधिक की कमी का अनुमान।',
+
+    // 15. Mineral Water Rumor Debunked
+    'Unverified Viral Message Claims Complete Mineral Water Ban Across Northern Districts': 'अपुष्ट वायरल संदेश में उत्तरी जिलों में बोतलबंद मिनरल वाटर पर पूर्ण प्रतिबंध का दावा',
+    'Debunked: Fabricated Social Circular Claims Bottled Water Suspension in North India': 'खंडन: उत्तर भारत में बोतलबंद पानी की बिक्री बंद करने का फर्जी सोशल दावा खारिज',
+    'Circulating social media forwards alleging an imminent blanket prohibition on bottled drinking water across northern states have been officially debunked by statutory consumer authorities. The Food Safety and Standards Authority clarified that routine quality testing is underway.': 'उत्तरी राज्यों में बोतलबंद पेयजल पर पूर्ण प्रतिबंध लगाने का दावा करने वाले सोशल मीडिया संदेशों को उपभोक्ता प्राधिकरणों द्वारा खारिज कर दिया गया है। FSSAI ने स्पष्ट किया कि केवल नियमित गुणवत्ता परीक्षण जारी है।',
+    'FSSAI confirms routine quality tests ongoing; no sales suspension or production halts have been ordered. Public urged to disregard manipulated video clips.': 'FSSAI ने पुष्टि की कि नियमित गुणवत्ता जांच जारी है; बिक्री रोकने या उत्पादन ठप करने का कोई आदेश नहीं दिया गया। जनता से भ्रामक क्लिप पर विश्वास न करने की अपील।',
+    'Food Safety Authority issues formal advisory refuting fabricated circular.': 'खाद्य सुरक्षा प्राधिकरण ने फर्जी सर्कुलर का खंडन करते हुए औपचारिक सलाह जारी की।',
+    'Fact-checking desks traced original false claims to manipulated video snippet.': 'फैक्ट-चेक डेस्क ने झूठे दावों को एक एडिटेड वीडियो क्लिप से जुड़ा पाया।',
+    'Public advised not to amplify unverified messaging from unauthorized handles.': 'जनता को अनधिकृत हैंडल से आने वाले अपुष्ट संदेशों को साझा न करने की सलाह।',
+
+    // Shorts extra phrases
+    'Raigarh Collector Enforces 48-Hour Stack Emission Telemetry Audit': 'रायगढ़ कलेक्टर ने 48 घंटे के स्टैक एमिशन टेलीमेट्री ऑडिट का आदेश दिया',
+    'Special surveillance squads dispatched along Taraimal industrial corridor to verify continuous electrostatic precipitator uptime across sponge iron rolling mills.': 'स्पंज आयरन रोलिंग मिलों में निरंतर इलेक्ट्रोस्टैटिक प्रीसिपिटेटर अपटाइम की जांच के लिए तराईमाल औद्योगिक क्षेत्र में विशेष निगरानी दस्ते तैनात किए गए।'
   },
   bn: {},
   mr: {},
@@ -325,12 +565,16 @@ export function getUIText(key: string, lang: SupportedLanguage = 'en'): string {
 
 export function translateContentText(text: string, lang: SupportedLanguage = 'en'): string {
   if (lang === 'en' || !text) return text;
+  // If text already contains Devanagari script and target language is Hindi, return as-is
+  if (lang === 'hi' && /[\u0900-\u097F]/.test(text)) return text;
   const phraseDict = VERNACULAR_PHRASES[lang];
   if (phraseDict && phraseDict[text]) return phraseDict[text];
 
-  // If specific phrase not mapped, return original
   return text;
 }
 
 export const translateHeadline = translateContentText;
 export const translateArticle = translateContentText;
+
+// Dynamic auto-translation engine export
+export * from './translationService';

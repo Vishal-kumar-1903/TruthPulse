@@ -9,6 +9,7 @@ import {
   Radio,
   BookOpen
 } from 'lucide-react';
+import { SupportedLanguage, getUIText } from '@/lib/translations';
 
 interface MobileBottomNavProps {
   onOpenFeed: () => void;
@@ -17,6 +18,7 @@ interface MobileBottomNavProps {
   onOpenMenu: () => void;
   onOpenMagazine?: () => void;
   activeTab?: 'feed' | 'reels' | 'metro' | 'menu';
+  currentLang?: SupportedLanguage;
 }
 
 export default function MobileBottomNav({
@@ -24,7 +26,8 @@ export default function MobileBottomNav({
   onOpenReels,
   onOpenMetro,
   onOpenMenu,
-  activeTab = 'feed'
+  activeTab = 'feed',
+  currentLang = 'hi'
 }: MobileBottomNavProps) {
   return (
     <nav 
@@ -41,7 +44,7 @@ export default function MobileBottomNav({
         }`}
       >
         <Newspaper className="w-5 h-5" />
-        <span className="text-[10px] tracking-tight">News</span>
+        <span className="text-[10px] tracking-tight">{getUIText('news', currentLang)}</span>
       </button>
 
       {/* 2. Reels / Shorts Tab */}
@@ -53,7 +56,7 @@ export default function MobileBottomNav({
           <Flame className="w-5 h-5 text-red-500 fill-current group-hover:scale-110 transition-transform" />
           <span className="w-1.5 h-1.5 rounded-full bg-red-500 absolute -top-0.5 -right-0.5 animate-ping"></span>
         </div>
-        <span className="text-[10px] tracking-tight font-semibold">Reels</span>
+        <span className="text-[10px] tracking-tight font-semibold">{getUIText('reels', currentLang)}</span>
       </button>
 
       {/* 3. Metro Hubs Tab */}
@@ -62,7 +65,7 @@ export default function MobileBottomNav({
         className="flex flex-col items-center justify-center gap-0.5 py-1 px-3 rounded-xl text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition"
       >
         <Building2 className="w-5 h-5 text-amber-500" />
-        <span className="text-[10px] tracking-tight font-semibold">Metros</span>
+        <span className="text-[10px] tracking-tight font-semibold">{getUIText('metros', currentLang)}</span>
       </button>
 
       {/* 4. Menu / Drawer Tab */}
@@ -71,7 +74,7 @@ export default function MobileBottomNav({
         className="flex flex-col items-center justify-center gap-0.5 py-1 px-3 rounded-xl text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition"
       >
         <Menu className="w-5 h-5" />
-        <span className="text-[10px] tracking-tight font-semibold">Menu</span>
+        <span className="text-[10px] tracking-tight font-semibold">{getUIText('menu', currentLang)}</span>
       </button>
     </nav>
   );

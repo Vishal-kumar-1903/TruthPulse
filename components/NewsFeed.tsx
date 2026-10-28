@@ -6,7 +6,7 @@ import NativeSponsoredCard, { DEFAULT_PARTNER_CARDS } from './NativeSponsoredCar
 import AdSidebar from './AdSidebar';
 import BreakingShorts, { DEFAULT_BREAKING_SHORTS, BreakingShort } from './BreakingShorts';
 import { AuthUser } from './AuthModal';
-import { SupportedLanguage, getUIText, translateHeadline } from '@/lib/translations';
+import { SupportedLanguage, getUIText, translateHeadline, useAutoTranslate } from '@/lib/translations';
 import { 
   Flame, 
   MapPin, 
@@ -108,9 +108,7 @@ export default function NewsFeed({
     ? heroArticle.title 
     : 'Parliament clears landmark Electoral Transparency and Digital Infrastructure Bill in New Delhi.');
 
-  const breakingHeadline = currentLang && currentLang !== 'en'
-    ? translateHeadline(rawBreaking, currentLang)
-    : rawBreaking;
+  const breakingHeadline = useAutoTranslate(rawBreaking, currentLang);
 
   const hasActiveFilter = (currentCategory && currentCategory !== 'ALL' && currentCategory !== 'Home') || 
                           (currentState && currentState !== 'All India');
@@ -142,6 +140,7 @@ export default function NewsFeed({
 
       {/* 2. BREAKING NEWS "SHORTS" REEL ENGINE (10s Auto-Transition & Mobile Story Rings) */}
       <BreakingShorts 
+        currentLang={currentLang}
         onOpenReels={onOpenReels}
         onSelectArticle={(short) => {
           if (onSelectArticle) {
@@ -160,7 +159,7 @@ export default function NewsFeed({
             <div className="flex items-center gap-2">
               <MapPin className="w-4 h-4 text-red-600" />
               <h2 className="text-xs sm:text-sm font-black uppercase tracking-wider text-slate-900 dark:text-slate-100">
-                Explore State Desks (India)
+                {getUIText('exploreStateDesks', currentLang)}
               </h2>
             </div>
             {currentState && currentState !== 'All India' && (
@@ -168,7 +167,7 @@ export default function NewsFeed({
                 onClick={() => onSelectState('All India')}
                 className="text-xs text-red-600 hover:text-red-700 font-bold flex items-center gap-1"
               >
-                <span>Reset to All India</span>
+                <span>{getUIText('resetToAllIndia', currentLang)}</span>
                 <X className="w-3.5 h-3.5" />
               </button>
             )}
@@ -200,22 +199,22 @@ export default function NewsFeed({
       {hasActiveFilter && (
         <div className="mb-6 flex flex-wrap items-center justify-between gap-3 p-3 rounded-2xl bg-slate-100 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 text-xs w-full max-w-full">
           <div className="flex flex-wrap items-center gap-2">
-            <span className="font-bold text-slate-500 dark:text-slate-400">Active Filters:</span>
+            <span className="font-bold text-slate-500 dark:text-slate-400">{getUIText('activeFilters', currentLang)}</span>
             
             {currentCategory && currentCategory !== 'ALL' && currentCategory !== 'Home' && (
               <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-red-600/10 text-red-600 dark:text-red-400 font-bold border border-red-500/20">
-                <span>Category: {currentCategory}</span>
+                <span>{getUIText(currentCategory.toLowerCase(), currentLang) || currentCategory}</span>
               </span>
             )}
 
             {currentState && currentState !== 'All India' && (
               <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-blue-600/10 text-blue-600 dark:text-blue-400 font-bold border border-blue-500/20">
-                <span>State: {currentState}</span>
+                <span>{currentState}</span>
               </span>
             )}
 
             <span className="text-slate-500 dark:text-slate-400 font-mono">
-              ({articles.length} verified dispatches found)
+              ({articles.length} {getUIText('dispatchesFound', currentLang)})
             </span>
           </div>
 
@@ -223,7 +222,7 @@ export default function NewsFeed({
             onClick={onClearFilters}
             className="text-xs font-bold text-slate-600 dark:text-slate-300 hover:text-red-600 flex items-center gap-1"
           >
-            <span>Clear All</span>
+            <span>{getUIText('clearAll', currentLang)}</span>
             <X className="w-3.5 h-3.5" />
           </button>
         </div>
