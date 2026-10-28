@@ -34,7 +34,8 @@ import {
   Scale,
   Building2,
   BookOpen,
-  Sparkles
+  Sparkles,
+  Search
 } from 'lucide-react';
 import { AuthUser } from './AuthModal';
 import LanguageSelector from './LanguageSelector';
@@ -116,6 +117,25 @@ export default function SidebarDrawer({
 }: SidebarDrawerProps) {
   const [isStatesAccordionOpen, setIsStatesAccordionOpen] = useState(false);
   const [touchStartX, setTouchStartX] = useState<number | null>(null);
+  const [geoSearchQuery, setGeoSearchQuery] = useState('');
+
+  // Filtered Metros
+  const filteredMetros = METROPOLITAN_HUBS.filter(hub => {
+    if (!geoSearchQuery.trim()) return true;
+    const q = geoSearchQuery.toLowerCase().trim();
+    return hub.shortLabel.toLowerCase().includes(q) || 
+           hub.primaryCity.toLowerCase().includes(q) || 
+           hub.state.toLowerCase().includes(q);
+  });
+
+  // Filtered States
+  const filteredStates = ALL_INDIAN_STATES.filter(state => {
+    if (!geoSearchQuery.trim()) return true;
+    const q = geoSearchQuery.toLowerCase().trim();
+    return state.toLowerCase().includes(q);
+  });
+
+  const shouldShowStatesList = isStatesAccordionOpen || geoSearchQuery.trim().length > 0;
 
   if (!isOpen) return null;
 
@@ -332,118 +352,160 @@ export default function SidebarDrawer({
             </div>
           </div>
 
-          {/* 2. METROPOLITAN HUBS (QUICK CITY SWITCHER) */}
-          <div>
-            <div className="flex items-center justify-between mb-2 px-2">
-              <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-amber-700 flex items-center gap-1.5">
-                <Building2 className="w-3.5 h-3.5 text-amber-600" />
-                <span>Metropolitan Hubs</span>
+          {/* 2. REGIONAL & METRO DIRECTORY WITH INTEGRATED FAST SEARCH */}
+          <div className="space-y-3">
+            <div className="flex items-center justify-between px-1">
+              <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-slate-500">
+                Regional & Metro Directory
               </span>
-              <span className="text-[9px] font-mono text-slate-500">Tier-1 Clusters</span>
+              <span className="text-[10px] font-mono text-emerald-600 font-bold">28 States + 8 Metros</span>
             </div>
 
-            <div className="grid grid-cols-2 gap-1.5">
-              {METROPOLITAN_HUBS.map((hub) => {
-                const isSelected = currentMetro === hub.id;
-                return (
-                  <button
-                    key={hub.id}
-                    onClick={() => {
-                      if (onSelectMetro) {
-                        onSelectMetro(hub.id);
-                      } else {
-                        onSelectState(hub.state);
-                      }
-                      onClose();
-                    }}
-                    className={`flex flex-col text-left p-2 rounded-xl transition border text-xs ${
-                      isSelected
-                        ? 'bg-red-50 border-red-300 text-red-700 font-bold shadow-sm'
-                        : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100 hover:border-slate-300'
-                    }`}
-                  >
-                    <div className="flex items-center justify-between w-full">
-                      <span className="font-bold text-xs truncate">{hub.shortLabel}</span>
-                      <span className={`w-1.5 h-1.5 rounded-full ${isSelected ? 'bg-red-600' : 'bg-emerald-500'} shrink-0`} />
-                    </div>
-                    <span className="text-[10px] text-slate-500 font-mono truncate">{hub.primaryCity}</span>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* 3. EDITION & GEO SELECTOR ACCORDION */}
-          <div>
-            <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-slate-500 block mb-2 px-2">
-              State & UT Directory
-            </span>
-
-            <div className="space-y-1.5">
-              
-              {/* International Switcher */}
-              <button
-                onClick={() => handleEditionClick('International')}
-                className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-bold transition ${
-                  currentEdition === 'International'
-                    ? 'bg-cyan-50 text-cyan-700 border border-cyan-200'
-                    : 'text-slate-700 hover:bg-slate-100 hover:text-slate-900'
-                }`}
-              >
-                <div className="flex items-center gap-2.5">
-                  <Globe2 className="w-4 h-4 text-cyan-600" />
-                  <span>International (Global)</span>
-                </div>
-                {currentEdition === 'International' && (
-                  <span className="w-2 h-2 rounded-full bg-cyan-600"></span>
-                )}
-              </button>
-
-              {/* National (India) with States Accordion */}
-              <div className="rounded-2xl border border-slate-200 bg-slate-50 overflow-hidden">
+            {/* In-Menu Geo Search Input (Fixes space and provides instant lookup) */}
+            <div className="relative">
+              <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+              <input
+                type="text"
+                value={geoSearchQuery}
+                onChange={(e) => setGeoSearchQuery(e.target.value)}
+                placeholder="राज्य, शहर या मेट्रो हब खोजें..."
+                className="w-full pl-8 pr-7 py-2 rounded-xl text-xs bg-slate-100 hover:bg-slate-50 focus:bg-white border border-slate-200 focus:border-red-500 text-slate-900 placeholder:text-slate-400 focus:outline-none transition shadow-inner"
+              />
+              {geoSearchQuery && (
                 <button
-                  onClick={() => {
-                    handleEditionClick('National');
-                    setIsStatesAccordionOpen(!isStatesAccordionOpen);
-                  }}
-                  className={`w-full flex items-center justify-between p-3 text-xs font-bold transition ${
-                    currentEdition === 'National' ? 'text-red-600 font-bold' : 'text-slate-700'
+                  type="button"
+                  onClick={() => setGeoSearchQuery('')}
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 p-0.5"
+                  title="Clear search"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              )}
+            </div>
+
+            {/* A. Metropolitan Hubs Grid */}
+            <div className="bg-slate-50 rounded-2xl p-3 border border-slate-200 space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-amber-700 flex items-center gap-1.5">
+                  <Building2 className="w-3.5 h-3.5 text-amber-600" />
+                  <span>Metropolitan Hubs</span>
+                </span>
+                <span className="text-[9px] font-mono text-slate-500 font-semibold">Tier-1 Mega Clusters</span>
+              </div>
+
+              <div className="grid grid-cols-2 gap-1.5">
+                {filteredMetros.length === 0 ? (
+                  <p className="col-span-2 text-[10px] font-mono text-slate-400 py-1 text-center">No metro matches &quot;{geoSearchQuery}&quot;</p>
+                ) : (
+                  filteredMetros.map((hub) => {
+                    const isSelected = currentMetro === hub.id;
+                    return (
+                      <button
+                        key={hub.id}
+                        onClick={() => {
+                          if (onSelectMetro) onSelectMetro(hub.id);
+                          else onSelectState(hub.state);
+                          onClose();
+                        }}
+                        className={`flex flex-col text-left p-2.5 rounded-xl transition border text-xs ${
+                          isSelected
+                            ? 'bg-red-50 border-red-300 text-red-700 font-bold shadow-sm ring-1 ring-red-500/20'
+                            : 'bg-white border-slate-200 text-slate-800 hover:bg-slate-100 hover:border-slate-300'
+                        }`}
+                      >
+                        <div className="flex items-center justify-between w-full">
+                          <span className="font-bold text-xs truncate">{hub.shortLabel}</span>
+                          <span className={`w-1.5 h-1.5 rounded-full ${isSelected ? 'bg-red-600' : 'bg-emerald-500'} shrink-0`} />
+                        </div>
+                        <span className="text-[10px] text-slate-500 font-mono truncate mt-0.5">{hub.primaryCity}</span>
+                      </button>
+                    );
+                  })
+                )}
+              </div>
+            </div>
+
+            {/* B. State & UT Directory */}
+            <div className="bg-slate-50 rounded-2xl p-3 border border-slate-200 space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
+                  <MapPin className="w-3.5 h-3.5 text-red-600" />
+                  <span>State & UT Directory</span>
+                </span>
+                <span className="text-[9px] font-mono text-slate-500 font-semibold">Hyper-Local Grid</span>
+              </div>
+
+              <div className="space-y-1.5">
+                {/* International Switcher */}
+                <button
+                  onClick={() => handleEditionClick('International')}
+                  className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition border ${
+                    currentEdition === 'International'
+                      ? 'bg-cyan-50 text-cyan-800 border-cyan-300 shadow-sm'
+                      : 'bg-white border-slate-200 text-slate-800 hover:bg-slate-100'
                   }`}
                 >
                   <div className="flex items-center gap-2.5">
-                    <span className="text-base leading-none">🇮🇳</span>
-                    <span>National (India - 28 States)</span>
+                    <Globe2 className="w-4 h-4 text-cyan-600" />
+                    <span>International (Global)</span>
                   </div>
-                  {isStatesAccordionOpen ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+                  {currentEdition === 'International' && (
+                    <span className="w-2 h-2 rounded-full bg-cyan-600"></span>
+                  )}
                 </button>
 
-                {/* Expanded State List */}
-                {isStatesAccordionOpen && (
-                  <div className="p-2 border-t border-slate-200 max-h-56 overflow-y-auto space-y-0.5 scrollbar-none bg-white">
-                    {ALL_INDIAN_STATES.map((state) => {
-                      const isStateActive = currentState === state || (!currentState && state === 'All India');
-                      return (
-                        <button
-                          key={state}
-                          onClick={() => handleStateClick(state)}
-                          className={`w-full text-left px-3 py-1.5 rounded-lg text-[11px] font-semibold transition flex items-center justify-between ${
-                            isStateActive
-                              ? 'bg-red-50 text-red-600 font-bold'
-                              : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
-                          }`}
-                        >
-                          <span className="flex items-center gap-1.5">
-                            <MapPin className="w-3 h-3 text-red-500 shrink-0" />
-                            <span>{state}</span>
-                          </span>
-                          {isStateActive && <span className="w-1.5 h-1.5 rounded-full bg-red-600"></span>}
-                        </button>
-                      );
-                    })}
-                  </div>
-                )}
-              </div>
+                {/* National (India) with States Accordion */}
+                <div className="rounded-xl border border-slate-200 bg-white overflow-hidden shadow-sm">
+                  <button
+                    onClick={() => {
+                      handleEditionClick('National');
+                      setIsStatesAccordionOpen(!isStatesAccordionOpen);
+                    }}
+                    className={`w-full flex items-center justify-between p-3 text-xs font-bold transition ${
+                      currentEdition === 'National' ? 'text-red-600 bg-red-50/50' : 'text-slate-800 hover:bg-slate-50'
+                    }`}
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <span className="text-base leading-none">🇮🇳</span>
+                      <span>National (India - 28 States)</span>
+                      {filteredStates.length < ALL_INDIAN_STATES.length && (
+                        <span className="text-[9px] font-mono px-1.5 py-0.2 rounded bg-red-100 text-red-700 font-bold">
+                          {filteredStates.length} found
+                        </span>
+                      )}
+                    </div>
+                    {shouldShowStatesList ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+                  </button>
 
+                  {/* Expanded 2-Column State List (Eliminates awkward scrolling) */}
+                  {shouldShowStatesList && (
+                    <div className="p-2 border-t border-slate-200 max-h-64 overflow-y-auto scrollbar-none bg-slate-50">
+                      <div className="grid grid-cols-2 gap-1">
+                        {filteredStates.map((state) => {
+                          const isStateActive = currentState === state || (!currentState && state === 'All India');
+                          return (
+                            <button
+                              key={state}
+                              onClick={() => handleStateClick(state)}
+                              className={`w-full text-left px-2.5 py-1.5 rounded-lg text-[11px] font-semibold transition flex items-center justify-between border ${
+                                isStateActive
+                                  ? 'bg-red-50 border-red-300 text-red-700 font-bold shadow-sm'
+                                  : 'bg-white border-slate-200/80 text-slate-700 hover:bg-slate-100'
+                              }`}
+                            >
+                              <span className="flex items-center gap-1 truncate">
+                                <MapPin className="w-3 h-3 text-red-500 shrink-0" />
+                                <span className="truncate">{state}</span>
+                              </span>
+                              {isStateActive && <span className="w-1.5 h-1.5 rounded-full bg-red-600 shrink-0"></span>}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
 

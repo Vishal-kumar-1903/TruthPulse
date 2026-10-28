@@ -120,17 +120,17 @@ export default function Navbar({
   return (
     <header className="sticky top-0 z-40 backdrop-blur-md bg-white/95 dark:bg-slate-950/95 border-b border-slate-200 dark:border-slate-800 transition-colors shadow-sm font-sans w-full max-w-full">
       
-      {/* 1. TOP UTILITY BAR (Hamburger, Logo, AQI, Live TV, Notifications, User Profile) */}
-      <div className="border-b border-slate-100 dark:border-slate-900 bg-slate-50/90 dark:bg-slate-900/60 py-2 px-3 sm:px-4 md:px-6 lg:px-8 text-xs w-full max-w-full">
-        <div className="w-full max-w-7xl xl:max-w-[1400px] 2xl:max-w-[1600px] mx-auto flex items-center justify-between gap-2 sm:gap-3 lg:gap-4">
+      {/* 1. TOP UTILITY BAR (Hamburger, Logo, Centered Search, Live TV, Notifications, User Profile) */}
+      <div className="border-b border-slate-100 bg-white py-2 px-3 sm:px-4 md:px-6 lg:px-8 text-xs w-full max-w-full">
+        <div className="w-full max-w-7xl xl:max-w-[1400px] 2xl:max-w-[1600px] mx-auto flex items-center justify-between gap-2 sm:gap-4">
           
           {/* Left: Hamburger Button + Brand Logo + Weather Chip */}
-          <div className="flex items-center gap-2 sm:gap-3 shrink-0 min-w-0">
+          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
             
             {/* 3-LINE HAMBURGER BUTTON (OPENS SLIDING SIDEBAR DRAWER) */}
             <button
               onClick={onOpenSidebar}
-              className="p-1.5 sm:p-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-100 hover:text-red-600 dark:hover:text-red-400 hover:border-red-500/40 transition shadow-sm flex items-center justify-center group shrink-0"
+              className="p-1.5 sm:p-2 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-800 hover:text-red-600 transition shadow-sm flex items-center justify-center group shrink-0"
               title="Open Navigation Menu"
             >
               <Menu className="w-4 h-4 sm:w-5 sm:h-5 group-hover:scale-105 transition-transform" />
@@ -142,7 +142,7 @@ export default function Navbar({
                 <Radio className="w-3.5 h-3.5 sm:w-4 sm:h-4 animate-pulse" />
               </div>
               <div className="leading-tight">
-                <span className="font-black text-slate-900 dark:text-white tracking-tight text-sm sm:text-base lg:text-lg flex items-center gap-1">
+                <span className="font-black text-slate-900 tracking-tight text-sm sm:text-base lg:text-lg flex items-center gap-1">
                   <span>TruthPulse</span>
                   <span className="hidden sm:inline text-[9px] sm:text-[10px] font-bold tracking-wider px-1.5 py-0.2 rounded bg-red-600 text-white uppercase">
                     SATYA
@@ -152,51 +152,53 @@ export default function Navbar({
             </Link>
 
             {/* Date Tag (Ultra-wide screens) */}
-            <span className="hidden 2xl:inline text-[11px] font-mono text-slate-500 dark:text-slate-400 pl-2 border-l border-slate-200 dark:border-slate-800 shrink-0">
+            <span className="hidden 2xl:inline text-[11px] font-mono text-slate-500 pl-2 border-l border-slate-200 shrink-0">
               {currentTime}
             </span>
 
             {/* AQI & Weather Widget (2XL+ only to guarantee ample breathing room) */}
-            <div className="hidden 2xl:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-300 font-mono text-[11px] shrink-0">
+            <div className="hidden 2xl:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-100 border border-slate-200 text-slate-600 font-mono text-[11px] shrink-0">
               <CloudSun className="w-3.5 h-3.5 text-amber-500" />
               <span>{activeDisplayLocation}: 28°C</span>
-              <span className="text-slate-400">•</span>
-              <span className="text-emerald-500 dark:text-emerald-400 font-semibold flex items-center gap-0.5">
+              <span className="text-slate-300">•</span>
+              <span className="text-emerald-600 font-semibold flex items-center gap-0.5">
                 <Wind className="w-3 h-3" /> AQI 128
               </span>
             </div>
           </div>
 
-          {/* Right Utilities */}
-          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0 min-w-0 pr-1 sm:pr-2">
-            
-            {/* Search Input (Desktop lg+) */}
-            <form onSubmit={handleSearchSubmit} className="relative hidden lg:block">
-              <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+          {/* Center: Spacious Centered Search Bar (Fits the full space cleanly without cramped text) */}
+          <div className="flex-1 max-w-md lg:max-w-lg xl:max-w-xl mx-2 sm:mx-4 hidden md:block">
+            <form onSubmit={handleSearchSubmit} className="relative w-full">
+              <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
               <input
                 type="text"
-                placeholder={getUIText('searchPlaceholder', currentLang) || 'Search by city, title, topic or keywords...'}
+                placeholder={getUIText('searchPlaceholder', currentLang) || 'सत्यापित समाचार, शहर या विषय खोजें...'}
                 value={searchInput}
                 onChange={(e) => setSearchInput(e.target.value)}
-                className="pl-9 pr-8 py-1.5 rounded-full text-xs bg-slate-50 hover:bg-white focus:bg-white dark:bg-slate-900 dark:focus:bg-slate-950 border border-slate-200 hover:border-slate-300 dark:border-slate-800 focus:outline-none focus:border-red-500 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 w-52 xl:w-72 2xl:w-84 focus:w-80 2xl:focus:w-96 transition-all shadow-inner"
+                className="w-full pl-10 pr-9 py-2 rounded-full text-xs bg-slate-100 hover:bg-slate-50 focus:bg-white border border-slate-200 focus:border-red-500 text-slate-900 placeholder:text-slate-400 focus:outline-none transition-all shadow-inner"
               />
               {searchInput && (
                 <button
                   type="button"
                   onClick={() => { setSearchInput(''); onSearch(''); }}
-                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-0.5 rounded-full"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-0.5 rounded-full"
                   title="Clear search"
                 >
                   <X className="w-3.5 h-3.5" />
                 </button>
               )}
             </form>
+          </div>
 
-            {/* EDITOR STUDIO TRIGGER PILL (FOR EDITOR/ADMIN ROLE) */}
+          {/* Right Utilities */}
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0 min-w-0 pr-1 sm:pr-2">
+            
+            {/* EDITOR STUDIO TRIGGER PILL (FOR EDITOR/ADMIN ROLE - CLEAN WHITE WITH EMERALD LIVE DOT) */}
             {currentUser && (currentUser.role === 'CHIEF_EDITOR' || currentUser.role === 'ADMIN' || (currentUser.role as string) === 'EDITOR') && (
               <Link
                 href="/studio"
-                className="hidden md:flex items-center gap-1.5 px-3 py-1 rounded-full bg-white hover:bg-slate-50 text-slate-900 font-mono text-[11px] font-bold tracking-wide transition shadow-sm shrink-0 border border-emerald-500/50 hover:border-emerald-600 ring-1 ring-emerald-500/20"
+                className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white hover:bg-emerald-50 text-slate-900 font-mono text-[11px] font-bold tracking-wide transition shadow-sm shrink-0 border border-emerald-500/50 hover:border-emerald-600 ring-1 ring-emerald-500/20"
                 title="Open Dedicated Editor Workstation"
               >
                 <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
@@ -207,7 +209,7 @@ export default function Navbar({
             {/* LIVE STREAM BUTTON */}
             <button
               onClick={onOpenLiveStream}
-              className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-red-600 hover:bg-red-700 text-white font-bold text-[10px] sm:text-[11px] tracking-wide transition shadow-sm shrink-0"
+              className="flex items-center gap-1 px-2.5 py-1.5 rounded-full bg-red-600 hover:bg-red-700 text-white font-bold text-[10px] sm:text-[11px] tracking-wide transition shadow-sm shrink-0"
               title="Watch Live Stream / Broadcast"
             >
               <span className="w-1.5 h-1.5 rounded-full bg-white inline-block animate-ping"></span>
@@ -348,17 +350,17 @@ export default function Navbar({
                           onClick={() => setShowProfileMenu(!showProfileMenu)}
                           className={`flex items-center gap-1.5 pl-1.5 pr-2.5 py-1 rounded-full transition shadow-sm shrink-0 group ${
                             isEditor
-                              ? 'bg-emerald-50 hover:bg-emerald-100/80 dark:bg-emerald-950/40 dark:hover:bg-emerald-900/50 border border-emerald-300 dark:border-emerald-700/60'
-                              : 'bg-slate-100 hover:bg-slate-200 dark:bg-slate-900 dark:hover:bg-slate-850 border border-slate-200 dark:border-slate-800'
+                              ? 'bg-emerald-50 hover:bg-emerald-100/80 border border-emerald-300'
+                              : 'bg-slate-100 hover:bg-slate-200 border border-slate-200'
                           }`}
                           title={`Logged in as ${currentUser.name} (${currentUser.role})`}
                         >
                           <div className={`w-6 h-6 rounded-full font-bold text-xs flex items-center justify-center shrink-0 shadow-sm ${
-                            isEditor ? 'bg-emerald-600 text-white' : 'bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900'
+                            isEditor ? 'bg-emerald-600 text-white' : 'bg-blue-600 text-white'
                           }`}>
                             {currentUser.name.charAt(0).toUpperCase()}
                           </div>
-                          <span className="inline-block text-xs font-semibold text-slate-800 dark:text-slate-200 max-w-[85px] sm:max-w-[110px] truncate">
+                          <span className="inline-block text-xs font-semibold text-slate-800 max-w-[85px] sm:max-w-[110px] truncate">
                             {currentUser.name.split(' ')[0]}
                           </span>
                           {isEditor ? (

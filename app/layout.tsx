@@ -1,6 +1,9 @@
 import type { Metadata, Viewport } from 'next';
 import './globals.css';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export const metadata: Metadata = {
   title: 'TruthPulse (SatyaNews) | Multi-Agent Verified Editorial Ecosystem',
   description: 'Autonomous multi-agent verified news portal and civic editorial ecosystem with cryptographic SHA-256 seals, Observer/Investigator modes, and hyper-local routing.',
@@ -25,13 +28,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className="dark w-full max-w-full overflow-x-hidden">
+    <html lang="hi" className="w-full max-w-full overflow-x-hidden">
       <head>
         <link rel="manifest" href="/manifest.json" />
         <link rel="icon" type="image/svg+xml" href="/icon.svg" />
         <meta name="theme-color" content="#dc2626" />
       </head>
-      <body className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 antialiased selection:bg-cyan-500 selection:text-white w-full max-w-full overflow-x-hidden">
+      <body className="min-h-screen bg-slate-50 text-slate-900 antialiased selection:bg-red-500 selection:text-white w-full max-w-full overflow-x-hidden">
         {children}
         <script
           dangerouslySetInnerHTML={{
