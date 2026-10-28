@@ -48,6 +48,7 @@ interface ArticlePerformance {
   imageUrl?: string;
   status: string;
   evidenceNotesCount: number;
+  strapiId?: string;
 }
 
 export default function EditorStudioPage() {
@@ -79,6 +80,7 @@ export default function EditorStudioPage() {
   const [enableCivicAction, setEnableCivicAction] = useState(false);
   const [authorityDept, setAuthorityDept] = useState('Municipal Utilities Authority');
   const [authorityEmail, setAuthorityEmail] = useState('grievance@municipal.gov.in');
+  const [syncToStrapi, setSyncToStrapi] = useState(true);
 
   // UI Interactive States
   const [isPublishing, setIsPublishing] = useState(false);
@@ -198,7 +200,11 @@ export default function EditorStudioPage() {
 
       const data = await res.json();
       if (data.success) {
-        setToastMessage('Story dispatched! Live at top of Front Page.');
+        if (data.strapi?.success) {
+          setToastMessage(`Story live on Front Page & Synced to Strapi CMS (ID: ${data.strapi.strapiId})!`);
+        } else {
+          setToastMessage('Story dispatched! Live at top of Front Page.');
+        }
         try {
           localStorage.setItem('truthpulse_refresh_feed', Date.now().toString());
           window.dispatchEvent(new Event('truthpulse_refresh'));
@@ -299,6 +305,18 @@ export default function EditorStudioPage() {
 
           {/* Right: Clean User Pill & Signout */}
           <div className="flex items-center gap-2.5">
+            <a
+              href="http://localhost:1337/admin"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hidden lg:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-indigo-50 hover:bg-indigo-100/80 text-indigo-700 text-[11px] font-mono border border-indigo-200 transition"
+              title="Open Strapi Headless CMS Admin Console (localhost:1337/admin)"
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-indigo-600 animate-pulse"></span>
+              <span>Strapi CMS Admin</span>
+              <Globe className="w-3 h-3" />
+            </a>
+
             <div className="hidden md:flex items-center gap-2 text-xs font-mono text-slate-600">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
               <span className="text-slate-800 font-sans font-semibold">{currentEditor.name.split(' ')[0]}</span>
@@ -643,6 +661,43 @@ export default function EditorStudioPage() {
                 </div>
               </div>
 
+              {/* Card 4: Strapi Open-Source CMS Integration */}
+              <div className="bg-white border border-slate-200 rounded-2xl p-4 space-y-2.5 text-xs shadow-sm">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-1.5 font-bold text-slate-900">
+                    <span className="w-2 h-2 rounded-full bg-indigo-600 animate-pulse"></span>
+                    <span>Strapi Open-Source CMS</span>
+                  </div>
+                  <span className="px-1.5 py-0.5 rounded text-[9px] font-mono font-bold bg-indigo-100 text-indigo-700 border border-indigo-200">
+                    Active Dual-Sync
+                  </span>
+                </div>
+
+                <label className="flex items-center justify-between cursor-pointer pt-2 border-t border-slate-100">
+                  <span className="text-[11px] text-slate-700 font-medium">Replicate to Strapi CMS</span>
+                  <input
+                    type="checkbox"
+                    checked={syncToStrapi}
+                    onChange={(e) => setSyncToStrapi(e.target.checked)}
+                    className="w-4 h-4 text-indigo-600 rounded border-slate-300 focus:ring-0"
+                  />
+                </label>
+
+                <p className="text-[10px] font-mono text-slate-500 leading-normal">
+                  Articles are mapped to Strapi Content Schema with Draft & Publish states, REST API & Webhooks.
+                </p>
+
+                <a
+                  href="http://localhost:1337/admin"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full flex items-center justify-center gap-1.5 py-1.5 rounded-lg bg-indigo-50 hover:bg-indigo-100/80 text-indigo-700 font-mono text-[10px] font-bold border border-indigo-200 transition"
+                >
+                  <span>Launch Strapi Admin Panel</span>
+                  <Globe className="w-3 h-3" />
+                </a>
+              </div>
+
             </div>
           </div>
         )}
@@ -747,7 +802,14 @@ export default function EditorStudioPage() {
                         return (
                           <tr key={art._id} className="hover:bg-slate-50 transition">
                             <td className="py-3 px-4 max-w-sm truncate text-slate-900 font-medium">
-                              {art.title}
+                              <div className="flex items-center gap-1.5 truncate">
+                                {art.strapiId && (
+                                  <span className="px-1.5 py-0.2 rounded text-[9px] font-mono font-bold bg-indigo-100 text-indigo-700 border border-indigo-200 shrink-0">
+                                    Strapi #{art.strapiId}
+                                  </span>
+                                )}
+                                <span className="truncate">{art.title}</span>
+                              </div>
                             </td>
                             <td className="py-3 px-3 text-slate-600 font-mono text-[11px]">
                               {art.category}

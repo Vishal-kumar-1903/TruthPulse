@@ -1,0 +1,111 @@
+{
+  "kind": "collectionType",
+  "collectionName": "articles",
+  "info": {
+    "singularName": "article",
+    "pluralName": "articles",
+    "displayName": "Article",
+    "description": "TruthPulse Open-Source News Article Schema with Draft & Publish"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "title": {
+      "type": "string",
+      "required": true,
+      "unique": false
+    },
+    "slug": {
+      "type": "uid",
+      "targetField": "title"
+    },
+    "summary": {
+      "type": "text",
+      "required": true
+    },
+    "bullets": {
+      "type": "json"
+    },
+    "content": {
+      "type": "richtext",
+      "required": false
+    },
+    "category": {
+      "type": "enumeration",
+      "enum": [
+        "Business",
+        "Politics",
+        "Sports",
+        "Weather",
+        "Entertainment",
+        "Health",
+        "General"
+      ],
+      "default": "General",
+      "required": true
+    },
+    "region": {
+      "type": "enumeration",
+      "enum": [
+        "National",
+        "International"
+      ],
+      "default": "National"
+    },
+    "state": {
+      "type": "string"
+    },
+    "city": {
+      "type": "string"
+    },
+    "author": {
+      "type": "string",
+      "default": "TruthPulse Editorial Desk"
+    },
+    "trustScore": {
+      "type": "integer",
+      "default": 90,
+      "min": 0,
+      "max": 100
+    },
+    "isVerified": {
+      "type": "boolean",
+      "default": true
+    },
+    "isPinned": {
+      "type": "boolean",
+      "default": false
+    },
+    "sources": {
+      "type": "json"
+    },
+    "imageUrl": {
+      "type": "string"
+    },
+    "coverImage": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "mediaType": {
+      "type": "enumeration",
+      "enum": [
+        "IMAGE",
+        "VIDEO_LOOP",
+        "LOTTIE_ANIMATION"
+      ],
+      "default": "IMAGE"
+    },
+    "mediaUrl": {
+      "type": "string"
+    },
+    "contentHash": {
+      "type": "string"
+    }
+  }
+}

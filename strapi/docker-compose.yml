@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  strapi:
+    image: strapi/strapi:latest
+    container_name: truthpulse-strapi
+    restart: unless-stopped
+    ports:
+      - '1337:1337'
+    environment:
+      DATABASE_CLIENT: postgres
+      DATABASE_HOST: strapi-db
+      DATABASE_PORT: 5432
+      DATABASE_NAME: strapi
+      DATABASE_USERNAME: strapi
+      DATABASE_PASSWORD: strapi_secure_password_2026
+      JWT_SECRET: truthpulse_strapi_jwt_super_secret_key_32chars
+      ADMIN_JWT_SECRET: truthpulse_strapi_admin_jwt_secret_key_32chars
+      APP_KEYS: truthpulse_key_a,truthpulse_key_b,truthpulse_key_c,truthpulse_key_d
+      API_TOKEN_SALT: truthpulse_api_token_salt_32chars
+      TRANSFER_TOKEN_SALT: truthpulse_transfer_salt_32chars
+    volumes:
+      - strapi-data:/srv/app
+    depends_on:
+      - strapi-db
+    networks:
+      - truthpulse-net
+
+  strapi-db:
+    image: postgres:15-alpine
+    container_name: truthpulse-strapi-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: strapi
+      POSTGRES_USER: strapi
+      POSTGRES_PASSWORD: strapi_secure_password_2026
+    volumes:
+      - strapi-pgdata:/var/lib/postgresql/data
+    networks:
+      - truthpulse-net
+
+volumes:
+  strapi-data:
+  strapi-pgdata:
+
+networks:
+  truthpulse-net:
+    driver: bridge

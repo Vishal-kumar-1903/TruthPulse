@@ -69,6 +69,7 @@ export interface IArticle extends Document {
   imageUrl?: string;
   mediaType?: MediaType;
   mediaUrl?: string;
+  strapiId?: string;
   civicAction?: {
     isCivic: boolean;
     authorityName: string;
@@ -173,6 +174,7 @@ const ArticleSchema = new Schema<IArticle>(
       default: 'IMAGE'
     },
     mediaUrl: { type: String },
+    strapiId: { type: String, index: true, sparse: true },
     civicAction: {
       isCivic: { type: Boolean, default: false },
       authorityName: { type: String, default: '' },

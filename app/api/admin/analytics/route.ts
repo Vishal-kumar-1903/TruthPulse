@@ -20,6 +20,7 @@ export async function GET() {
               mediaType: 1,
               mediaUrl: 1,
               imageUrl: 1,
+              strapiId: 1,
               upvotes: { $ifNull: ['$upvotes', 0] },
               downvotes: { $ifNull: ['$downvotes', 0] },
               greenVoterCount: { $size: { $ifNull: ['$greenVoters', []] } },

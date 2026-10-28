@@ -7,6 +7,7 @@ import { bot4VerificationAuditor } from '@/lib/agents';
 import { seedDatabase } from '@/lib/seed';
 import { FALLBACK_ARTICLES, filterFallbackArticles, METRO_CLUSTERS_MAP } from '@/lib/fallbackArticles';
 import { METROPOLITAN_HUBS } from '@/lib/metroHubs';
+import { publishArticleToStrapi, fetchStrapiArticles } from '@/lib/strapi';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
@@ -275,6 +276,35 @@ export async function POST(req: NextRequest) {
       // Create new article in MongoDB without manual string _id so MongoDB generates valid ObjectId
       const newArticle = await Article.create(articleData);
 
+      // Dual-Sync to Strapi Open-Source CMS
+      let strapiSyncResult: any = null;
+      try {
+        strapiSyncResult = await publishArticleToStrapi({
+          title,
+          summary,
+          bullets: articleData.bullets,
+          content: articleData.content,
+          category,
+          region: articleData.region,
+          state: articleData.state,
+          city: articleData.city,
+          trustScore: articleData.trustScore,
+          author,
+          imageUrl: articleData.imageUrl,
+          mediaType: articleData.mediaType,
+          mediaUrl: articleData.mediaUrl,
+          isPinned: articleData.isPinned,
+          sources
+        });
+
+        if (strapiSyncResult?.success && strapiSyncResult.strapiId) {
+          newArticle.strapiId = strapiSyncResult.strapiId.toString();
+          await newArticle.save();
+        }
+      } catch (strapiErr) {
+        console.warn('Strapi dual-sync notice (CMS offline or token pending):', strapiErr);
+      }
+
       // Reward contributor TruthCredits
       try {
         await AdminUser.findOneAndUpdate(
@@ -297,7 +327,8 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({
         success: true,
         message: 'Article published to database with Cryptographic Seal! +25 TruthCredits awarded.',
-        data: newArticle
+        data: newArticle,
+        strapi: strapiSyncResult
       });
     }
 
@@ -308,6 +339,24 @@ export async function POST(req: NextRequest) {
       createdAt: new Date().toISOString()
     };
     FALLBACK_ARTICLES.unshift(fallbackArticle as any);
+
+    // Optional Strapi sync during fallback mode
+    try {
+      await publishArticleToStrapi({
+        title,
+        summary,
+        bullets: fallbackArticle.bullets,
+        content: fallbackArticle.content,
+        category,
+        region: fallbackArticle.region,
+        state: fallbackArticle.state,
+        city: fallbackArticle.city,
+        trustScore: fallbackArticle.trustScore,
+        author,
+        imageUrl: fallbackArticle.imageUrl,
+        sources
+      });
+    } catch (strapiErr) {}
 
     return NextResponse.json({
       success: true,
