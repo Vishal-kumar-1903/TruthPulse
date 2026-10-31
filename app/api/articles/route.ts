@@ -39,7 +39,13 @@ export async function GET(req: NextRequest) {
 
       const filter: any = {};
 
-      if (status !== 'ALL') {
+      if (status === 'PUBLISHED') {
+        // Public reader stream: show PUBLISHED or SCHEDULED whose embargo time has passed
+        filter.$or = [
+          { status: 'PUBLISHED' },
+          { status: 'SCHEDULED', scheduledPublishAt: { $lte: new Date() } }
+        ];
+      } else if (status !== 'ALL') {
         filter.status = status;
       }
 
@@ -198,8 +204,13 @@ export async function POST(req: NextRequest) {
       reelBadge = 'BREAKING',
       snippet,
       civicAction,
-      isPinned = true
+      isPinned = true,
+      isScheduled = false,
+      scheduledPublishAt
     } = body;
+
+    const effectiveStatus = (isScheduled && scheduledPublishAt) ? 'SCHEDULED' : 'PUBLISHED';
+    const effectiveScheduledPublishAt = (isScheduled && scheduledPublishAt) ? new Date(scheduledPublishAt) : undefined;
 
     // MANDATORY EDITORIAL GATING CHECK:
     if (!sources || sources.length === 0 || !sources[0]?.url) {
@@ -257,8 +268,10 @@ export async function POST(req: NextRequest) {
       isVerified: audit.trustScore >= 85,
       discrepancyAlert: audit.discrepancyAlert,
       contentHash,
-      status: 'PUBLISHED',
-      isPinned: Boolean(isPinned),
+      status: effectiveStatus,
+      isScheduled: Boolean(isScheduled && scheduledPublishAt),
+      scheduledPublishAt: effectiveScheduledPublishAt,
+      isPinned: effectiveStatus === 'SCHEDULED' ? false : Boolean(isPinned),
       author,
       imageUrl: imageUrl || 'https://images.unsplash.com/photo-1585829365295-ab7cd400c167?w=1200',
       mediaType,
@@ -333,9 +346,13 @@ export async function POST(req: NextRequest) {
         console.warn('Credit update skipped:', creditErr);
       }
 
+      const message = effectiveStatus === 'SCHEDULED'
+        ? `Article scheduled for auto-embargo release at ${effectiveScheduledPublishAt?.toLocaleString()}! +25 TruthCredits awarded.`
+        : 'Article published to database with Cryptographic Seal! +25 TruthCredits awarded.';
+
       return NextResponse.json({
         success: true,
-        message: 'Article published to database with Cryptographic Seal! +25 TruthCredits awarded.',
+        message,
         data: newArticle,
         strapi: strapiSyncResult
       });

@@ -12,7 +12,7 @@ export interface PayloadCollectionConfig {
   };
   fields: Array<{
     name: string;
-    type: 'text' | 'textarea' | 'richText' | 'select' | 'number' | 'array' | 'upload' | 'relationship';
+    type: 'text' | 'textarea' | 'richText' | 'select' | 'number' | 'array' | 'upload' | 'relationship' | 'date';
     required?: boolean;
     options?: string[];
   }>;
@@ -22,7 +22,7 @@ export const ArticlesCollection: PayloadCollectionConfig = {
   slug: 'articles',
   admin: {
     useAsTitle: 'title',
-    defaultColumns: ['title', 'category', 'status', 'trustScore', 'createdAt']
+    defaultColumns: ['title', 'category', 'status', 'scheduledPublishAt', 'trustScore', 'createdAt']
   },
   fields: [
     { name: 'title', type: 'text', required: true },
@@ -46,9 +46,11 @@ export const ArticlesCollection: PayloadCollectionConfig = {
     { 
       name: 'status', 
       type: 'select', 
-      options: ['DRAFT', 'PUBLISHED', 'ARCHIVED'],
+      options: ['DRAFT', 'PUBLISHED', 'SCHEDULED', 'ARCHIVED'],
       required: true 
     },
+    { name: 'scheduledPublishAt', type: 'date' },
+    { name: 'isScheduled', type: 'select', options: ['true', 'false'] },
     { name: 'imageUrl', type: 'text' },
     { name: 'mediaUrl', type: 'text' }
   ]
@@ -58,7 +60,7 @@ export const ReelsCollection: PayloadCollectionConfig = {
   slug: 'reels',
   admin: {
     useAsTitle: 'headline',
-    defaultColumns: ['headline', 'badge', 'location', 'trustScore', 'createdAt']
+    defaultColumns: ['headline', 'badge', 'status', 'scheduledPublishAt', 'location', 'trustScore', 'createdAt']
   },
   fields: [
     { name: 'headline', type: 'text', required: true },
@@ -69,6 +71,14 @@ export const ReelsCollection: PayloadCollectionConfig = {
       options: ['BREAKING', 'ALERT', 'FACT-CHECK'],
       required: true 
     },
+    { 
+      name: 'status', 
+      type: 'select', 
+      options: ['DRAFT', 'PUBLISHED', 'SCHEDULED', 'ARCHIVED'],
+      required: true 
+    },
+    { name: 'scheduledPublishAt', type: 'date' },
+    { name: 'isScheduled', type: 'select', options: ['true', 'false'] },
     { name: 'location', type: 'text' },
     { name: 'category', type: 'select', options: ['Politics', 'Business', 'Sports', 'Weather', 'Entertainment', 'Health'] },
     { name: 'mediaUrl', type: 'text' },

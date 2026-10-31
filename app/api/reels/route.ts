@@ -50,7 +50,14 @@ export async function GET(req: NextRequest) {
           { contentType: 'REEL' },
           { mediaType: 'VIDEO_LOOP' }
         ],
-        status: 'PUBLISHED'
+        $and: [
+          {
+            $or: [
+              { status: 'PUBLISHED' },
+              { status: 'SCHEDULED', scheduledPublishAt: { $lte: new Date() } }
+            ]
+          }
+        ]
       })
       .sort({ createdAt: -1 })
       .limit(15)
@@ -109,8 +116,13 @@ export async function POST(req: NextRequest) {
       sourceName = 'Primary Video Wire',
       sourceUrl,
       author = 'TruthPulse Editorial Bureau',
-      trustScore = 92
+      trustScore = 92,
+      isScheduled = false,
+      scheduledPublishAt
     } = body;
+
+    const effectiveStatus = (isScheduled && scheduledPublishAt) ? 'SCHEDULED' : 'PUBLISHED';
+    const effectiveScheduledPublishAt = (isScheduled && scheduledPublishAt) ? new Date(scheduledPublishAt) : undefined;
 
     const reelHeadline = (headline || title || '').trim();
     const reelSnippet = (snippet || summary || '').trim();
@@ -183,8 +195,10 @@ export async function POST(req: NextRequest) {
       downvotes: 0,
       isVerified: true,
       contentHash,
-      status: 'PUBLISHED',
-      isPinned: true,
+      status: effectiveStatus,
+      isScheduled: Boolean(isScheduled && scheduledPublishAt),
+      scheduledPublishAt: effectiveScheduledPublishAt,
+      isPinned: effectiveStatus === 'SCHEDULED' ? false : true,
       author,
       imageUrl: imageUrl || 'https://images.unsplash.com/photo-1541872703-74c5e44368f9?w=1000',
       mediaType: 'VIDEO_LOOP',
@@ -253,9 +267,13 @@ export async function POST(req: NextRequest) {
 
     const formattedShort = articleToShort(savedArticle);
 
+    const message = effectiveStatus === 'SCHEDULED'
+      ? `Breaking Video Reel scheduled for broadcast at ${effectiveScheduledPublishAt?.toLocaleString()}! +25 TruthCredits awarded.`
+      : 'Breaking Video Reel published to live registry! +25 TruthCredits awarded.';
+
     return NextResponse.json({
       success: true,
-      message: 'Breaking Video Reel published to live registry! +25 TruthCredits awarded.',
+      message,
       short: formattedShort,
       strapi: strapiSyncResult
     });

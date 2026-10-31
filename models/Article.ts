@@ -62,7 +62,9 @@ export interface IArticle extends Document {
     conflictingSources?: Array<{ source: string; claim: string }>;
   };
   contentHash: string;
-  status: 'DRAFT' | 'PUBLISHED' | 'UNDER_REVIEW' | 'DEBUNKED';
+  status: 'DRAFT' | 'PUBLISHED' | 'UNDER_REVIEW' | 'DEBUNKED' | 'SCHEDULED';
+  scheduledPublishAt?: Date;
+  isScheduled?: boolean;
   views: number;
   isPinned: boolean;
   author: string;
@@ -164,9 +166,11 @@ const ArticleSchema = new Schema<IArticle>(
     contentHash: { type: String, required: true },
     status: {
       type: String,
-      enum: ['DRAFT', 'PUBLISHED', 'UNDER_REVIEW', 'DEBUNKED'],
+      enum: ['DRAFT', 'PUBLISHED', 'UNDER_REVIEW', 'DEBUNKED', 'SCHEDULED'],
       default: 'PUBLISHED'
     },
+    scheduledPublishAt: { type: Date },
+    isScheduled: { type: Boolean, default: false },
     views: { type: Number, default: 0 },
     isPinned: { type: Boolean, default: false },
     author: { type: String, default: 'TruthPulse Editorial Desk' },

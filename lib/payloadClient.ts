@@ -21,6 +21,7 @@ export interface PayloadHealthResponse {
     reels: number;
     users: number;
     media: number;
+    scheduled: number;
   };
 }
 
@@ -29,7 +30,9 @@ export interface PayloadCMSDocument {
   collection: 'articles' | 'reels' | 'users';
   title: string;
   category?: string;
-  status: 'PUBLISHED' | 'DRAFT';
+  status: 'PUBLISHED' | 'DRAFT' | 'SCHEDULED' | 'ARCHIVED';
+  scheduledPublishAt?: string;
+  isScheduled?: boolean;
   author?: string;
   trustScore?: number;
   createdAt: string;
@@ -48,10 +51,11 @@ export async function checkPayloadHealth(): Promise<PayloadHealthResponse> {
     const latencyMs = Date.now() - start;
 
     if (isConnected) {
-      const [articleCount, reelCount, userCount] = await Promise.all([
+      const [articleCount, reelCount, userCount, scheduledCount] = await Promise.all([
         Article.countDocuments({ contentType: { $ne: 'REEL' } }).catch(() => 0),
         Article.countDocuments({ contentType: 'REEL' }).catch(() => 0),
-        AdminUser.countDocuments().catch(() => 0)
+        AdminUser.countDocuments().catch(() => 0),
+        Article.countDocuments({ status: 'SCHEDULED' }).catch(() => 0)
       ]);
 
       const host = mongoose.connection.host || 'cluster0.t1ondzv.mongodb.net';
@@ -67,7 +71,8 @@ export async function checkPayloadHealth(): Promise<PayloadHealthResponse> {
           articles: articleCount,
           reels: reelCount,
           users: userCount,
-          media: articleCount + reelCount
+          media: articleCount + reelCount,
+          scheduled: scheduledCount
         }
       };
     }
@@ -78,7 +83,7 @@ export async function checkPayloadHealth(): Promise<PayloadHealthResponse> {
       database: 'truthpulse',
       clusterHost: 'offline',
       latencyMs,
-      collections: { articles: 0, reels: 0, users: 0, media: 0 }
+      collections: { articles: 0, reels: 0, users: 0, media: 0, scheduled: 0 }
     };
   } catch (err) {
     return {
@@ -87,7 +92,7 @@ export async function checkPayloadHealth(): Promise<PayloadHealthResponse> {
       database: 'truthpulse',
       clusterHost: 'error',
       latencyMs: Date.now() - start,
-      collections: { articles: 0, reels: 0, users: 0, media: 0 }
+      collections: { articles: 0, reels: 0, users: 0, media: 0, scheduled: 0 }
     };
   }
 }
@@ -130,7 +135,9 @@ export async function fetchPayloadDocuments(
       collection: doc.contentType === 'REEL' ? 'reels' : 'articles',
       title: doc.title || 'Untitled Dispatch',
       category: doc.category || 'General',
-      status: (doc.status as 'PUBLISHED' | 'DRAFT') || 'PUBLISHED',
+      status: (doc.status as 'PUBLISHED' | 'DRAFT' | 'SCHEDULED' | 'ARCHIVED') || 'PUBLISHED',
+      scheduledPublishAt: doc.scheduledPublishAt ? new Date(doc.scheduledPublishAt).toISOString() : undefined,
+      isScheduled: Boolean(doc.isScheduled || doc.status === 'SCHEDULED'),
       author: doc.author || 'TruthPulse Bureau',
       trustScore: doc.trustScore || 90,
       createdAt: doc.createdAt ? new Date(doc.createdAt).toISOString() : new Date().toISOString(),

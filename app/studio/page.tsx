@@ -47,7 +47,9 @@ import {
   VolumeX,
   ExternalLink,
   Server,
-  Database
+  Database,
+  Clock,
+  Calendar
 } from 'lucide-react';
 import { METROPOLITAN_HUBS } from '@/lib/metroHubs';
 import AnimatedMedia from '@/components/AnimatedMedia';
@@ -148,6 +150,41 @@ export default function EditorStudioPage() {
   const [authorityDept, setAuthorityDept] = useState('Municipal Utilities Authority');
   const [authorityEmail, setAuthorityEmail] = useState('grievance@municipal.gov.in');
 
+  // Scheduled Publishing & Auto-Embargo States
+  const [isScheduled, setIsScheduled] = useState<boolean>(false);
+  const [scheduledDateTime, setScheduledDateTime] = useState<string>(() => {
+    const d = new Date(Date.now() + 60 * 60 * 1000);
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    const hours = String(d.getHours()).padStart(2, '0');
+    const mins = String(d.getMinutes()).padStart(2, '0');
+    return `${year}-${month}-${day}T${hours}:${mins}`;
+  });
+
+  const setSchedulingPreset = (type: '1H' | 'PRIME' | 'TOMORROW_MORNING') => {
+    const now = new Date();
+    const d = new Date();
+    if (type === '1H') {
+      d.setTime(now.getTime() + 60 * 60 * 1000);
+    } else if (type === 'PRIME') {
+      d.setHours(20, 0, 0, 0);
+      if (d.getTime() <= now.getTime()) {
+        d.setDate(d.getDate() + 1);
+      }
+    } else if (type === 'TOMORROW_MORNING') {
+      d.setDate(d.getDate() + 1);
+      d.setHours(8, 0, 0, 0);
+    }
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    const hours = String(d.getHours()).padStart(2, '0');
+    const mins = String(d.getMinutes()).padStart(2, '0');
+    setScheduledDateTime(`${year}-${month}-${day}T${hours}:${mins}`);
+    setIsScheduled(true);
+  };
+
   // UI Interactive States
   const [isPublishing, setIsPublishing] = useState(false);
   const [isSynthesizing, setIsSynthesizing] = useState(false);
@@ -162,13 +199,13 @@ export default function EditorStudioPage() {
     latencyMs: number;
     database: string;
     clusterHost: string;
-    collections: { articles: number; reels: number; users: number; media: number };
+    collections: { articles: number; reels: number; users: number; media: number; scheduled?: number };
   }>({
     online: true,
     latencyMs: 12,
     database: 'truthpulse',
     clusterHost: 'cluster0.t1ondzv.mongodb.net',
-    collections: { articles: 18, reels: 8, users: 4, media: 26 }
+    collections: { articles: 18, reels: 8, users: 4, media: 26, scheduled: 0 }
   });
   const [payloadDocs, setPayloadDocs] = useState<any[]>([]);
   const [payloadActiveCol, setPayloadActiveCol] = useState<'articles' | 'reels'>('articles');
@@ -324,13 +361,18 @@ export default function EditorStudioPage() {
           sources: [{ name: sourceName.trim() || 'Primary Wire', url: sourceUrl.trim(), stance: 'CORROBORATING' }],
           trustScore,
           author: authorByline.trim() || currentEditor.name || 'TruthPulse Editorial Bureau',
-          isPinned: true
+          isPinned: true,
+          isScheduled,
+          scheduledPublishAt: isScheduled ? new Date(scheduledDateTime).toISOString() : undefined
         })
       });
 
       const data = await res.json();
       if (data.success) {
-        if (syncToPayload) {
+        if (isScheduled) {
+          const dateStr = new Date(scheduledDateTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', month: 'short', day: 'numeric' });
+          setToastMessage(`⏱️ ${contentType === 'ARTICLE' ? 'In-Depth Article' : 'News Dispatch'} Scheduled with Auto-Embargo for ${dateStr}!`);
+        } else if (syncToPayload) {
           setToastMessage(`✅ ${contentType === 'ARTICLE' ? 'In-Depth Article' : 'News Dispatch'} published & synced to Payload CMS (MongoDB)!`);
         } else {
           setToastMessage(`✅ ${contentType === 'ARTICLE' ? 'In-Depth Article' : 'News Dispatch'} published to Front Page!`);
@@ -387,13 +429,20 @@ export default function EditorStudioPage() {
           sourceName: reelSourceName.trim() || 'ANI Video Wire',
           sourceUrl: reelSourceUrl.trim(),
           author: authorByline || currentEditor.name || 'TruthPulse Video Desk',
-          trustScore
+          trustScore,
+          isScheduled,
+          scheduledPublishAt: isScheduled ? new Date(scheduledDateTime).toISOString() : undefined
         })
       });
 
       const data = await res.json();
       if (data.success) {
-        setToastMessage(`🎬 Breaking Reel "${reelHeadline.slice(0, 25)}..." is LIVE on Front Page & Payload Reels collection!`);
+        if (isScheduled) {
+          const dateStr = new Date(scheduledDateTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', month: 'short', day: 'numeric' });
+          setToastMessage(`⏱️ Reel "${reelHeadline.slice(0, 20)}..." scheduled for broadcast at ${dateStr}!`);
+        } else {
+          setToastMessage(`🎬 Breaking Reel "${reelHeadline.slice(0, 25)}..." is LIVE on Front Page & Payload Reels collection!`);
+        }
         
         // Broadcast new reel to home page carousel & fullscreen player
         try {
@@ -885,22 +934,99 @@ export default function EditorStudioPage() {
                         : 'Corroboration required before wire transmission.'}
                     </p>
 
+                    {/* Auto-Embargo & Scheduling Control */}
+                    <div className="pt-3 border-t border-slate-100 space-y-2">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[11px] font-mono uppercase text-slate-700 font-bold flex items-center gap-1.5">
+                          <Clock className="w-3.5 h-3.5 text-indigo-600" />
+                          <span>Release Mode</span>
+                        </span>
+                        <div className="flex items-center bg-slate-100 p-0.5 rounded-lg border border-slate-200 text-[10px] font-mono">
+                          <button
+                            type="button"
+                            onClick={() => setIsScheduled(false)}
+                            className={`px-2 py-0.5 rounded font-bold transition ${
+                              !isScheduled ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-900'
+                            }`}
+                          >
+                            Live Now
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setIsScheduled(true)}
+                            className={`px-2 py-0.5 rounded font-bold transition ${
+                              isScheduled ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-500 hover:text-indigo-600'
+                            }`}
+                          >
+                            Schedule
+                          </button>
+                        </div>
+                      </div>
+
+                      {isScheduled && (
+                        <div className="p-3 rounded-xl bg-indigo-50/70 border border-indigo-200 space-y-2 animate-fadeIn">
+                          <div className="flex items-center justify-between text-[10px] font-mono text-indigo-900 font-bold">
+                            <span>Auto-Embargo Timestamp:</span>
+                            <span className="text-indigo-600">Auto-Goes Live</span>
+                          </div>
+
+                          <input
+                            type="datetime-local"
+                            value={scheduledDateTime}
+                            onChange={(e) => setScheduledDateTime(e.target.value)}
+                            className="w-full px-2.5 py-1.5 rounded-lg bg-white border border-indigo-200 text-xs font-mono text-slate-900 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                          />
+
+                          {/* Quick Presets */}
+                          <div className="flex items-center gap-1.5 pt-1">
+                            <button
+                              type="button"
+                              onClick={() => setSchedulingPreset('1H')}
+                              className="flex-1 py-1 px-1 rounded-md bg-white hover:bg-indigo-100 border border-indigo-200 text-[10px] font-mono text-indigo-800 text-center font-semibold transition"
+                            >
+                              +1 Hour
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => setSchedulingPreset('PRIME')}
+                              className="flex-1 py-1 px-1 rounded-md bg-white hover:bg-indigo-100 border border-indigo-200 text-[10px] font-mono text-indigo-800 text-center font-semibold transition"
+                            >
+                              8 PM Prime
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => setSchedulingPreset('TOMORROW_MORNING')}
+                              className="flex-1 py-1 px-1 rounded-md bg-white hover:bg-indigo-100 border border-indigo-200 text-[10px] font-mono text-indigo-800 text-center font-semibold transition"
+                            >
+                              Tmrw 8 AM
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
                     {/* Primary Action Button */}
                     <button
                       type="button"
                       disabled={isPublishing || trustScore < 80 || !title.trim() || !summary.trim() || !sourceUrl.trim()}
                       onClick={handlePublishNewsOrArticle}
-                      className="w-full py-2.5 rounded-xl bg-slate-900 hover:bg-black text-white font-semibold text-xs transition shadow-sm flex items-center justify-center gap-2 disabled:opacity-40 active:scale-98"
+                      className={`w-full py-2.5 rounded-xl text-white font-semibold text-xs transition shadow-sm flex items-center justify-center gap-2 disabled:opacity-40 active:scale-98 ${
+                        isScheduled ? 'bg-indigo-600 hover:bg-indigo-700' : 'bg-slate-900 hover:bg-black'
+                      }`}
                     >
                       {isPublishing ? (
                         <>
                           <RefreshCw className="w-3.5 h-3.5 animate-spin" />
-                          <span>Signing & Broadcasting...</span>
+                          <span>{isScheduled ? 'Scheduling Auto-Embargo...' : 'Signing & Broadcasting...'}</span>
                         </>
                       ) : (
                         <>
-                          <Send className="w-3.5 h-3.5" />
-                          <span>{contentType === 'ARTICLE' ? 'Publish In-Depth Article' : 'Publish Verified News'}</span>
+                          {isScheduled ? <Clock className="w-3.5 h-3.5" /> : <Send className="w-3.5 h-3.5" />}
+                          <span>
+                            {isScheduled
+                              ? `Schedule ${contentType === 'ARTICLE' ? 'Article' : 'Dispatch'} (Auto-Embargo)`
+                              : (contentType === 'ARTICLE' ? 'Publish In-Depth Article' : 'Publish Verified News')}
+                          </span>
                         </>
                       )}
                     </button>
@@ -1267,23 +1393,96 @@ export default function EditorStudioPage() {
                     </div>
                   </div>
 
+                  {/* Auto-Embargo & Scheduling Control for Reel */}
+                  <div className="pt-2 border-t border-slate-100 space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[11px] font-mono uppercase text-slate-700 font-bold flex items-center gap-1.5">
+                        <Clock className="w-3.5 h-3.5 text-red-600" />
+                        <span>Broadcast Timing</span>
+                      </span>
+                      <div className="flex items-center bg-slate-100 p-0.5 rounded-lg border border-slate-200 text-[10px] font-mono">
+                        <button
+                          type="button"
+                          onClick={() => setIsScheduled(false)}
+                          className={`px-2 py-0.5 rounded font-bold transition ${
+                            !isScheduled ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-900'
+                          }`}
+                        >
+                          Live Now
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setIsScheduled(true)}
+                          className={`px-2 py-0.5 rounded font-bold transition ${
+                            isScheduled ? 'bg-red-600 text-white shadow-sm' : 'text-slate-500 hover:text-red-600'
+                          }`}
+                        >
+                          Schedule
+                        </button>
+                      </div>
+                    </div>
+
+                    {isScheduled && (
+                      <div className="p-3 rounded-xl bg-red-50/60 border border-red-200 space-y-2 animate-fadeIn">
+                        <div className="flex items-center justify-between text-[10px] font-mono text-red-900 font-bold">
+                          <span>Reel Embargo Release Time:</span>
+                          <span className="text-red-600">Auto-Broadcasts</span>
+                        </div>
+
+                        <input
+                          type="datetime-local"
+                          value={scheduledDateTime}
+                          onChange={(e) => setScheduledDateTime(e.target.value)}
+                          className="w-full px-2.5 py-1.5 rounded-lg bg-white border border-red-200 text-xs font-mono text-slate-900 focus:outline-none focus:ring-1 focus:ring-red-500"
+                        />
+
+                        {/* Quick Presets */}
+                        <div className="flex items-center gap-1.5 pt-1">
+                          <button
+                            type="button"
+                            onClick={() => setSchedulingPreset('1H')}
+                            className="flex-1 py-1 px-1 rounded-md bg-white hover:bg-red-100 border border-red-200 text-[10px] font-mono text-red-800 text-center font-semibold transition"
+                          >
+                            +1 Hour
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setSchedulingPreset('PRIME')}
+                            className="flex-1 py-1 px-1 rounded-md bg-white hover:bg-red-100 border border-red-200 text-[10px] font-mono text-red-800 text-center font-semibold transition"
+                          >
+                            8 PM Prime
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setSchedulingPreset('TOMORROW_MORNING')}
+                            className="flex-1 py-1 px-1 rounded-md bg-white hover:bg-red-100 border border-red-200 text-[10px] font-mono text-red-800 text-center font-semibold transition"
+                          >
+                            Tmrw 8 AM
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
                   {/* Primary Publish Action */}
                   <div className="pt-3 border-t border-slate-100">
                     <button
                       type="button"
                       disabled={isPublishing || !reelHeadline.trim() || !reelSnippet.trim() || !reelSourceUrl.trim()}
                       onClick={handlePublishReel}
-                      className="w-full py-3 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold text-xs transition shadow-md shadow-red-500/20 flex items-center justify-center gap-2 disabled:opacity-40 active:scale-98"
+                      className={`w-full py-3 rounded-xl text-white font-bold text-xs transition shadow-md flex items-center justify-center gap-2 disabled:opacity-40 active:scale-98 ${
+                        isScheduled ? 'bg-indigo-700 hover:bg-indigo-800 shadow-indigo-500/20' : 'bg-red-600 hover:bg-red-700 shadow-red-500/20'
+                      }`}
                     >
                       {isPublishing ? (
                         <>
                           <RefreshCw className="w-4 h-4 animate-spin" />
-                          <span>Publishing Reel & Syncing Payload...</span>
+                          <span>{isScheduled ? 'Scheduling Reel Broadcast...' : 'Publishing Reel & Syncing Payload...'}</span>
                         </>
                       ) : (
                         <>
-                          <Film className="w-4 h-4" />
-                          <span>Publish Breaking Reel (Broadcast Live)</span>
+                          {isScheduled ? <Clock className="w-4 h-4" /> : <Film className="w-4 h-4" />}
+                          <span>{isScheduled ? 'Schedule Reel (Auto-Embargo Release)' : 'Publish Breaking Reel (Broadcast Live)'}</span>
                         </>
                       )}
                     </button>
@@ -1661,9 +1860,16 @@ export default function EditorStudioPage() {
                             {doc.category || 'General'}
                           </td>
                           <td className="py-2.5 px-3">
-                            <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-emerald-100 text-emerald-800">
-                              {doc.status}
-                            </span>
+                            {doc.status === 'SCHEDULED' ? (
+                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-amber-100 text-amber-900 border border-amber-300" title={`Embargoed until: ${doc.scheduledPublishAt ? new Date(doc.scheduledPublishAt).toLocaleString() : 'scheduled time'}`}>
+                                <Clock className="w-2.5 h-2.5 text-amber-700" />
+                                <span>SCHEDULED</span>
+                              </span>
+                            ) : (
+                              <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-emerald-100 text-emerald-800">
+                                {doc.status || 'PUBLISHED'}
+                              </span>
+                            )}
                           </td>
                           <td className="py-2.5 px-3 font-mono text-[11px] font-bold text-emerald-600">
                             {doc.trustScore}%
@@ -2010,6 +2216,10 @@ export default function EditorStudioPage() {
                   <div className="flex items-center justify-between">
                     <span>3. UsersCollection ('users')</span>
                     <span className="text-blue-300 font-bold">{payloadHealth.collections.users} editors</span>
+                  </div>
+                  <div className="flex items-center justify-between pt-1 border-t border-slate-800 text-[10px] text-amber-400">
+                    <span>⏱️ Auto-Embargo & Scheduling</span>
+                    <span className="font-bold">Enabled ({payloadHealth.collections.scheduled || 0} scheduled)</span>
                   </div>
                 </div>
               </div>

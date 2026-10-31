@@ -62,6 +62,9 @@ export interface ArticleItem {
   trustScore: number;
   isPinned?: boolean;
   contentHash?: string;
+  status?: 'DRAFT' | 'PUBLISHED' | 'UNDER_REVIEW' | 'DEBUNKED' | 'SCHEDULED';
+  scheduledPublishAt?: string;
+  isScheduled?: boolean;
   imageUrl?: string;
   mediaType?: MediaType;
   mediaUrl?: string;
