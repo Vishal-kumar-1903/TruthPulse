@@ -104,6 +104,27 @@
     "mediaUrl": {
       "type": "string"
     },
+    "contentType": {
+      "type": "enumeration",
+      "enum": [
+        "NEWS",
+        "ARTICLE",
+        "REEL"
+      ],
+      "default": "NEWS"
+    },
+    "reelBadge": {
+      "type": "enumeration",
+      "enum": [
+        "BREAKING",
+        "ALERT",
+        "FACT-CHECK"
+      ],
+      "default": "BREAKING"
+    },
+    "snippet": {
+      "type": "text"
+    },
     "contentHash": {
       "type": "string"
     }

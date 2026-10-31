@@ -19,6 +19,9 @@ export interface StrapiArticleInput {
   imageUrl?: string;
   mediaType?: 'IMAGE' | 'VIDEO_LOOP' | 'LOTTIE_ANIMATION';
   mediaUrl?: string;
+  contentType?: 'NEWS' | 'ARTICLE' | 'REEL' | string;
+  reelBadge?: 'BREAKING' | 'ALERT' | 'FACT-CHECK' | string;
+  snippet?: string;
   isPinned?: boolean;
   publishedAt?: string | null; // null for draft, ISO string for published
 }
@@ -109,6 +112,9 @@ export async function publishArticleToStrapi(
       imageUrl: article.imageUrl || 'https://images.unsplash.com/photo-1585829365295-ab7cd400c167?w=1200',
       mediaType: article.mediaType || 'IMAGE',
       mediaUrl: article.mediaUrl || '',
+      contentType: article.contentType || 'NEWS',
+      reelBadge: article.reelBadge || 'BREAKING',
+      snippet: article.snippet || article.summary.slice(0, 150),
       isPinned: Boolean(article.isPinned),
       sources: article.sources || [],
       publishedAt: options.publishImmediately ? (article.publishedAt || new Date().toISOString()) : null

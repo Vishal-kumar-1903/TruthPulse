@@ -194,6 +194,9 @@ export async function POST(req: NextRequest) {
       imageUrl,
       mediaType = 'IMAGE',
       mediaUrl,
+      contentType = 'NEWS',
+      reelBadge = 'BREAKING',
+      snippet,
       civicAction,
       isPinned = true
     } = body;
@@ -260,6 +263,9 @@ export async function POST(req: NextRequest) {
       imageUrl: imageUrl || 'https://images.unsplash.com/photo-1585829365295-ab7cd400c167?w=1200',
       mediaType,
       mediaUrl,
+      contentType,
+      reelBadge,
+      snippet: snippet || summary.slice(0, 150),
       civicAction
     };
 
@@ -293,6 +299,9 @@ export async function POST(req: NextRequest) {
           imageUrl: articleData.imageUrl,
           mediaType: articleData.mediaType,
           mediaUrl: articleData.mediaUrl,
+          contentType: articleData.contentType,
+          reelBadge: articleData.reelBadge,
+          snippet: articleData.snippet,
           isPinned: articleData.isPinned,
           sources
         });

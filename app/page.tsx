@@ -69,6 +69,7 @@ function NewsPortalContent() {
   const [darkMode, setDarkMode] = useState<boolean>(false);
   const [currentLang, setCurrentLang] = useState<SupportedLanguage>('hi');
   const [currentUser, setCurrentUser] = useState<AuthUser | null>(null);
+  const [reelsList, setReelsList] = useState(DEFAULT_BREAKING_SHORTS);
 
   // Centralized Modal Manager Hook
   const modals = usePortalModals();
@@ -95,6 +96,16 @@ function NewsPortalContent() {
     } catch {
       // Ignore storage access errors
     }
+
+    // Dynamic Reels fetch
+    fetch('/api/reels')
+      .then(r => r.json())
+      .then(d => {
+        if (d.success && Array.isArray(d.shorts) && d.shorts.length > 0) {
+          setReelsList(d.shorts);
+        }
+      })
+      .catch(() => {});
   }, []);
 
   const handleLoginSuccess = (user: AuthUser) => {
@@ -427,7 +438,7 @@ function NewsPortalContent() {
       {/* 4. CODE-SPLIT LAZY LOADED MODALS */}
       {modals.reels.isOpen && (
         <ReelsViewer
-          shorts={DEFAULT_BREAKING_SHORTS}
+          shorts={reelsList}
           initialIndex={modals.reels.initialIndex}
           isOpen={modals.reels.isOpen}
           onClose={modals.reels.close}

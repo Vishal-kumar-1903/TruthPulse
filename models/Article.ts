@@ -69,6 +69,9 @@ export interface IArticle extends Document {
   imageUrl?: string;
   mediaType?: MediaType;
   mediaUrl?: string;
+  contentType?: 'NEWS' | 'ARTICLE' | 'REEL';
+  reelBadge?: 'BREAKING' | 'ALERT' | 'FACT-CHECK';
+  snippet?: string;
   strapiId?: string;
   civicAction?: {
     isCivic: boolean;
@@ -174,6 +177,17 @@ const ArticleSchema = new Schema<IArticle>(
       default: 'IMAGE'
     },
     mediaUrl: { type: String },
+    contentType: {
+      type: String,
+      enum: ['NEWS', 'ARTICLE', 'REEL'],
+      default: 'NEWS'
+    },
+    reelBadge: {
+      type: String,
+      enum: ['BREAKING', 'ALERT', 'FACT-CHECK'],
+      default: 'BREAKING'
+    },
+    snippet: { type: String, default: '' },
     strapiId: { type: String, index: true, sparse: true },
     civicAction: {
       isCivic: { type: Boolean, default: false },

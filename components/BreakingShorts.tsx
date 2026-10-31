@@ -129,11 +129,12 @@ interface BreakingShortsProps {
 }
 
 export default function BreakingShorts({
-  shorts = DEFAULT_BREAKING_SHORTS,
+  shorts: initialShorts = DEFAULT_BREAKING_SHORTS,
   onSelectArticle,
   onOpenReels,
   currentLang = 'hi'
 }: BreakingShortsProps) {
+  const [liveShorts, setLiveShorts] = useState<BreakingShort[]>(initialShorts);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [progress, setProgress] = useState(0); // 0 to 100
   const [isPaused, setIsPaused] = useState(false);
@@ -141,12 +142,46 @@ export default function BreakingShorts({
   const [touchStartX, setTouchStartX] = useState<number | null>(null);
   const [copiedShare, setCopiedShare] = useState(false);
 
+  // Fetch dynamic published reels from /api/reels on mount
+  useEffect(() => {
+    let isMounted = true;
+    async function loadDynamicReels() {
+      try {
+        const res = await fetch('/api/reels');
+        const data = await res.json();
+        if (data.success && Array.isArray(data.shorts) && data.shorts.length > 0 && isMounted) {
+          setLiveShorts(data.shorts);
+        }
+      } catch (err) {
+        // Fallback to initialShorts
+      }
+    }
+    loadDynamicReels();
+
+    // Listen for newly published reels from Studio
+    const handleNewReel = (e: any) => {
+      if (e.detail?.short) {
+        setLiveShorts(prev => [e.detail.short, ...prev.filter(s => s.id !== e.detail.short.id)]);
+        setCurrentIndex(0);
+        setProgress(0);
+      } else {
+        loadDynamicReels();
+      }
+    };
+
+    window.addEventListener('truthpulse_new_reel', handleNewReel);
+    return () => {
+      isMounted = false;
+      window.removeEventListener('truthpulse_new_reel', handleNewReel);
+    };
+  }, []);
+
   const [durationSec, setDurationSec] = useState<number>(5); // 5-second fast auto-transition default
   const DURATION_MS = durationSec * 1000;
   const TICK_MS = 50; // Smoother 50ms progress ticks
   const STEP_PERCENT = 100 / (DURATION_MS / TICK_MS);
 
-  const activeShort = shorts[currentIndex] || shorts[0];
+  const activeShort = liveShorts[currentIndex] || liveShorts[0] || DEFAULT_BREAKING_SHORTS[0];
   const translatedHeadline = useAutoTranslate(activeShort.headline, currentLang);
   const translatedSnippet = useAutoTranslate(activeShort.snippet, currentLang);
 
@@ -194,13 +229,13 @@ export default function BreakingShorts({
   // 2. Next / Prev Handlers
   const goToNext = useCallback(() => {
     setProgress(0);
-    setCurrentIndex((prev) => (prev + 1) % shorts.length);
-  }, [shorts.length]);
+    setCurrentIndex((prev) => (prev + 1) % liveShorts.length);
+  }, [liveShorts.length]);
 
   const goToPrev = useCallback(() => {
     setProgress(0);
-    setCurrentIndex((prev) => (prev - 1 + shorts.length) % shorts.length);
-  }, [shorts.length]);
+    setCurrentIndex((prev) => (prev - 1 + liveShorts.length) % liveShorts.length);
+  }, [liveShorts.length]);
 
   // Read next when slide switches if audio enabled
   useEffect(() => {
@@ -322,7 +357,7 @@ export default function BreakingShorts({
 
         {/* Horizontal Scrollable Avatar Rings */}
         <div className="flex items-center gap-3 overflow-x-auto scrollbar-none py-1 px-1 w-full max-w-full">
-          {shorts.map((item, idx) => {
+          {liveShorts.map((item, idx) => {
             const isRingActive = currentIndex === idx;
             return (
               <button
@@ -393,7 +428,7 @@ export default function BreakingShorts({
         {/* 1. TOP SEGMENTED PROGRESS BARS (WhatsApp/Instagram Story Style) */}
         <div className="relative z-20 pt-3 px-4 sm:px-6">
           <div className="flex items-center gap-1.5 w-full">
-            {shorts.map((_, idx) => {
+            {liveShorts.map((_, idx) => {
               let segmentFill = '0%';
               if (idx < currentIndex) segmentFill = '100%';
               else if (idx === currentIndex) segmentFill = `${progress}%`;
@@ -529,7 +564,7 @@ export default function BreakingShorts({
             </span>
 
             <span className="hidden sm:inline-flex items-center gap-1 text-[11px] font-mono text-slate-500">
-              <span>Short {currentIndex + 1} of {shorts.length}</span>
+              <span>Short {currentIndex + 1} of {liveShorts.length}</span>
             </span>
           </div>
 

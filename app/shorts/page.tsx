@@ -12,6 +12,7 @@ function ShortsPageContent() {
   const [currentUser, setCurrentUser] = useState<AuthUser | null>(null);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [authReason, setAuthReason] = useState('Sign in to verify or dispute this reel.');
+  const [shortsList, setShortsList] = useState(DEFAULT_BREAKING_SHORTS);
 
   useEffect(() => {
     try {
@@ -22,6 +23,16 @@ function ShortsPageContent() {
     } catch (e) {
       // Ignore
     }
+
+    // Load latest dynamic reels
+    fetch('/api/reels')
+      .then(res => res.json())
+      .then(data => {
+        if (data.success && Array.isArray(data.shorts) && data.shorts.length > 0) {
+          setShortsList(data.shorts);
+        }
+      })
+      .catch(() => {});
   }, []);
 
   const handleRequireAuth = (reason?: string) => {
@@ -36,7 +47,7 @@ function ShortsPageContent() {
   return (
     <div className="min-h-screen bg-black">
       <ReelsViewer
-        shorts={DEFAULT_BREAKING_SHORTS}
+        shorts={shortsList}
         initialIndex={0}
         isOpen={true}
         onClose={handleClose}
