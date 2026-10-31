@@ -36,6 +36,9 @@ export async function connectDB(): Promise<typeof mongoose | null> {
     const opts: mongoose.ConnectOptions = {
       serverSelectionTimeoutMS: isCloudAtlas ? 15000 : 3000,
       autoIndex: false,
+      maxPoolSize: 10,
+      minPoolSize: 1,
+      socketTimeoutMS: 30000,
       tlsAllowInvalidCertificates: isCloudAtlas ? true : false,
     };
 

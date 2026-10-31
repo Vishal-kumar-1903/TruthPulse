@@ -75,11 +75,18 @@ export async function GET(req: NextRequest) {
           }
         }
 
-        return NextResponse.json({
-          success: true,
-          count: combined.length,
-          shorts: combined
-        });
+        return NextResponse.json(
+          {
+            success: true,
+            count: combined.length,
+            shorts: combined
+          },
+          {
+            headers: {
+              'Cache-Control': 'public, s-maxage=15, stale-while-revalidate=60'
+            }
+          }
+        );
       }
     }
 

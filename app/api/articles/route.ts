@@ -135,9 +135,9 @@ export async function GET(req: NextRequest) {
           { success: true, count: articles.length, data: articles, isDatabaseConnected: true },
           {
             headers: {
-              'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0',
-              'CDN-Cache-Control': 'no-store',
-              'Vercel-CDN-Cache-Control': 'no-store'
+              'Cache-Control': 'public, s-maxage=10, stale-while-revalidate=50',
+              'CDN-Cache-Control': 'public, s-maxage=10, stale-while-revalidate=50',
+              'Vercel-CDN-Cache-Control': 'public, s-maxage=10, stale-while-revalidate=50'
             }
           }
         );
@@ -156,7 +156,7 @@ export async function GET(req: NextRequest) {
       },
       {
         headers: {
-          'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0'
+          'Cache-Control': 'public, s-maxage=15, stale-while-revalidate=60'
         }
       }
     );

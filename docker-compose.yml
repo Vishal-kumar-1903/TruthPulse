@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  truthpulse:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: truthpulse_app
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - MONGODB_URI=${MONGODB_URI}
+      - NEXTAUTH_SECRET=${NEXTAUTH_SECRET:-truthpulse_super_secret_jwt_key_2026}
+      - NEXT_PUBLIC_SITE_URL=${NEXT_PUBLIC_SITE_URL:-http://localhost:3000}
