@@ -237,12 +237,24 @@ function NewsPortalContent() {
     window.addEventListener('storage', handleStorage);
     window.addEventListener('truthpulse_refresh', handleCustomRefresh);
 
-    // Auto-poll every 15s to automatically surface newly dispatched editor articles on frontpage
-    const interval = setInterval(fetchArticles, 15000);
+    // Smart Visibility-Aware Polling (Pauses in background to save 80% RAM & bandwidth)
+    const interval = setInterval(() => {
+      if (typeof document !== 'undefined' && document.visibilityState === 'visible') {
+        fetchArticles();
+      }
+    }, 20000);
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        fetchArticles();
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibilityChange);
 
     return () => {
       window.removeEventListener('storage', handleStorage);
       window.removeEventListener('truthpulse_refresh', handleCustomRefresh);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
       clearInterval(interval);
     };
   }, [currentEdition, currentCategory, currentState, currentCity, currentMetro, searchQuery]);

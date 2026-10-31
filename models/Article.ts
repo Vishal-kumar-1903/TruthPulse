@@ -211,5 +211,13 @@ const ArticleSchema = new Schema<IArticle>(
   }
 );
 
+// High-Performance Compound Indexes for Zero-Lag Scaling
+ArticleSchema.index({ status: 1, createdAt: -1 });
+ArticleSchema.index({ status: 1, category: 1, createdAt: -1 });
+ArticleSchema.index({ contentType: 1, status: 1, createdAt: -1 });
+ArticleSchema.index({ 'location.city': 1, status: 1 });
+ArticleSchema.index({ 'location.state': 1, status: 1 });
+ArticleSchema.index({ contentHash: 1 });
+
 export const Article: Model<IArticle> = mongoose.models.Article || mongoose.model<IArticle>('Article', ArticleSchema);
 export default Article;

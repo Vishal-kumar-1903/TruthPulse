@@ -28,10 +28,9 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
       return NextResponse.json({ success: false, error: 'Article not found' }, { status: 404 });
     }
 
-    // Auto-increment views if mongo connected
-    if (article.save) {
-      article.views = (article.views || 0) + 1;
-      await article.save();
+    // Auto-increment views non-blockingly without heavy full-document save
+    if (conn && conn.connection.readyState === 1 && article._id) {
+      Article.updateOne({ _id: article._id }, { $inc: { views: 1 } }).catch(() => {});
     }
 
     const isTampered = !verifyContentIntegrity(
