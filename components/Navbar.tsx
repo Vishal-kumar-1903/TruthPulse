@@ -30,6 +30,7 @@ import { AuthUser } from './AuthModal';
 import LanguageSelector from './LanguageSelector';
 import { SupportedLanguage, getUIText } from '@/lib/translations';
 import { METROPOLITAN_HUBS } from '@/lib/metroHubs';
+import { subscribeToMetroAlerts } from '@/lib/pushService';
 
 export const CATEGORIES = [
   'Home',
@@ -90,8 +91,70 @@ export default function Navbar({
   const [showNotifications, setShowNotifications] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [currentTime, setCurrentTime] = useState('');
+  const [isPushSubscribed, setIsPushSubscribed] = useState(false);
+  const [isSubscribing, setIsSubscribing] = useState(false);
+  const [liveNotifs, setLiveNotifs] = useState<Array<{ id: string; title: string; body: string; time: string; metro?: string }>>([
+    {
+      id: 'n-1',
+      title: '🚨 Electoral Bill Passed',
+      body: 'Parliament enacts landmark digital verification and infrastructure act in New Delhi.',
+      time: '2m ago',
+      metro: 'Delhi NCR'
+    },
+    {
+      id: 'n-2',
+      title: '⚡ Raigarh Solar Subsidies',
+      body: 'Chhattisgarh launches 90% capital grant for 1.8L farmers.',
+      time: '14m ago',
+      metro: 'Raigarh'
+    },
+    {
+      id: 'n-3',
+      title: '🛰️ ISRO Mission Update',
+      body: 'Integrated thermal vacuum tests completed on Gaganyaan flight module.',
+      time: '42m ago',
+      metro: 'Bengaluru'
+    }
+  ]);
 
-  // Live Date / Time
+  // Live Date / Time & Notification Listener
+  useEffect(() => {
+    try {
+      const isSub = localStorage.getItem('truthpulse_push_enabled') === 'true';
+      if (isSub) setIsPushSubscribed(true);
+    } catch {}
+
+    const handleNewNotif = (e: any) => {
+      if (e.detail) {
+        setLiveNotifs(prev => [
+          {
+            id: e.detail.id || `n-${Date.now()}`,
+            title: `🔔 ${e.detail.title}`,
+            body: e.detail.body,
+            time: 'Just now',
+            metro: e.detail.metroHub
+          },
+          ...prev.slice(0, 7)
+        ]);
+      }
+    };
+
+    window.addEventListener('truthpulse_new_notification', handleNewNotif);
+    return () => window.removeEventListener('truthpulse_new_notification', handleNewNotif);
+  }, []);
+
+  const handleSubscribeMetro = async () => {
+    setIsSubscribing(true);
+    try {
+      const res = await subscribeToMetroAlerts(currentMetro || 'all');
+      if (res.success) {
+        setIsPushSubscribed(true);
+      }
+    } finally {
+      setIsSubscribing(false);
+    }
+  };
+
   useEffect(() => {
     const updateTime = () => {
       const now = new Date();
@@ -256,12 +319,12 @@ export default function Navbar({
                     className="fixed inset-0 z-[90] bg-black/20 backdrop-blur-[1px]" 
                     onClick={() => setShowNotifications(false)} 
                   />
-                  <div className="absolute right-0 mt-2 w-72 sm:w-80 max-w-[calc(100vw-1.5rem)] rounded-2xl bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 p-3 shadow-2xl z-[100] text-xs space-y-2 animate-fadeIn">
+                  <div className="absolute right-0 mt-2 w-72 sm:w-84 max-w-[calc(100vw-1.5rem)] rounded-2xl bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 p-3 shadow-2xl z-[100] text-xs space-y-2.5 animate-fadeIn">
                     <div className="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-slate-850 font-bold text-slate-900 dark:text-white">
                       <div className="flex items-center gap-1.5">
                         <Bell className="w-3.5 h-3.5 text-red-500" />
                         <span>Live Dispatches</span>
-                        <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-red-600 text-white font-bold">3 NEW</span>
+                        <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-red-600 text-white font-bold">{liveNotifs.length} NEW</span>
                       </div>
                       <button 
                         type="button"
@@ -272,43 +335,57 @@ export default function Navbar({
                       </button>
                     </div>
 
+                    {/* Targeted City/Cluster Web Push Subscription Pill */}
+                    <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-center justify-between gap-2 text-xs">
+                      <div className="flex items-center gap-1.5 truncate text-[11px] font-mono text-slate-700 dark:text-slate-300">
+                        <MapPin className="w-3.5 h-3.5 text-red-500 shrink-0" />
+                        <span className="truncate">{currentMetro ? `${currentMetro.toUpperCase()} Alerts` : 'Pan-India Alerts'}</span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={handleSubscribeMetro}
+                        disabled={isSubscribing || isPushSubscribed}
+                        className={`px-2.5 py-1 rounded-lg text-[10px] font-mono font-bold shrink-0 transition ${
+                          isPushSubscribed
+                            ? 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 border border-emerald-500/30'
+                            : 'bg-red-600 hover:bg-red-700 text-white shadow-sm'
+                        }`}
+                      >
+                        {isSubscribing ? 'Subscribing...' : (isPushSubscribed ? 'Subscribed ✓' : 'Enable Push Alerts')}
+                      </button>
+                    </div>
+
                     <div className="space-y-2 max-h-72 overflow-y-auto pr-0.5">
-                      <div className="p-2.5 rounded-xl bg-red-500/10 border border-red-500/20 text-red-700 dark:text-red-400 text-[11px] leading-relaxed">
-                        <div className="flex items-center justify-between mb-0.5 font-bold">
-                          <span>🚨 Electoral Bill Passed</span>
-                          <span className="text-[10px] font-mono opacity-70">2m ago</span>
+                      {liveNotifs.map((notif) => (
+                        <div 
+                          key={notif.id}
+                          className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-[11px] leading-relaxed transition hover:border-slate-300 dark:hover:border-slate-700"
+                        >
+                          <div className="flex items-center justify-between mb-0.5 font-bold">
+                            <span className="text-slate-900 dark:text-white truncate max-w-[180px]">{notif.title}</span>
+                            <span className="text-[10px] font-mono text-slate-400 opacity-80 shrink-0">{notif.time}</span>
+                          </div>
+                          <p className="text-slate-600 dark:text-slate-400 text-[11px] line-clamp-2">
+                            {notif.body}
+                          </p>
+                          {notif.metro && (
+                            <div className="mt-1 pt-1 border-t border-slate-100 dark:border-slate-850 flex items-center justify-between text-[9px] font-mono text-slate-400">
+                              <span>Cluster: <strong className="text-red-500 uppercase">{notif.metro}</strong></span>
+                              <span className="text-emerald-600 dark:text-emerald-400 font-bold">Verified Wire</span>
+                            </div>
+                          )}
                         </div>
-                        <p className="text-slate-700 dark:text-slate-300">
-                          Parliament enacts landmark digital verification and infrastructure act in New Delhi.
-                        </p>
-                      </div>
-
-                      <div className="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 text-[11px] leading-relaxed">
-                        <div className="flex items-center justify-between mb-0.5 font-bold">
-                          <span className="text-amber-500 font-bold">⚡ Raigarh Solar Subsidies</span>
-                          <span className="text-[10px] font-mono text-slate-400">14m ago</span>
-                        </div>
-                        <p className="text-slate-600 dark:text-slate-400">
-                          Chhattisgarh launches 90% capital grant for 1.8L farmers.
-                        </p>
-                      </div>
-
-                      <div className="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 text-[11px] leading-relaxed">
-                        <div className="flex items-center justify-between mb-0.5 font-bold">
-                          <span className="text-emerald-500 font-bold">🛰️ ISRO Mission Update</span>
-                          <span className="text-[10px] font-mono text-slate-400">42m ago</span>
-                        </div>
-                        <p className="text-slate-600 dark:text-slate-400">
-                          Integrated thermal vacuum tests completed on Gaganyaan flight module.
-                        </p>
-                      </div>
+                      ))}
                     </div>
 
                     <div className="pt-2 border-t border-slate-100 dark:border-slate-850 flex items-center justify-between text-[10px] font-mono text-slate-400">
-                      <span>Real-time SSE Active</span>
+                      <span>Real-time Web Push & SSE</span>
                       <button 
                         type="button"
-                        onClick={() => setShowNotifications(false)}
+                        onClick={() => {
+                          setLiveNotifs([]);
+                          setShowNotifications(false);
+                        }}
                         className="text-red-600 dark:text-red-400 font-bold hover:underline"
                       >
                         Dismiss All

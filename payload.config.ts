@@ -101,10 +101,28 @@ export const UsersCollection: PayloadCollectionConfig = {
   ]
 };
 
+export const PushAlertsCollection: PayloadCollectionConfig = {
+  slug: 'push_alerts',
+  admin: {
+    useAsTitle: 'title',
+    defaultColumns: ['title', 'metroHub', 'status', 'subscribersTargeted', 'createdAt']
+  },
+  fields: [
+    { name: 'title', type: 'text', required: true },
+    { name: 'body', type: 'textarea', required: true },
+    { name: 'metroHub', type: 'text' },
+    { name: 'category', type: 'text' },
+    { name: 'status', type: 'select', options: ['SENT', 'SCHEDULED', 'PENDING'] },
+    { name: 'subscribersTargeted', type: 'number' },
+    { name: 'targetUrl', type: 'text' },
+    { name: 'scheduledFor', type: 'date' }
+  ]
+};
+
 export const payloadConfig = {
   databaseUri: process.env.MONGODB_URI || 'mongodb://localhost:27017/truthpulse',
   databaseAdapter: '@payloadcms/db-mongodb',
-  collections: [ArticlesCollection, ReelsCollection, UsersCollection],
+  collections: [ArticlesCollection, ReelsCollection, UsersCollection, PushAlertsCollection],
   admin: {
     user: 'users',
     meta: {

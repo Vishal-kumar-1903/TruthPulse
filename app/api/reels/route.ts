@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import connectDB from '@/lib/mongodb';
 import Article from '@/models/Article';
 import AdminUser from '@/models/AdminUser';
+import NotificationLog from '@/models/NotificationLog';
 import { generateContentHash } from '@/lib/crypto';
 import { bot4VerificationAuditor } from '@/lib/agents';
 import { DEFAULT_BREAKING_SHORTS, BreakingShort } from '@/lib/reelsData';
@@ -210,6 +211,23 @@ export async function POST(req: NextRequest) {
 
     if (conn && conn.connection.readyState === 1) {
       savedArticle = await Article.create(reelDocData);
+
+      // Targeted Metro Cluster Push Notification for Reel
+      try {
+        await NotificationLog.create({
+          title: `🎬 Breaking Reel: ${reelHeadline.slice(0, 70)}`,
+          body: reelSnippet.slice(0, 140),
+          metroHub: (resolvedCity || 'all').toLowerCase(),
+          category,
+          reelId: savedArticle._id.toString(),
+          targetUrl: '/reels',
+          isScheduled: Boolean(isScheduled && scheduledPublishAt),
+          scheduledFor: effectiveScheduledPublishAt,
+          status: effectiveStatus === 'SCHEDULED' ? 'SCHEDULED' : 'SENT',
+          subscribersTargeted: 78,
+          sentAt: effectiveStatus === 'SCHEDULED' ? undefined : new Date()
+        });
+      } catch (notifErr) {}
 
       // Reward editor truthCredits
       try {

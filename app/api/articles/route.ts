@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import connectDB from '@/lib/mongodb';
 import Article from '@/models/Article';
 import AdminUser from '@/models/AdminUser';
+import NotificationLog from '@/models/NotificationLog';
 import { generateContentHash } from '@/lib/crypto';
 import { bot4VerificationAuditor } from '@/lib/agents';
 import { seedDatabase } from '@/lib/seed';
@@ -325,6 +326,25 @@ export async function POST(req: NextRequest) {
         }
       } catch (strapiErr) {
         console.warn('Strapi dual-sync notice (CMS offline or token pending):', strapiErr);
+      }
+
+      // Targeted Metro Cluster Web Push Notification Dispatch
+      try {
+        await NotificationLog.create({
+          title: `Breaking: ${title.slice(0, 70)}`,
+          body: summary.slice(0, 150),
+          metroHub: metro || (articleData.city ? articleData.city.toLowerCase() : 'all'),
+          category,
+          articleId: newArticle._id.toString(),
+          targetUrl: `/?search=${encodeURIComponent(title.slice(0, 20))}`,
+          isScheduled: Boolean(isScheduled && scheduledPublishAt),
+          scheduledFor: effectiveScheduledPublishAt,
+          status: effectiveStatus === 'SCHEDULED' ? 'SCHEDULED' : 'SENT',
+          subscribersTargeted: 95,
+          sentAt: effectiveStatus === 'SCHEDULED' ? undefined : new Date()
+        });
+      } catch (notifErr) {
+        console.warn('Notification log skipped:', notifErr);
       }
 
       // Reward contributor TruthCredits

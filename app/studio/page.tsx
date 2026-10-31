@@ -49,7 +49,8 @@ import {
   Server,
   Database,
   Clock,
-  Calendar
+  Calendar,
+  Bell
 } from 'lucide-react';
 import { METROPOLITAN_HUBS } from '@/lib/metroHubs';
 import AnimatedMedia from '@/components/AnimatedMedia';
@@ -184,6 +185,9 @@ export default function EditorStudioPage() {
     setScheduledDateTime(`${year}-${month}-${day}T${hours}:${mins}`);
     setIsScheduled(true);
   };
+
+  // Web Push Notification State
+  const [sendPushAlert, setSendPushAlert] = useState<boolean>(true);
 
   // UI Interactive States
   const [isPublishing, setIsPublishing] = useState(false);
@@ -380,6 +384,23 @@ export default function EditorStudioPage() {
         try {
           localStorage.setItem('truthpulse_refresh_feed', Date.now().toString());
           window.dispatchEvent(new Event('truthpulse_refresh'));
+
+          // Fire targeted web push alert to subscribers of this metropolitan zone
+          if (sendPushAlert) {
+            fetch('/api/notifications/dispatch', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                title,
+                summary,
+                metroHub: metroHub || 'all',
+                category,
+                articleId: data.data?._id,
+                isScheduled,
+                scheduledPublishAt: isScheduled ? new Date(scheduledDateTime).toISOString() : undefined
+              })
+            }).catch(() => {});
+          }
         } catch {}
         setTitle('');
         setSummary('');
@@ -448,6 +469,23 @@ export default function EditorStudioPage() {
         try {
           window.dispatchEvent(new CustomEvent('truthpulse_new_reel', { detail: { short: data.short } }));
           localStorage.setItem('truthpulse_refresh_feed', Date.now().toString());
+
+          if (sendPushAlert) {
+            fetch('/api/notifications/dispatch', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                title: reelHeadline,
+                summary: reelSnippet,
+                metroHub: reelLocation.toLowerCase(),
+                category: reelCategory,
+                reelId: data.short?.id,
+                url: '/reels',
+                isScheduled,
+                scheduledPublishAt: isScheduled ? new Date(scheduledDateTime).toISOString() : undefined
+              })
+            }).catch(() => {});
+          }
         } catch {}
 
         setReelHeadline('');
@@ -1176,6 +1214,40 @@ export default function EditorStudioPage() {
                     </p>
                   </div>
 
+                  {/* Card 5: Targeted Web Push Alerts */}
+                  <div className="bg-white border border-slate-200 rounded-2xl p-4 space-y-2.5 text-xs shadow-sm">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-1.5 font-bold text-slate-900">
+                        <Bell className="w-3.5 h-3.5 text-red-500" />
+                        <span>Cluster Web Push Alert</span>
+                      </div>
+                      <span className="px-1.5 py-0.5 rounded text-[9px] font-mono font-bold bg-red-100 text-red-700 border border-red-200">
+                        Targeted
+                      </span>
+                    </div>
+
+                    <label className="flex items-center justify-between cursor-pointer pt-2 border-t border-slate-100">
+                      <span className="text-[11px] text-slate-700 font-medium">Alert Subscribed Citizens</span>
+                      <input
+                        type="checkbox"
+                        checked={sendPushAlert}
+                        onChange={(e) => setSendPushAlert(e.target.checked)}
+                        className="w-4 h-4 text-red-600 rounded border-slate-300 focus:ring-0"
+                      />
+                    </label>
+
+                    <div className="p-2 rounded-lg bg-slate-50 border border-slate-200 text-[10px] font-mono text-slate-600 space-y-1">
+                      <div className="flex items-center justify-between">
+                        <span>Target Audience:</span>
+                        <span className="text-slate-900 font-bold uppercase">{metroHub || 'Pan-India'}</span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span>Delivery:</span>
+                        <span className="text-emerald-600 font-bold">{isScheduled ? 'Auto-fires at scheduled time' : 'Immediate Push Alert'}</span>
+                      </div>
+                    </div>
+                  </div>
+
                 </div>
               </div>
             )}
@@ -1464,6 +1536,23 @@ export default function EditorStudioPage() {
                     )}
                   </div>
 
+                  {/* Push Alert Toggle for Reel */}
+                  <div className="pt-2 border-t border-slate-100 flex items-center justify-between">
+                    <div className="flex items-center gap-1.5 text-xs text-slate-700 font-medium">
+                      <Bell className="w-3.5 h-3.5 text-red-500" />
+                      <span>Push Alert: <strong className="text-slate-900">{reelLocation || 'Pan-India'}</strong></span>
+                    </div>
+                    <label className="flex items-center gap-1.5 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={sendPushAlert}
+                        onChange={(e) => setSendPushAlert(e.target.checked)}
+                        className="w-4 h-4 text-red-600 rounded border-slate-300 focus:ring-0"
+                      />
+                      <span className="text-[11px] font-mono text-slate-500 font-semibold">{sendPushAlert ? 'Active' : 'Muted'}</span>
+                    </label>
+                  </div>
+
                   {/* Primary Publish Action */}
                   <div className="pt-3 border-t border-slate-100">
                     <button
@@ -1658,7 +1747,7 @@ export default function EditorStudioPage() {
             </div>
 
             {/* 2. Supported Payload Collections Overview */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
               
               {/* Collection 1: Articles & News */}
               <button
@@ -1757,6 +1846,25 @@ export default function EditorStudioPage() {
                 </p>
                 <div className="pt-2.5 mt-2.5 border-t border-slate-100 text-[10px] font-mono text-slate-400">
                   <span>collection: 'media'</span>
+                </div>
+              </div>
+
+              {/* Collection 5: Web Push & Citizen Alerts */}
+              <div className="p-5 rounded-2xl bg-white border border-slate-200 shadow-sm text-left">
+                <div className="flex items-center justify-between pb-3">
+                  <div className="w-9 h-9 rounded-xl bg-red-50 text-red-600 flex items-center justify-center font-bold">
+                    <Bell className="w-4 h-4" />
+                  </div>
+                  <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-red-100 text-red-700 border border-red-200">
+                    384 Citizens
+                  </span>
+                </div>
+                <h3 className="text-xs font-bold text-slate-900">Push Alerts Desk</h3>
+                <p className="text-[11px] text-slate-500 mt-1 leading-relaxed">
+                  Targeted alerts by metropolitan hubs (Delhi, Mumbai, Raigarh, Pan-India).
+                </p>
+                <div className="pt-2.5 mt-2.5 border-t border-slate-100 text-[10px] font-mono text-slate-400">
+                  <span>collection: 'push_alerts'</span>
                 </div>
               </div>
 
