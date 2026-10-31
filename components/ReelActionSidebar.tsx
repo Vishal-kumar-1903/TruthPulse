@@ -37,8 +37,8 @@ export default function ReelActionSidebar({
   onToggleAudio,
   onOpenFullArticle
 }: ReelActionSidebarProps) {
-  const [upvotes, setUpvotes] = useState<number>(short.trustScore * 14 + 120);
-  const [downvotes, setDownvotes] = useState<number>(Math.max(1, Math.floor((100 - short.trustScore) / 2)));
+  const [upvotes, setUpvotes] = useState<number>((short?.trustScore ?? 95) * 14 + 120);
+  const [downvotes, setDownvotes] = useState<number>(Math.max(1, Math.floor((100 - (short?.trustScore ?? 95)) / 2)));
   const [userVote, setUserVote] = useState<'UP' | 'DOWN' | null>(null);
   const [isCopied, setIsCopied] = useState<boolean>(false);
 
@@ -86,8 +86,8 @@ export default function ReelActionSidebar({
   const handleShare = async (e: React.MouseEvent) => {
     e.stopPropagation();
     const shareData = {
-      title: `[TruthShort] ${short.headline}`,
-      text: `${short.headline} - ${short.snippet} (Verified on TruthPulse SatyaNews)`,
+      title: `[TruthShort] ${short?.headline || 'Breaking News'}`,
+      text: `${short?.headline || ''} - ${short?.snippet || ''} (Verified on TruthPulse SatyaNews)`,
       url: typeof window !== 'undefined' ? window.location.href : 'https://truthpulse.news'
     };
 

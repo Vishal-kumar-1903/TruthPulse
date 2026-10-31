@@ -159,7 +159,7 @@ export default function SidebarDrawer({
                   <span>{currentUser.truthCredits} Credits</span>
                 </span>
                 <span className="text-[10px] text-slate-500 font-mono">
-                  {currentUser.email.split('@')[0]}
+                  {(currentUser.email || 'user@truthpulse.in').split('@')[0]}
                 </span>
               </div>
 

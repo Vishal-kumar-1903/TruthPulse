@@ -21,7 +21,7 @@ import {
   Sparkles,
   Info
 } from 'lucide-react';
-import { BreakingShort } from './BreakingShorts';
+import { BreakingShort, DEFAULT_BREAKING_SHORTS } from '@/lib/reelsData';
 import { AuthUser } from './AuthModal';
 import ReelActionSidebar from './ReelActionSidebar';
 import ReelCommentDrawer from './ReelCommentDrawer';
@@ -72,9 +72,24 @@ export default function ReelsViewer({
     }
   }, [isOpen, initialIndex]);
 
-  const activeShort = shorts[activeIndex] || shorts[0];
-  const translatedHeadline = useAutoTranslate(activeShort.headline, currentLang);
-  const translatedSnippet = useAutoTranslate(activeShort.snippet, currentLang);
+  const activeShort: BreakingShort = (shorts && shorts.length > 0 && shorts[activeIndex]) 
+    || (shorts && shorts[0]) 
+    || DEFAULT_BREAKING_SHORTS[0] 
+    || {
+      id: 'fallback-reel',
+      badge: 'BREAKING',
+      headline: 'Parliament Clears Historic Electoral Transparency & Digital Infrastructure Act',
+      snippet: 'Mandatory algorithmic verification and real-time treasury expenditure dashboards codified into national law.',
+      location: 'New Delhi',
+      source: 'Editorial Wire',
+      category: 'Politics',
+      imageUrl: 'https://images.unsplash.com/photo-1541872703-74c5e44368f9?w=1000',
+      trustScore: 96,
+      timeAgo: 'Just now'
+    };
+
+  const translatedHeadline = useAutoTranslate(activeShort?.headline || '', currentLang);
+  const translatedSnippet = useAutoTranslate(activeShort?.snippet || '', currentLang);
 
   // 1. Text-to-Speech (TTS) Voiceover
   const speakReel = useCallback((short: BreakingShort) => {
@@ -85,7 +100,7 @@ export default function ReelsViewer({
     const langObj = SUPPORTED_LANGUAGES.find(l => l.code === currentLang);
     const speechCode = langObj?.speechCode || 'en-IN';
 
-    const speechText = `${short.badge}. ${translatedHeadline}. ${translatedSnippet}`;
+    const speechText = `${short?.badge || 'BREAKING'}. ${translatedHeadline}. ${translatedSnippet}`;
     const utterance = new SpeechSynthesisUtterance(speechText);
     utterance.rate = 1.0;
     utterance.pitch = 1.0;
@@ -134,13 +149,15 @@ export default function ReelsViewer({
   // 2. Navigation Next / Prev
   const goToNext = useCallback(() => {
     setProgress(0);
+    if (!shorts || shorts.length === 0) return;
     setActiveIndex((prev) => (prev + 1) % shorts.length);
-  }, [shorts.length]);
+  }, [shorts]);
 
   const goToPrev = useCallback(() => {
     setProgress(0);
+    if (!shorts || shorts.length === 0) return;
     setActiveIndex((prev) => (prev - 1 + shorts.length) % shorts.length);
-  }, [shorts.length]);
+  }, [shorts]);
 
   // 3. Auto-Advance Timer & Segmented Progress Bar
   const TICK_MS = 50;
@@ -277,8 +294,8 @@ export default function ReelsViewer({
       {/* DESKTOP BLURRED BACKGROUND MEDIA */}
       <div className="absolute inset-0 z-0 overflow-hidden hidden md:block pointer-events-none">
         <img
-          src={activeShort.imageUrl}
-          alt={activeShort.headline}
+          src={activeShort?.imageUrl || 'https://images.unsplash.com/photo-1541872703-74c5e44368f9?w=1000'}
+          alt={activeShort?.headline || ''}
           className="w-full h-full object-cover blur-3xl opacity-25 scale-110 transition-all duration-700"
         />
         <div className="absolute inset-0 bg-black/60 backdrop-blur-2xl"></div>
@@ -323,12 +340,12 @@ export default function ReelsViewer({
         {/* BACKGROUND ANIMATED MEDIA WITH HIGH DYNAMIC CONTRAST GRADIENTS */}
         <div className="absolute inset-0 z-0">
           <AnimatedMedia
-            key={activeShort.id}
-            mediaType={activeShort.mediaType || 'IMAGE'}
-            mediaUrl={activeShort.mediaUrl}
-            imageUrl={activeShort.imageUrl}
-            alt={activeShort.headline}
-            category={activeShort.category}
+            key={activeShort?.id || 'reel-media'}
+            mediaType={activeShort?.mediaType || 'IMAGE'}
+            mediaUrl={activeShort?.mediaUrl}
+            imageUrl={activeShort?.imageUrl || 'https://images.unsplash.com/photo-1541872703-74c5e44368f9?w=1000'}
+            alt={activeShort?.headline || ''}
+            category={activeShort?.category || 'Politics'}
             isReel={true}
             showBadge={false}
             className="w-full h-full object-cover"
@@ -389,14 +406,14 @@ export default function ReelsViewer({
             </button>
 
             {/* Reel Badge (BREAKING / ALERT / FACT-CHECK) */}
-            <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider ${getBadgeStyle(activeShort.badge)}`}>
+            <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider ${getBadgeStyle(activeShort?.badge || 'BREAKING')}`}>
               <Radio className="w-3 h-3 animate-pulse" />
-              <span>{activeShort.badge}</span>
+              <span>{activeShort?.badge || 'BREAKING'}</span>
             </span>
 
             {/* Category Badge */}
             <span className="hidden sm:inline-block px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-white/15 backdrop-blur-md text-white border border-white/10">
-              {activeShort.category}
+              {activeShort?.category || 'General'}
             </span>
           </div>
 
@@ -483,12 +500,12 @@ export default function ReelsViewer({
             <div className="flex items-center gap-2 text-xs">
               <span className="flex items-center gap-1 text-[11px] font-bold text-white bg-black/60 px-2.5 py-0.5 rounded-full backdrop-blur-md border border-white/20 shadow-sm">
                 <MapPin className="w-3 h-3 text-red-500 shrink-0" />
-                <span className="truncate max-w-[130px]">{activeShort.location}</span>
+                <span className="truncate max-w-[130px]">{activeShort?.location || 'National'}</span>
               </span>
 
               <span className="flex items-center gap-1 text-[10px] font-mono text-slate-300">
                 <Clock className="w-3 h-3 text-slate-400" />
-                <span>{activeShort.timeAgo}</span>
+                <span>{activeShort?.timeAgo || 'Just now'}</span>
               </span>
             </div>
 
@@ -507,7 +524,7 @@ export default function ReelsViewer({
             {/* Source Attribution & Read Full Article Trigger */}
             <div className="flex items-center gap-2 pt-0.5">
               <span className="text-[10px] font-mono text-slate-400 truncate">
-                Wire: <strong className="text-slate-200">{activeShort.source}</strong>
+                Wire: <strong className="text-slate-200">{activeShort?.source || 'Editorial Bureau Wire'}</strong>
               </span>
 
               {onOpenFullArticle && (

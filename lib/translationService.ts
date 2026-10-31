@@ -8,14 +8,15 @@ import { ArticleItem } from '@/components/NewsCard';
 const clientTranslationCache = new Map<string, string>();
 
 function getCacheKey(text: string, lang: string): string {
-  return `${lang}:${text.trim()}`;
+  const safeStr = typeof text === 'string' ? text.trim() : '';
+  return `${lang}:${safeStr}`;
 }
 
 /**
  * Synchronous instant check for existing translation in dictionary, memory cache, or localStorage
  */
 export function getCachedTranslation(text: string, targetLang: SupportedLanguage): string | null {
-  if (!text || targetLang === 'en') return text;
+  if (!text || typeof text !== 'string' || targetLang === 'en') return typeof text === 'string' ? text : '';
   
   // 1. Instant static dictionary
   const dictMatch = translateContentText(text, targetLang);
@@ -47,7 +48,7 @@ export function getCachedTranslation(text: string, targetLang: SupportedLanguage
  * Save translation into runtime memory and localStorage
  */
 export function setCachedTranslation(text: string, targetLang: SupportedLanguage, translated: string) {
-  if (!text || !translated || text === translated) return;
+  if (!text || typeof text !== 'string' || !translated || typeof translated !== 'string' || text === translated) return;
   const key = getCacheKey(text, targetLang);
   clientTranslationCache.set(key, translated);
 
@@ -62,7 +63,7 @@ export function setCachedTranslation(text: string, targetLang: SupportedLanguage
  * Asynchronously translates single text using /api/translate
  */
 export async function translateAsync(text: string, targetLang: SupportedLanguage): Promise<string> {
-  if (!text || targetLang === 'en') return text;
+  if (!text || typeof text !== 'string' || targetLang === 'en') return typeof text === 'string' ? text : '';
 
   const cached = getCachedTranslation(text, targetLang);
   if (cached) return cached;
@@ -76,7 +77,7 @@ export async function translateAsync(text: string, targetLang: SupportedLanguage
 
     if (res.ok) {
       const data = await res.json();
-      if (data.success && data.translated) {
+      if (data.success && data.translated && typeof data.translated === 'string') {
         setCachedTranslation(text, targetLang, data.translated);
         return data.translated;
       }
@@ -92,7 +93,7 @@ export async function translateAsync(text: string, targetLang: SupportedLanguage
  * Asynchronously translates a batch of texts in one single network round-trip
  */
 export async function translateBatchAsync(texts: string[], targetLang: SupportedLanguage): Promise<string[]> {
-  if (!texts || texts.length === 0 || targetLang === 'en') return texts;
+  if (!Array.isArray(texts) || texts.length === 0 || targetLang === 'en') return texts || [];
 
   const results: string[] = new Array(texts.length);
   const uncachedIndices: number[] = [];
@@ -100,8 +101,8 @@ export async function translateBatchAsync(texts: string[], targetLang: Supported
 
   // Check cache for each item first
   texts.forEach((t, i) => {
-    if (!t) {
-      results[i] = t;
+    if (!t || typeof t !== 'string') {
+      results[i] = t || '';
       return;
     }
     const cached = getCachedTranslation(t, targetLang);
@@ -160,21 +161,21 @@ export async function translateArticleAsync(
     return {
       title: article?.title || '',
       summary: article?.summary || '',
-      bullets: article?.bullets || []
+      bullets: Array.isArray(article?.bullets) ? article.bullets : []
     };
   }
 
   const textsToTranslate = [
-    article.title,
-    article.summary,
-    ...(article.bullets || [])
+    article.title || '',
+    article.summary || '',
+    ...(Array.isArray(article.bullets) ? article.bullets : [])
   ];
 
   const translatedList = await translateBatchAsync(textsToTranslate, targetLang);
 
   return {
-    title: translatedList[0] || article.title,
-    summary: translatedList[1] || article.summary,
+    title: translatedList[0] || article.title || '',
+    summary: translatedList[1] || article.summary || '',
     bullets: translatedList.slice(2)
   };
 }
@@ -183,25 +184,27 @@ export async function translateArticleAsync(
  * React hook for auto-translating single strings (e.g. headlines, captions, ticker text)
  */
 export function useAutoTranslate(text: string, targetLang: SupportedLanguage = 'en'): string {
+  const safeText = typeof text === 'string' ? text : '';
   const [translated, setTranslated] = useState<string>(() => {
-    const cached = getCachedTranslation(text, targetLang);
-    return cached || text;
+    if (!safeText || targetLang === 'en') return safeText;
+    const cached = getCachedTranslation(safeText, targetLang);
+    return cached || safeText;
   });
 
   useEffect(() => {
-    if (!text || targetLang === 'en') {
-      setTranslated(text);
+    if (!safeText || targetLang === 'en') {
+      setTranslated(safeText);
       return;
     }
 
-    const cached = getCachedTranslation(text, targetLang);
+    const cached = getCachedTranslation(safeText, targetLang);
     if (cached) {
       setTranslated(cached);
       return;
     }
 
     let isMounted = true;
-    translateAsync(text, targetLang).then((res) => {
+    translateAsync(safeText, targetLang).then((res) => {
       if (isMounted && res) {
         setTranslated(res);
       }
@@ -210,19 +213,23 @@ export function useAutoTranslate(text: string, targetLang: SupportedLanguage = '
     return () => {
       isMounted = false;
     };
-  }, [text, targetLang]);
+  }, [safeText, targetLang]);
 
-  return translated;
+  return translated || safeText;
 }
 
 /**
  * React hook for auto-translating a full NewsCard article with 0 layout shift
  */
 export function useTranslatedArticle(article: ArticleItem, targetLang: SupportedLanguage = 'en') {
+  const safeTitle = article?.title || '';
+  const safeSummary = article?.summary || '';
+  const safeBullets = Array.isArray(article?.bullets) ? article.bullets : [];
+
   const [data, setData] = useState(() => {
-    const cachedTitle = getCachedTranslation(article.title, targetLang) || article.title;
-    const cachedSummary = getCachedTranslation(article.summary, targetLang) || article.summary;
-    const cachedBullets = article.bullets?.map(b => getCachedTranslation(b, targetLang) || b) || [];
+    const cachedTitle = getCachedTranslation(safeTitle, targetLang) || safeTitle;
+    const cachedSummary = getCachedTranslation(safeSummary, targetLang) || safeSummary;
+    const cachedBullets = safeBullets.map(b => getCachedTranslation(b, targetLang) || b);
 
     return {
       title: cachedTitle,
@@ -236,23 +243,23 @@ export function useTranslatedArticle(article: ArticleItem, targetLang: Supported
 
     if (targetLang === 'en') {
       setData({
-        title: article.title,
-        summary: article.summary,
-        bullets: article.bullets || []
+        title: safeTitle,
+        summary: safeSummary,
+        bullets: safeBullets
       });
       return;
     }
 
     // Instant check
-    const cachedTitle = getCachedTranslation(article.title, targetLang);
-    const cachedSummary = getCachedTranslation(article.summary, targetLang);
-    const allBulletsCached = article.bullets?.every(b => !!getCachedTranslation(b, targetLang)) ?? true;
+    const cachedTitle = getCachedTranslation(safeTitle, targetLang);
+    const cachedSummary = getCachedTranslation(safeSummary, targetLang);
+    const allBulletsCached = safeBullets.every(b => !!getCachedTranslation(b, targetLang));
 
     if (cachedTitle && cachedSummary && allBulletsCached) {
       setData({
         title: cachedTitle,
         summary: cachedSummary,
-        bullets: article.bullets?.map(b => getCachedTranslation(b, targetLang) || b) || []
+        bullets: safeBullets.map(b => getCachedTranslation(b, targetLang) || b)
       });
       return;
     }
@@ -267,7 +274,7 @@ export function useTranslatedArticle(article: ArticleItem, targetLang: Supported
     return () => {
       isMounted = false;
     };
-  }, [article._id, article.title, article.summary, article.bullets, targetLang]);
+  }, [article?._id, safeTitle, safeSummary, targetLang]);
 
   return data;
 }

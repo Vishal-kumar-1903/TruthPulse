@@ -559,12 +559,13 @@ const VERNACULAR_PHRASES: Record<SupportedLanguage, Record<string, string>> = {
 };
 
 export function getUIText(key: string, lang: SupportedLanguage = 'en'): string {
+  if (!key || typeof key !== 'string') return '';
   const dict = UI_TRANSLATIONS[lang] || UI_TRANSLATIONS.en;
-  return dict[key] || UI_TRANSLATIONS.en[key] || key;
+  return dict?.[key] || UI_TRANSLATIONS.en?.[key] || key;
 }
 
 export function translateContentText(text: string, lang: SupportedLanguage = 'en'): string {
-  if (lang === 'en' || !text) return text;
+  if (lang === 'en' || !text || typeof text !== 'string') return text || '';
   // If text already contains Devanagari script and target language is Hindi, return as-is
   if (lang === 'hi' && /[\u0900-\u097F]/.test(text)) return text;
   const phraseDict = VERNACULAR_PHRASES[lang];

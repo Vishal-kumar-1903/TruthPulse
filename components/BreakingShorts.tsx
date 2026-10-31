@@ -85,9 +85,24 @@ export default function BreakingShorts({
   const TICK_MS = 50; // Smoother 50ms progress ticks
   const STEP_PERCENT = 100 / (DURATION_MS / TICK_MS);
 
-  const activeShort = liveShorts[currentIndex] || liveShorts[0] || DEFAULT_BREAKING_SHORTS[0];
-  const translatedHeadline = useAutoTranslate(activeShort.headline, currentLang);
-  const translatedSnippet = useAutoTranslate(activeShort.snippet, currentLang);
+  const activeShort: BreakingShort = (liveShorts && liveShorts.length > 0 && liveShorts[currentIndex]) 
+    || (liveShorts && liveShorts[0]) 
+    || DEFAULT_BREAKING_SHORTS[0] 
+    || {
+      id: 'fallback-short',
+      badge: 'BREAKING',
+      headline: 'Parliament Clears Historic Electoral Transparency & Digital Infrastructure Act',
+      snippet: 'Mandatory algorithmic verification and real-time treasury expenditure dashboards codified into national law.',
+      location: 'New Delhi',
+      source: 'Editorial Wire',
+      category: 'Politics',
+      imageUrl: 'https://images.unsplash.com/photo-1541872703-74c5e44368f9?w=1000',
+      trustScore: 96,
+      timeAgo: 'Just now'
+    };
+
+  const translatedHeadline = useAutoTranslate(activeShort?.headline || '', currentLang);
+  const translatedSnippet = useAutoTranslate(activeShort?.snippet || '', currentLang);
 
   // 1. Text-to-Speech (TTS) Voiceover Synthesis
   const speakCurrentShort = useCallback((short: BreakingShort) => {
@@ -98,7 +113,7 @@ export default function BreakingShorts({
     const langObj = SUPPORTED_LANGUAGES.find(l => l.code === currentLang);
     const speechCode = langObj?.speechCode || 'en-IN';
 
-    const speechText = `${short.badge}. ${translatedHeadline}. ${translatedSnippet}`;
+    const speechText = `${short?.badge || 'BREAKING'}. ${translatedHeadline}. ${translatedSnippet}`;
     const utterance = new SpeechSynthesisUtterance(speechText);
     utterance.rate = 1.0;
     utterance.pitch = 1.0;
@@ -133,13 +148,15 @@ export default function BreakingShorts({
   // 2. Next / Prev Handlers
   const goToNext = useCallback(() => {
     setProgress(0);
+    if (!liveShorts || liveShorts.length === 0) return;
     setCurrentIndex((prev) => (prev + 1) % liveShorts.length);
-  }, [liveShorts.length]);
+  }, [liveShorts]);
 
   const goToPrev = useCallback(() => {
     setProgress(0);
+    if (!liveShorts || liveShorts.length === 0) return;
     setCurrentIndex((prev) => (prev - 1 + liveShorts.length) % liveShorts.length);
-  }, [liveShorts.length]);
+  }, [liveShorts]);
 
   // Read next when slide switches if audio enabled
   useEffect(() => {
@@ -209,12 +226,12 @@ export default function BreakingShorts({
     e.stopPropagation();
     if (typeof navigator !== 'undefined' && navigator.share) {
       navigator.share({
-        title: `[TruthShort] ${activeShort.headline}`,
-        text: activeShort.snippet,
+        title: `[TruthShort] ${activeShort?.headline || 'Breaking News'}`,
+        text: activeShort?.snippet || '',
         url: window.location.href
       });
     } else if (typeof navigator !== 'undefined' && navigator.clipboard) {
-      navigator.clipboard.writeText(`${activeShort.headline} - ${activeShort.snippet} (via TruthPulse Shorts)`);
+      navigator.clipboard.writeText(`${activeShort?.headline || ''} - ${activeShort?.snippet || ''} (via TruthPulse Shorts)`);
       setCopiedShare(true);
       setTimeout(() => setCopiedShare(false), 2000);
     }
@@ -265,7 +282,7 @@ export default function BreakingShorts({
             const isRingActive = currentIndex === idx;
             return (
               <button
-                key={item.id}
+                key={item?.id || idx}
                 onClick={() => {
                   setProgress(0);
                   setCurrentIndex(idx);
@@ -282,8 +299,8 @@ export default function BreakingShorts({
                 }`}>
                   <div className="w-14 h-14 rounded-full overflow-hidden p-0.5 bg-white dark:bg-slate-950">
                     <img
-                      src={item.imageUrl}
-                      alt={item.headline}
+                      src={item?.imageUrl || 'https://images.unsplash.com/photo-1541872703-74c5e44368f9?w=1000'}
+                      alt={item?.headline || ''}
                       className="w-full h-full object-cover rounded-full"
                     />
                   </div>
@@ -293,7 +310,7 @@ export default function BreakingShorts({
                     ? 'text-red-600 dark:text-red-400' 
                     : 'text-slate-600 dark:text-slate-400'
                 }`}>
-                  {item.location.split(',')[0]}
+                  {(item?.location || 'National').split(',')[0]}
                 </span>
               </button>
             );
@@ -315,12 +332,12 @@ export default function BreakingShorts({
         {/* Background Visual Layer with High-Res Image & Clean White Gradients */}
         <div className="absolute inset-0 z-0">
           <AnimatedMedia
-            key={activeShort.id}
-            mediaType={activeShort.mediaType || 'IMAGE'}
-            mediaUrl={activeShort.mediaUrl}
-            imageUrl={activeShort.imageUrl}
-            alt={activeShort.headline}
-            category={activeShort.category}
+            key={activeShort?.id || 'active-short'}
+            mediaType={activeShort?.mediaType || 'IMAGE'}
+            mediaUrl={activeShort?.mediaUrl}
+            imageUrl={activeShort?.imageUrl || 'https://images.unsplash.com/photo-1541872703-74c5e44368f9?w=1000'}
+            alt={activeShort?.headline || ''}
+            category={activeShort?.category || 'Politics'}
             isReel={true}
             showBadge={false}
             className="w-full h-full object-cover opacity-20 scale-105 group-hover:scale-100 transition-transform duration-1000 ease-out"
@@ -362,21 +379,21 @@ export default function BreakingShorts({
           
           <div className="flex items-center gap-2">
             {/* Reel Badge (BREAKING / ALERT / FACT-CHECK) */}
-            <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-black tracking-wider uppercase shadow-sm ${getBadgeStyle(activeShort.badge)}`}>
+            <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-black tracking-wider uppercase shadow-sm ${getBadgeStyle(activeShort?.badge || 'BREAKING')}`}>
               <Radio className="w-3 h-3 animate-pulse" />
-              <span>{activeShort.badge}</span>
+              <span>{activeShort?.badge || 'BREAKING'}</span>
             </span>
 
             {/* Location Tag */}
             <span className="flex items-center gap-1 text-[11px] font-bold text-slate-700 bg-white/90 px-2.5 py-0.5 rounded-md border border-slate-200 shadow-sm max-w-[120px] sm:max-w-none truncate">
               <MapPin className="w-3 h-3 text-red-600 shrink-0" />
-              <span className="truncate">{activeShort.location}</span>
+              <span className="truncate">{activeShort?.location || 'National'}</span>
             </span>
 
             {/* Time Ago */}
             <span className="hidden sm:flex items-center gap-1 text-[11px] font-mono text-slate-500 font-semibold">
               <Clock className="w-3 h-3" />
-              <span>{activeShort.timeAgo}</span>
+              <span>{activeShort?.timeAgo || 'Just now'}</span>
             </span>
           </div>
 
@@ -451,9 +468,9 @@ export default function BreakingShorts({
           </p>
 
           <div className="mt-2 text-[10px] font-mono text-slate-500 flex items-center gap-2">
-            <span>Wire Attribution: <strong className="text-slate-800">{activeShort.source}</strong></span>
+            <span>Wire Attribution: <strong className="text-slate-800">{activeShort?.source || 'Verified Bureau Wire'}</strong></span>
             <span>•</span>
-            <span className="text-emerald-600 font-bold">{activeShort.trustScore}% Verified Authenticity</span>
+            <span className="text-emerald-600 font-bold">{activeShort?.trustScore ?? 95}% Verified Authenticity</span>
           </div>
         </div>
 

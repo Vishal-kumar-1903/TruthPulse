@@ -27,10 +27,10 @@ function articleToShort(doc: any): BreakingShort {
   return {
     id: doc._id?.toString() || `short-${Date.now()}`,
     badge: (doc.reelBadge || 'BREAKING') as 'BREAKING' | 'ALERT' | 'FACT-CHECK',
-    headline: doc.title,
-    snippet: doc.snippet || doc.summary || '',
+    headline: doc.title || doc.headline || 'Verified News Dispatch',
+    snippet: doc.snippet || doc.summary || 'Real-time multi-agent news verification stream.',
     location: doc.city ? `${doc.city}${doc.state ? ', ' + doc.state : ''}` : (doc.state || 'National'),
-    source: doc.sources?.[0]?.name || 'Editorial Bureau Wire',
+    source: doc.sources?.[0]?.name || doc.author || 'Editorial Bureau Wire',
     fullArticleId: doc._id?.toString(),
     category: doc.category || 'Politics',
     imageUrl: doc.imageUrl || 'https://images.unsplash.com/photo-1541872703-74c5e44368f9?w=1000',
@@ -62,7 +62,7 @@ export async function GET(req: NextRequest) {
         // Merge custom shorts with default fallback shorts, ensuring no duplicate headlines
         const combined = [...customShorts];
         for (const def of DEFAULT_BREAKING_SHORTS) {
-          if (!combined.some(c => c.headline.toLowerCase() === def.headline.toLowerCase())) {
+          if (!combined.some(c => (c.headline || '').toLowerCase() === (def.headline || '').toLowerCase())) {
             combined.push(def);
           }
         }

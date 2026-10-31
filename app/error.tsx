@@ -35,16 +35,23 @@ export default function GlobalError({
           An unexpected error occurred while processing verified news streams. Our autonomous multi-agent consensus monitors have been alerted.
         </p>
 
-        {error.digest && (
+        {(error.message || error.digest) && (
           <div className="mb-6 px-3 py-2 bg-slate-950/70 border border-slate-800 rounded-lg text-left">
-            <span className="text-[10px] uppercase font-mono tracking-wider text-slate-500 block mb-0.5">Audit Digest</span>
-            <code className="text-xs font-mono text-red-400 break-all">{error.digest}</code>
+            <span className="text-[10px] uppercase font-mono tracking-wider text-slate-500 block mb-0.5">Audit Trace</span>
+            <code className="text-xs font-mono text-red-400 break-all">{error.message || error.digest}</code>
           </div>
         )}
 
         <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
           <button
-            onClick={() => reset()}
+            onClick={() => {
+              try {
+                if (typeof window !== 'undefined') {
+                  sessionStorage.clear();
+                }
+              } catch {}
+              reset();
+            }}
             className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-red-600 hover:bg-red-500 text-white font-medium text-xs rounded-xl shadow-lg shadow-red-600/20 transition-all active:scale-95"
           >
             <RefreshCw className="w-4 h-4" />

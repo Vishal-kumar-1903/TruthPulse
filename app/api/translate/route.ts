@@ -6,13 +6,17 @@ const translationMemoryCache = new Map<string, string>();
 const MAX_CACHE_ENTRIES = 2000;
 
 async function fetchGoogleTranslate(text: string, targetLang: string, sourceLang: string = 'auto'): Promise<string> {
-  const cacheKey = `${sourceLang}:${targetLang}:${text.trim()}`;
+  if (!text || typeof text !== 'string') return '';
+  const safeText = text.trim();
+  if (!safeText) return '';
+
+  const cacheKey = `${sourceLang}:${targetLang}:${safeText}`;
   if (translationMemoryCache.has(cacheKey)) {
     return translationMemoryCache.get(cacheKey)!;
   }
 
   // 1. Try native fetch first
-  const encodedQuery = encodeURIComponent(text);
+  const encodedQuery = encodeURIComponent(safeText);
   const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${sourceLang}&tl=${targetLang}&dt=t&q=${encodedQuery}`;
 
   try {

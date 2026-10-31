@@ -144,7 +144,7 @@ export default function NewsFeed({
         onOpenReels={onOpenReels}
         onSelectArticle={(short) => {
           if (onSelectArticle) {
-            const matched = articles.find(a => a._id === short.fullArticleId || a.title.toLowerCase().includes(short.headline.slice(0, 25).toLowerCase()));
+            const matched = articles.find(a => (short?.fullArticleId && a._id === short.fullArticleId) || (a.title && short?.headline && a.title.toLowerCase().includes(short.headline.slice(0, 25).toLowerCase())));
             if (matched) {
               onSelectArticle(matched);
             }

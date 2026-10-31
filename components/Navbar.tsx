@@ -358,10 +358,10 @@ export default function Navbar({
                           <div className={`w-6 h-6 rounded-full font-bold text-xs flex items-center justify-center shrink-0 shadow-sm ${
                             isEditor ? 'bg-emerald-600 text-white' : 'bg-blue-600 text-white'
                           }`}>
-                            {currentUser.name.charAt(0).toUpperCase()}
+                            {(currentUser.name || 'User').charAt(0).toUpperCase()}
                           </div>
                           <span className="hidden sm:inline-block text-xs font-semibold text-slate-800 max-w-[55px] md:max-w-[70px] lg:max-w-[85px] xl:max-w-[110px] truncate">
-                            {currentUser.name.split(' ')[0]}
+                            {(currentUser.name || 'User').split(' ')[0]}
                           </span>
                           {isEditor ? (
                             <span className="hidden 2xl:inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[9px] font-mono font-bold bg-emerald-600 text-white uppercase tracking-wider">
