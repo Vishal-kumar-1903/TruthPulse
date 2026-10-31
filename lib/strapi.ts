@@ -229,13 +229,15 @@ export function normalizeStrapiArticle(item: any): any {
 /**
  * Check whether the Strapi instance is online and reachable
  */
-export async function checkStrapiHealth(): Promise<{ online: boolean; url: string; latencyMs: number; error?: string }> {
-  const url = getStrapiURL('/api/articles?pagination[limit]=1');
+export async function checkStrapiHealth(overrideUrl?: string): Promise<{ online: boolean; url: string; latencyMs: number; error?: string }> {
+  const base = overrideUrl || getStrapiURL();
+  const cleanBase = base.replace(/\/$/, '');
+  const url = `${cleanBase}/api/articles?pagination[limit]=1`;
   const start = Date.now();
 
   try {
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 2500); // 2.5s quick ping
+    const timeout = setTimeout(() => controller.abort(), 3500); // 3.5s ping
 
     const res = await fetch(url, {
       signal: controller.signal,
@@ -246,16 +248,16 @@ export async function checkStrapiHealth(): Promise<{ online: boolean; url: strin
     const latencyMs = Date.now() - start;
 
     return {
-      online: res.status < 500, // 200, 401, 403 all mean server is alive
-      url: getStrapiURL(),
+      online: res.status < 500, // 200, 401, 403, 404 all mean server is alive
+      url: cleanBase,
       latencyMs
     };
   } catch (err: any) {
     return {
       online: false,
-      url: getStrapiURL(),
+      url: cleanBase,
       latencyMs: Date.now() - start,
-      error: err.name === 'AbortError' ? 'Timeout' : 'Offline / Unreachable'
+      error: err.name === 'AbortError' ? 'Connection timed out' : 'Server Offline / Connection Refused'
     };
   }
 }

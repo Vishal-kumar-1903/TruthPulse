@@ -156,7 +156,10 @@ export default function EditorStudioPage() {
   const [searchFilter, setSearchFilter] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('ALL');
 
-  // Strapi CMS Health Status
+  // Strapi CMS Health & Connection States
+  const [strapiUrl, setStrapiUrl] = useState<string>('http://localhost:1337');
+  const [showStrapiModal, setShowStrapiModal] = useState<boolean>(false);
+  const [strapiCopiedCmd, setStrapiCopiedCmd] = useState<boolean>(false);
   const [strapiStatus, setStrapiStatus] = useState<{ checking: boolean; online: boolean; latencyMs?: number; error?: string }>({
     checking: false,
     online: false
@@ -172,7 +175,7 @@ export default function EditorStudioPage() {
   const [articles, setArticles] = useState<ArticlePerformance[]>([]);
   const [loadingAnalytics, setLoadingAnalytics] = useState(false);
 
-  // Load editor session on mount
+  // Load editor session and strapi settings on mount
   useEffect(() => {
     try {
       const savedUser = localStorage.getItem('truthpulse_user');
@@ -183,31 +186,62 @@ export default function EditorStudioPage() {
           setAuthorByline(parsed.name || 'TruthPulse Editorial Desk');
         }
       }
+      const savedStrapiUrl = localStorage.getItem('truthpulse_strapi_url');
+      if (savedStrapiUrl) {
+        setStrapiUrl(savedStrapiUrl);
+      }
     } catch {
       // Ignore
     }
   }, []);
 
   // Check Strapi Health
-  const checkStrapi = async () => {
+  const checkStrapi = async (targetUrl?: string, quiet: boolean = false) => {
+    const urlToTest = targetUrl || strapiUrl || 'http://localhost:1337';
     setStrapiStatus(prev => ({ ...prev, checking: true }));
     try {
-      const res = await fetch('/api/health/strapi');
+      const res = await fetch(`/api/health/strapi?url=${encodeURIComponent(urlToTest)}`);
       const data = await res.json();
+      const isOnline = Boolean(data.online);
       setStrapiStatus({
         checking: false,
-        online: Boolean(data.online),
+        online: isOnline,
         latencyMs: data.latencyMs,
         error: data.error
       });
+
+      if (!quiet) {
+        if (isOnline) {
+          setToastMessage(`✅ Strapi is Online & Connected (${data.latencyMs}ms)`);
+        } else {
+          setToastMessage(`⚠️ Strapi unreachable on ${urlToTest}`);
+          setShowStrapiModal(true);
+        }
+        setTimeout(() => setToastMessage(null), 4000);
+      }
     } catch {
       setStrapiStatus({ checking: false, online: false, error: 'Offline / Standby' });
+      if (!quiet) {
+        setToastMessage(`⚠️ Strapi server connect nahi ho saka (${urlToTest})`);
+        setTimeout(() => setToastMessage(null), 4000);
+        setShowStrapiModal(true);
+      }
     }
   };
 
   useEffect(() => {
-    checkStrapi();
+    checkStrapi(undefined, true);
   }, []);
+
+  const handleLaunchStrapi = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (strapiStatus.online) {
+      const adminUrl = `${strapiUrl.replace(/\/$/, '')}/admin`;
+      window.open(adminUrl, '_blank', 'noopener,noreferrer');
+    } else {
+      setShowStrapiModal(true);
+    }
+  };
 
   // Fetch live analytics data
   const fetchAnalytics = async () => {
@@ -1371,8 +1405,12 @@ export default function EditorStudioPage() {
                   <span className="text-xs font-mono font-bold uppercase tracking-wider text-indigo-300">
                     Strapi Open-Source Headless CMS Integration
                   </span>
-                  <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-white/10 border border-white/20">
-                    {strapiStatus.online ? `Online (${strapiStatus.latencyMs}ms)` : 'Standby / Local Port 1337'}
+                  <span className={`px-2 py-0.5 rounded text-[10px] font-mono font-bold border ${
+                    strapiStatus.online 
+                      ? 'bg-emerald-500/20 border-emerald-400/40 text-emerald-300' 
+                      : 'bg-white/10 border-white/20 text-slate-300'
+                  }`}>
+                    {strapiStatus.online ? `Online (${strapiStatus.latencyMs}ms)` : 'Standby / Offline'}
                   </span>
                 </div>
 
@@ -1384,26 +1422,63 @@ export default function EditorStudioPage() {
                   Every Article, Breaking News Flash, and Video Reel published via TruthPulse Studio can seamlessly dual-sync to your self-hosted Strapi CMS database with Draft & Publish lifecycles, rich media assets, and REST/GraphQL APIs.
                 </p>
 
+                {/* Primary Action Buttons */}
                 <div className="pt-2 flex flex-wrap items-center gap-3">
-                  <a
-                    href="http://localhost:1337/admin"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white text-indigo-950 font-bold text-xs hover:bg-indigo-50 transition shadow-md"
+                  <button
+                    type="button"
+                    onClick={handleLaunchStrapi}
+                    className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white text-indigo-950 font-bold text-xs hover:bg-indigo-50 transition shadow-md active:scale-95"
+                    title={strapiStatus.online ? `Open ${strapiUrl}/admin` : 'Launch Strapi Setup Assistant'}
                   >
                     <span>Launch Strapi Admin Panel</span>
                     <ExternalLink className="w-3.5 h-3.5" />
-                  </a>
+                  </button>
 
                   <button
                     type="button"
-                    onClick={checkStrapi}
+                    onClick={() => checkStrapi(strapiUrl, false)}
                     disabled={strapiStatus.checking}
-                    className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white font-mono text-xs border border-white/20 transition"
+                    className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-mono text-xs border border-white/20 transition active:scale-95"
                   >
                     <RefreshCw className={`w-3.5 h-3.5 ${strapiStatus.checking ? 'animate-spin' : ''}`} />
                     <span>{strapiStatus.checking ? 'Pinging Strapi...' : 'Test Strapi Connection'}</span>
                   </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setShowStrapiModal(true)}
+                    className="inline-flex items-center gap-1.5 px-3 py-2.5 rounded-xl bg-indigo-800/60 hover:bg-indigo-800 text-indigo-200 text-xs font-mono font-medium border border-indigo-700/60 transition"
+                  >
+                    <Server className="w-3.5 h-3.5 text-indigo-400" />
+                    <span>Setup Guide</span>
+                  </button>
+                </div>
+
+                {/* Active Strapi Endpoint Bar */}
+                <div className="pt-2 flex flex-wrap items-center gap-2 text-xs">
+                  <span className="text-indigo-300 font-mono text-[11px]">Strapi Target URL:</span>
+                  <div className="flex items-center gap-1.5 bg-black/40 border border-white/20 rounded-xl px-2.5 py-1">
+                    <input
+                      type="text"
+                      value={strapiUrl}
+                      onChange={(e) => {
+                        setStrapiUrl(e.target.value);
+                        try { localStorage.setItem('truthpulse_strapi_url', e.target.value); } catch {}
+                      }}
+                      placeholder="http://localhost:1337 or https://your-strapi.app"
+                      className="bg-transparent text-white font-mono text-xs focus:outline-none w-52 sm:w-64"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        try { localStorage.setItem('truthpulse_strapi_url', strapiUrl); } catch {}
+                        checkStrapi(strapiUrl, false);
+                      }}
+                      className="px-2 py-0.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-[10px] font-mono font-bold"
+                    >
+                      Save & Test
+                    </button>
+                  </div>
                 </div>
               </div>
 
@@ -1723,6 +1798,138 @@ cd strapi &amp;&amp; docker compose up -d
                 Acknowledge
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* STRAPI HEADLESS CMS SETUP & LAUNCHPAD MODAL */}
+      {showStrapiModal && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 animate-fadeIn font-sans">
+          <div className="bg-white border border-slate-200 rounded-3xl max-w-lg w-full p-6 sm:p-7 shadow-2xl relative space-y-5 text-slate-900 overflow-hidden">
+            
+            {/* Header */}
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-xl bg-indigo-600 text-white flex items-center justify-center font-bold">
+                  <Database className="w-4 h-4" />
+                </div>
+                <div>
+                  <h3 className="text-base font-black text-slate-900 leading-tight">
+                    Strapi Headless CMS Launchpad
+                  </h3>
+                  <p className="text-[11px] font-mono text-slate-500">
+                    Connection & Setup Assistant
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => setShowStrapiModal(false)}
+                className="p-1.5 rounded-full hover:bg-slate-100 text-slate-400 hover:text-slate-800 transition"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Current Health Status Pill */}
+            <div className={`p-3 rounded-2xl border flex items-center justify-between text-xs font-mono ${
+              strapiStatus.online 
+                ? 'bg-emerald-50 border-emerald-200 text-emerald-800' 
+                : 'bg-amber-50 border-amber-200 text-amber-900'
+            }`}>
+              <div className="flex items-center gap-2">
+                <span className={`w-2.5 h-2.5 rounded-full ${strapiStatus.online ? 'bg-emerald-500 animate-ping' : 'bg-amber-500'}`} />
+                <span className="font-bold">
+                  {strapiStatus.online ? `Connected (${strapiStatus.latencyMs}ms)` : 'Server Not Detected'}
+                </span>
+              </div>
+              <span className="text-[10px] truncate max-w-[170px] text-slate-600">
+                {strapiUrl}
+              </span>
+            </div>
+
+            {/* Explanatory Message */}
+            <div className="text-xs text-slate-600 leading-relaxed space-y-2">
+              <p>
+                Strapi ek <strong>independent open-source backend server</strong> hai. Browser me iska Admin Panel tabhi open hota hai jab aapne local machine (port 1337) par Strapi start kiya ho ya apna Cloud Strapi URL connect kiya ho.
+              </p>
+            </div>
+
+            {/* Option 1: Configure Custom Cloud Strapi URL */}
+            <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
+              <label className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                <Globe className="w-3.5 h-3.5 text-indigo-600" />
+                <span>Option 1: Connect Cloud / Remote Strapi Server</span>
+              </label>
+              <div className="flex items-center gap-2">
+                <input
+                  type="text"
+                  value={strapiUrl}
+                  onChange={(e) => setStrapiUrl(e.target.value)}
+                  placeholder="https://my-strapi.onrender.com or http://localhost:1337"
+                  className="flex-1 px-3 py-2 rounded-xl text-xs font-mono bg-white border border-slate-200 focus:outline-none focus:border-indigo-600 text-slate-900"
+                />
+                <button
+                  type="button"
+                  onClick={() => {
+                    try { localStorage.setItem('truthpulse_strapi_url', strapiUrl); } catch {}
+                    checkStrapi(strapiUrl, false);
+                  }}
+                  disabled={strapiStatus.checking}
+                  className="px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-mono text-xs font-bold transition shrink-0"
+                >
+                  {strapiStatus.checking ? 'Testing...' : 'Test & Save'}
+                </button>
+              </div>
+            </div>
+
+            {/* Option 2: 1-Click Terminal Quickstart */}
+            <div className="p-3.5 rounded-2xl bg-slate-900 text-white space-y-2">
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-bold text-slate-200 flex items-center gap-1.5 font-mono">
+                  <Server className="w-3.5 h-3.5 text-emerald-400" />
+                  <span>Option 2: Run Local Strapi (Terminal)</span>
+                </label>
+                <button
+                  type="button"
+                  onClick={() => {
+                    navigator.clipboard.writeText('npx create-strapi-app@latest truthpulse-cms --quickstart');
+                    setStrapiCopiedCmd(true);
+                    setTimeout(() => setStrapiCopiedCmd(false), 2000);
+                  }}
+                  className="px-2 py-0.5 rounded bg-white/10 hover:bg-white/20 text-emerald-400 font-mono text-[10px] transition"
+                >
+                  {strapiCopiedCmd ? 'Copied ✓' : 'Copy Command'}
+                </button>
+              </div>
+              <pre className="text-[11px] font-mono text-emerald-300 p-2 rounded-lg bg-black/50 overflow-x-auto select-all">
+npx create-strapi-app@latest truthpulse-cms --quickstart
+              </pre>
+              <p className="text-[10px] text-slate-400 font-sans leading-tight">
+                Is command se local SQLite database ke saath port 1337 par Strapi server start ho jayega.
+              </p>
+            </div>
+
+            {/* Actions */}
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-2.5 pt-2">
+              <a
+                href={`${strapiUrl.replace(/\/$/, '')}/admin`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition border border-slate-200"
+              >
+                <span>Open {strapiUrl.replace('http://', '').replace('https://', '')}/admin anyway</span>
+                <ExternalLink className="w-3 h-3" />
+              </a>
+
+              <button
+                type="button"
+                onClick={() => setShowStrapiModal(false)}
+                className="w-full sm:w-auto px-5 py-2 rounded-xl bg-slate-900 hover:bg-black text-white text-xs font-bold transition"
+              >
+                Got It
+              </button>
+            </div>
+
           </div>
         </div>
       )}
