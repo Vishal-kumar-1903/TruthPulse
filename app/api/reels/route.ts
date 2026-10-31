@@ -4,7 +4,7 @@ import Article from '@/models/Article';
 import AdminUser from '@/models/AdminUser';
 import { generateContentHash } from '@/lib/crypto';
 import { bot4VerificationAuditor } from '@/lib/agents';
-import { DEFAULT_BREAKING_SHORTS, BreakingShort } from '@/components/BreakingShorts';
+import { DEFAULT_BREAKING_SHORTS, BreakingShort } from '@/lib/reelsData';
 import { publishArticleToStrapi } from '@/lib/strapi';
 
 export const dynamic = 'force-dynamic';
