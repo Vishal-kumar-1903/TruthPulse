@@ -71,3 +71,27 @@
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(148, 163, 184, 0.5);
 }
+
+/* Suppress Netlify Injected Badges, Drawers, HUD, and Promotional Floating Overlays */
+iframe[src*="netlify"],
+iframe[id*="netlify"],
+iframe[class*="netlify"],
+[data-netlify-site-id],
+#netlify-badge,
+.netlify-badge,
+.netlify-hud,
+#netlify-hud,
+[class*="netlify-hud"],
+[id*="netlify-hud"],
+div[data-testid*="netlify"],
+div[class*="feedback-badge"],
+div[class*="badge-container"] {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  max-width: 0 !important;
+  max-height: 0 !important;
+  position: absolute !important;
+  left: -9999px !important;
+}
