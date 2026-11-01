@@ -3,5 +3,7 @@
   publish = ".next"
 
 [build.environment]
+  SECRETS_SCAN_OMIT_PATHS = ".env.example"
+  SECRETS_SCAN_OMIT_KEYS = "NEXT_PUBLIC_APP_URL"
   NODE_VERSION = "20"
   NEXT_TELEMETRY_DISABLED = "1"
