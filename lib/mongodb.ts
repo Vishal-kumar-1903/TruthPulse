@@ -21,18 +21,20 @@ if (!global.mongooseCache) {
 }
 
 export async function connectDB(): Promise<typeof mongoose | null> {
+  const uri = process.env.MONGODB_URI || MONGODB_URI;
+
   // If already connected and readyState is 1 (connected), return cached connection immediately
   if (cached.conn && mongoose.connection.readyState === 1) {
     return cached.conn;
   }
 
-  // Fast-fail: If MONGODB_URI is not configured, do not wait or spin up slow memory servers
-  if (!MONGODB_URI) {
+  // Fast-fail: If uri is not configured, do not wait or spin up slow memory servers
+  if (!uri) {
     return null;
   }
 
   if (!cached.promise) {
-    const isCloudAtlas = MONGODB_URI.includes('mongodb+srv://') || MONGODB_URI.includes('mongodb.net');
+    const isCloudAtlas = uri.includes('mongodb+srv://') || uri.includes('mongodb.net');
     const opts: mongoose.ConnectOptions = {
       serverSelectionTimeoutMS: isCloudAtlas ? 15000 : 3000,
       autoIndex: false,
@@ -44,7 +46,7 @@ export async function connectDB(): Promise<typeof mongoose | null> {
 
     cached.promise = (async () => {
       try {
-        const conn = await mongoose.connect(MONGODB_URI, opts);
+        const conn = await mongoose.connect(uri, opts);
         return conn;
       } catch (err: any) {
         console.warn(`⚠️ Configured MONGODB_URI connection failed (${err.message}). Using instant fallback.`);
