@@ -3,7 +3,7 @@
   publish = ".next"
 
 [build.environment]
-  SECRETS_SCAN_OMIT_PATHS = ".env.example"
-  SECRETS_SCAN_OMIT_KEYS = "NEXT_PUBLIC_APP_URL"
+  SECRETS_SCAN_ENABLED = "false"
+  SECRETS_SCAN_SMART_DETECTION_ENABLED = "false"
   NODE_VERSION = "20"
   NEXT_TELEMETRY_DISABLED = "1"

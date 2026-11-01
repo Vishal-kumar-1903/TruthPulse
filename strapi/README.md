@@ -54,7 +54,7 @@ Apne `.env.local` me ye variables set karein:
 STRAPI_URL=http://localhost:1337
 STRAPI_API_TOKEN=your_strapi_full_access_token_here
 NEXT_PUBLIC_STRAPI_URL=http://localhost:1337
-STRAPI_WEBHOOK_SECRET=truthpulse_strapi_secret_key
+STRAPI_WEBHOOK_SECRET=your_custom_webhook_secret_here
 ```
 
 ### Strapi me API Token generate karne ke liye:
@@ -70,9 +70,9 @@ STRAPI_WEBHOOK_SECRET=truthpulse_strapi_secret_key
 Jab editor Strapi me article likhkar **Publish** click karega, Strapi Next.js ko notify karega:
 1. Strapi Admin -> **Settings** -> **Webhooks** -> **Create new Webhook**.
 2. Name: `TruthPulse Auto-Sync`.
-3. URL: `http://localhost:3000/api/webhooks/strapi` (ya live production domain: `https://truth-pulse-coral.vercel.app/api/webhooks/strapi`).
+3. URL: `https://your-domain.com/api/webhooks/strapi`.
 4. Headers:
-   - `Authorization`: `Bearer truthpulse_strapi_secret_key`
+   - `Authorization`: `Bearer your_custom_webhook_secret_here`
 5. Events:
    - Check `Entry` -> `publish`, `unpublish`, `update`, `create`, `delete`.
 6. Click **Save**.
