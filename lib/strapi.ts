@@ -33,7 +33,7 @@ export interface StrapiConfig {
 }
 
 export function getStrapiURL(path = ''): string {
-  const base = process.env.STRAPI_URL || process.env.NEXT_PUBLIC_STRAPI_URL || 'http://localhost:1337';
+  const base = process.env.STRAPI_URL || process.env.NEXT_PUBLIC_STRAPI_URL || 'https://strapi.internal';
   return `${base.replace(/\/$/, '')}${path}`;
 }
 
@@ -205,7 +205,7 @@ export function normalizeStrapiArticle(item: any): any {
       city: attrs.city || ''
     },
     sources: attrs.sources || [
-      { name: 'Strapi Headless CMS Editorial', url: 'http://localhost:1337', stance: 'CORROBORATING' }
+      { name: 'Strapi Headless CMS Editorial', url: 'https://strapi.internal', stance: 'CORROBORATING' }
     ],
     trustScore: attrs.trustScore ?? 90,
     upvotes: attrs.upvotes || 0,

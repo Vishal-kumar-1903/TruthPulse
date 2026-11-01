@@ -12,7 +12,7 @@ Agar aapke system me Docker installed hai:
 cd strapi
 docker compose up -d
 ```
-Strapi Admin panel open karein: `http://localhost:1337/admin`
+Strapi Admin panel open karein: `http://127.0.0.1:8080/admin`
 
 ### Option B: Native Node.js CLI (Quick Setup)
 ```bash
@@ -24,7 +24,7 @@ Isse local SQLite database ke saath Strapi ready ho jayega!
 
 ## 2. Article Content-Type Setup
 
-1. Strapi Admin me login karein (`http://localhost:1337/admin`).
+1. Strapi Admin me login karein (`http://127.0.0.1:8080/admin`).
 2. **Content-Type Builder** me jayein -> Create New Collection Type -> Display Name: `Article`.
 3. Ya directly `strapi/schema/article.json` file ko copy karke `src/api/article/content-types/article/schema.json` me replace kar dein.
 
@@ -51,9 +51,9 @@ Isse local SQLite database ke saath Strapi ready ho jayega!
 
 Apne `.env.local` me ye variables set karein:
 ```env
-STRAPI_URL=http://localhost:1337
+STRAPI_URL=http://127.0.0.1:8080
 STRAPI_API_TOKEN=your_strapi_full_access_token_here
-NEXT_PUBLIC_STRAPI_URL=http://localhost:1337
+NEXT_PUBLIC_STRAPI_URL=http://127.0.0.1:8080
 STRAPI_WEBHOOK_SECRET=your_custom_webhook_secret_here
 ```
 
