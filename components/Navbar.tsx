@@ -479,6 +479,12 @@ export default function Navbar({
                                   </span>
                                 </div>
                                 <div className="text-[10px] text-slate-500 font-mono truncate">{currentUser.email}</div>
+                                {currentUser.pressId && (
+                                  <div className="mt-1 inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-slate-900 text-white font-mono text-[9px] font-bold">
+                                    <span>Press ID:</span>
+                                    <span className="text-emerald-400">{currentUser.pressId}</span>
+                                  </div>
+                                )}
                                 <div className="mt-2 flex items-center justify-between pt-1.5 border-t border-slate-200/60 dark:border-slate-800/60 text-[11px] font-mono">
                                   <span className="text-amber-600 dark:text-amber-400 font-bold flex items-center gap-1">
                                     <Coins className="w-3 h-3 shrink-0" />

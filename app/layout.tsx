@@ -28,13 +28,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="hi" className="w-full max-w-full overflow-x-hidden">
+    <html lang="hi" suppressHydrationWarning className="w-full max-w-full overflow-x-hidden">
       <head>
         <link rel="manifest" href="/manifest.json" />
         <link rel="icon" type="image/svg+xml" href="/icon.svg" />
         <meta name="theme-color" content="#dc2626" />
       </head>
-      <body className="min-h-screen bg-slate-50 text-slate-900 antialiased selection:bg-red-500 selection:text-white w-full max-w-full overflow-x-hidden">
+      <body suppressHydrationWarning className="min-h-screen bg-slate-50 text-slate-900 antialiased selection:bg-red-500 selection:text-white w-full max-w-full overflow-x-hidden">
         {children}
         <script
           dangerouslySetInnerHTML={{

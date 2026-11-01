@@ -5,11 +5,13 @@ import User from '@/models/User';
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json().catch(() => ({}));
-    const { role = 'READER', email, name } = body;
+    const { role = 'READER', email, name, pressId, agency, isVerified } = body;
 
     let targetEmail = email;
     let targetName = name;
     let targetRole = role;
+    let targetPressId = pressId || (role === 'CHIEF_EDITOR' ? 'TP-ED-9081' : (role === 'ADMIN' ? 'TP-ADM-001' : undefined));
+    let targetAgency = agency || (role === 'CHIEF_EDITOR' || role === 'ADMIN' ? 'TruthPulse National Editorial Bureau' : undefined);
 
     if (role === 'READER' && !email) {
       targetEmail = 'rohit.sharma@gmail.com';
@@ -53,6 +55,9 @@ export async function POST(req: NextRequest) {
           email: user.email,
           role: user.role,
           truthCredits: user.truthCredits,
+          pressId: targetPressId,
+          agency: targetAgency,
+          isVerified: true,
           votedArticles: user.votedArticles || [],
           bookmarks: user.bookmarks || []
         };
@@ -87,6 +92,9 @@ export async function POST(req: NextRequest) {
       email: targetEmail,
       role: targetRole,
       truthCredits: targetRole === 'CHIEF_EDITOR' ? 185 : 50,
+      pressId: targetPressId,
+      agency: targetAgency,
+      isVerified: true,
       votedArticles: [],
       bookmarks: []
     };

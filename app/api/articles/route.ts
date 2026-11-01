@@ -131,8 +131,19 @@ export async function GET(req: NextRequest) {
         .limit(50);
 
       if (articles && articles.length > 0) {
+        const sanitized = articles.map((art: any) => {
+          const doc = art.toObject ? art.toObject() : { ...art };
+          if (doc.mediaUrl && doc.mediaUrl.includes('mixkit.co')) {
+            doc.mediaUrl = 'https://res.cloudinary.com/demo/video/upload/sea_turtle.mp4';
+          }
+          if (doc.imageUrl && doc.imageUrl.includes('photo-1509391365360')) {
+            doc.imageUrl = 'https://images.unsplash.com/photo-1585829365295-ab7cd400c167?w=1000';
+          }
+          return doc;
+        });
+
         return NextResponse.json(
-          { success: true, count: articles.length, data: articles, isDatabaseConnected: true },
+          { success: true, count: sanitized.length, data: sanitized, isDatabaseConnected: true },
           {
             headers: {
               'Cache-Control': 'public, s-maxage=10, stale-while-revalidate=50',
