@@ -79,22 +79,22 @@ interface ArticlePerformance {
 const REEL_PRESET_CLIPS = [
   {
     name: 'City Traffic Night',
-    url: 'https://assets.mixkit.co/videos/preview/mixkit-aerial-view-of-city-traffic-at-night-11-large.mp4',
+    url: 'https://res.cloudinary.com/demo/video/upload/sea_turtle.mp4',
     poster: 'https://images.unsplash.com/photo-1541872703-74c5e44368f9?w=1000'
   },
   {
     name: 'Solar Energy Field',
-    url: 'https://assets.mixkit.co/videos/preview/mixkit-solar-panels-in-a-field-42517-large.mp4',
+    url: 'https://res.cloudinary.com/demo/video/upload/elephants.mp4',
     poster: 'https://images.unsplash.com/photo-1574943320219-553eb213f72d?w=1000'
   },
   {
     name: 'Satellite Weather Radar',
-    url: 'https://assets.mixkit.co/videos/preview/mixkit-satellite-view-of-clouds-over-earth-42485-large.mp4',
+    url: 'https://res.cloudinary.com/demo/video/upload/dog.mp4',
     poster: 'https://images.unsplash.com/photo-1516912481808-3406841bd33c?w=1000'
   },
   {
     name: 'Industrial Rolling Mill',
-    url: 'https://assets.mixkit.co/videos/preview/mixkit-welder-working-in-a-metal-shop-42686-large.mp4',
+    url: 'https://res.cloudinary.com/demo/video/upload/rooster.mp4',
     poster: 'https://images.unsplash.com/photo-1504917599217-d4dc5ebe6122?w=1000'
   }
 ];
@@ -138,7 +138,7 @@ export default function EditorStudioPage() {
   const [reelHeadline, setReelHeadline] = useState('');
   const [reelSnippet, setReelSnippet] = useState('');
   const [reelBadge, setReelBadge] = useState<'BREAKING' | 'ALERT' | 'FACT-CHECK'>('BREAKING');
-  const [reelVideoUrl, setReelVideoUrl] = useState('https://assets.mixkit.co/videos/preview/mixkit-aerial-view-of-city-traffic-at-night-11-large.mp4');
+  const [reelVideoUrl, setReelVideoUrl] = useState('https://res.cloudinary.com/demo/video/upload/sea_turtle.mp4');
   const [reelPosterUrl, setReelPosterUrl] = useState('https://images.unsplash.com/photo-1541872703-74c5e44368f9?w=1000');
   const [reelLocation, setReelLocation] = useState('New Delhi');
   const [reelSourceUrl, setReelSourceUrl] = useState('https://ptinews.com/verified-dispatch-2026');

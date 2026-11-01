@@ -26,7 +26,7 @@ export const DEFAULT_BREAKING_SHORTS: BreakingShort[] = [
     category: 'Politics',
     imageUrl: 'https://images.unsplash.com/photo-1541872703-74c5e44368f9?w=1000',
     mediaType: 'VIDEO_LOOP',
-    mediaUrl: 'https://assets.mixkit.co/videos/preview/mixkit-aerial-view-of-city-traffic-at-night-11-large.mp4',
+    mediaUrl: 'https://res.cloudinary.com/demo/video/upload/sea_turtle.mp4',
     trustScore: 96,
     timeAgo: '12m ago'
   },
@@ -40,7 +40,7 @@ export const DEFAULT_BREAKING_SHORTS: BreakingShort[] = [
     category: 'Environment',
     imageUrl: 'https://images.unsplash.com/photo-1574943320219-553eb213f72d?w=1000',
     mediaType: 'VIDEO_LOOP',
-    mediaUrl: 'https://assets.mixkit.co/videos/preview/mixkit-solar-panels-in-a-field-42517-large.mp4',
+    mediaUrl: 'https://res.cloudinary.com/demo/video/upload/elephants.mp4',
     trustScore: 95,
     timeAgo: '24m ago'
   },

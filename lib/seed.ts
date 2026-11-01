@@ -55,7 +55,7 @@ export async function seedDatabase(force: boolean = false) {
         isPinned: true,
         imageUrl: 'https://images.unsplash.com/photo-1541872703-74c5e44368f9?w=1200',
         mediaType: 'VIDEO_LOOP',
-        mediaUrl: 'https://assets.mixkit.co/videos/preview/mixkit-aerial-view-of-city-traffic-at-night-11-large.mp4',
+        mediaUrl: 'https://res.cloudinary.com/demo/video/upload/sea_turtle.mp4',
         author: 'TruthPulse National Bureau'
       },
 
@@ -80,7 +80,7 @@ export async function seedDatabase(force: boolean = false) {
         trustScore: 94,
         imageUrl: 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=1200',
         mediaType: 'VIDEO_LOOP',
-        mediaUrl: 'https://assets.mixkit.co/videos/preview/mixkit-solar-panels-in-a-field-42517-large.mp4',
+        mediaUrl: 'https://res.cloudinary.com/demo/video/upload/elephants.mp4',
         author: 'Central India Correspondent'
       },
 

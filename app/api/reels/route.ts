@@ -36,7 +36,7 @@ function articleToShort(doc: any): BreakingShort {
     category: doc.category || 'Politics',
     imageUrl: doc.imageUrl || 'https://images.unsplash.com/photo-1541872703-74c5e44368f9?w=1000',
     mediaType: doc.mediaType || 'VIDEO_LOOP',
-    mediaUrl: doc.mediaUrl || 'https://assets.mixkit.co/videos/preview/mixkit-aerial-view-of-city-traffic-at-night-11-large.mp4',
+    mediaUrl: doc.mediaUrl || 'https://res.cloudinary.com/demo/video/upload/sea_turtle.mp4',
     trustScore: doc.trustScore || 95,
     timeAgo: formatTimeAgo(doc.createdAt)
   };
@@ -210,7 +210,7 @@ export async function POST(req: NextRequest) {
       author,
       imageUrl: imageUrl || 'https://images.unsplash.com/photo-1541872703-74c5e44368f9?w=1000',
       mediaType: 'VIDEO_LOOP',
-      mediaUrl: mediaUrl || 'https://assets.mixkit.co/videos/preview/mixkit-aerial-view-of-city-traffic-at-night-11-large.mp4'
+      mediaUrl: mediaUrl || 'https://res.cloudinary.com/demo/video/upload/sea_turtle.mp4'
     };
 
     const conn = await connectDB();

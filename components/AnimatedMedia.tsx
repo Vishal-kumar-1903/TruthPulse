@@ -124,7 +124,7 @@ export default function AnimatedMedia({
             muted={isMuted}
             playsInline
             onError={() => {
-              console.warn('Video loop failed to load, falling back to Ken-Burns image:', mediaUrl);
+              // Silently switch to animated Ken-Burns image without console spam
               setVideoFailed(true);
             }}
             className={`w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105 ${className}`}
