@@ -18,6 +18,29 @@ import {
 } from 'lucide-react';
 import { MediaType } from './NewsCard';
 
+export function extractYouTubeId(url?: string): string | null {
+  if (!url) return null;
+  const trimmed = url.trim();
+
+  if (/^[a-zA-Z0-9_-]{11}$/.test(trimmed)) {
+    return trimmed;
+  }
+  if (trimmed.startsWith('yt:')) {
+    return trimmed.slice(3).trim();
+  }
+
+  const shortsMatch = trimmed.match(/(?:youtube\.com\/shorts\/)([a-zA-Z0-9_-]{11})/i);
+  if (shortsMatch) return shortsMatch[1];
+
+  const youtuBeMatch = trimmed.match(/(?:youtu\.be\/)([a-zA-Z0-9_-]{11})/i);
+  if (youtuBeMatch) return youtuBeMatch[1];
+
+  const watchMatch = trimmed.match(/(?:youtube\.com\/(?:watch\?v=|embed\/))([a-zA-Z0-9_-]{11})/i);
+  if (watchMatch) return watchMatch[1];
+
+  return null;
+}
+
 export interface AnimatedMediaProps {
   mediaType?: MediaType;
   mediaUrl?: string;
@@ -56,6 +79,7 @@ export default function AnimatedMedia({
   const containerRef = useRef<HTMLDivElement | null>(null);
 
   const fallbackImg = imageUrl || 'https://images.unsplash.com/photo-1585829365295-ab7cd400c167?w=1000';
+  const youtubeId = extractYouTubeId(mediaUrl || imageUrl);
   const effectiveMediaType = videoFailed ? 'IMAGE' : mediaType;
 
   // 1. Intersection Observer: Autoplay video only when in viewport to preserve battery & CPU
@@ -111,53 +135,71 @@ export default function AnimatedMedia({
       style={aspectRatio ? { aspectRatio } : undefined}
     >
       {/* =========================================================================
-          FORMAT 1: VIDEO LOOP (Lightweight, Autoplay, Muted WebM/MP4)
+          FORMAT 1: VIDEO LOOP / YOUTUBE SHORTS (Lightweight, Autoplay, Muted)
          ========================================================================= */}
       {effectiveMediaType === 'VIDEO_LOOP' && (
-        <div className="relative w-full h-full overflow-hidden">
-          <video
-            ref={videoRef}
-            src={mediaUrl || imageUrl}
-            poster={fallbackImg}
-            autoPlay
-            loop
-            muted={isMuted}
-            playsInline
-            onError={() => {
-              // Silently switch to animated Ken-Burns image without console spam
-              setVideoFailed(true);
-            }}
-            className={`w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105 ${className}`}
-          />
-
-          {/* Sound & Play Controls Overlay */}
-          <div className="absolute bottom-2.5 right-2.5 z-20 flex items-center gap-1.5 opacity-90 hover:opacity-100 transition-opacity">
-            <button
-              onClick={toggleMute}
-              className="p-1.5 rounded-full bg-black/60 hover:bg-black/90 text-white backdrop-blur-md border border-white/20 transition-all hover:scale-105 shadow-sm"
-              title={isMuted ? 'Unmute Audio' : 'Mute Audio'}
-            >
-              {isMuted ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5 text-cyan-400" />}
-            </button>
-
-            <button
-              onClick={togglePlay}
-              className="p-1.5 rounded-full bg-black/60 hover:bg-black/90 text-white backdrop-blur-md border border-white/20 transition-all hover:scale-105 shadow-sm"
-              title={isPlaying ? 'Pause Loop' : 'Play Loop'}
-            >
-              {isPlaying ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5 fill-current text-emerald-400" />}
-            </button>
+        youtubeId ? (
+          <div className="relative w-full h-full overflow-hidden bg-black">
+            <iframe
+              src={`https://www.youtube-nocookie.com/embed/${youtubeId}?autoplay=1&mute=1&loop=1&playlist=${youtubeId}&controls=0&modestbranding=1&rel=0&playsinline=1`}
+              title={alt || 'TruthPulse Video Broadcast'}
+              className={`w-full h-full border-0 pointer-events-auto ${className}`}
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+            />
+            {showBadge && (
+              <div className="absolute bottom-2.5 left-2.5 z-20 flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-red-600/90 backdrop-blur-md text-[10px] font-mono text-white pointer-events-none shadow-md">
+                <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span>
+                <span className="font-bold">YT SHORTS</span>
+              </div>
+            )}
           </div>
+        ) : (
+          <div className="relative w-full h-full overflow-hidden">
+            <video
+              ref={videoRef}
+              src={mediaUrl || imageUrl}
+              poster={fallbackImg}
+              autoPlay
+              loop
+              muted={isMuted}
+              playsInline
+              onError={() => {
+                // Silently switch to animated Ken-Burns image without console spam
+                setVideoFailed(true);
+              }}
+              className={`w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105 ${className}`}
+            />
 
-          {/* Video Loop Indicator Badge */}
-          {showBadge && (
-            <div className="absolute bottom-2.5 left-2.5 z-20 flex items-center gap-1 px-2 py-0.5 rounded-full bg-black/65 backdrop-blur-md border border-cyan-500/30 text-[10px] font-mono text-cyan-300 pointer-events-none">
-              <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-ping mr-0.5"></span>
-              <Video className="w-3 h-3 text-cyan-400" />
-              <span>LOOP</span>
+            {/* Sound & Play Controls Overlay */}
+            <div className="absolute bottom-2.5 right-2.5 z-20 flex items-center gap-1.5 opacity-90 hover:opacity-100 transition-opacity">
+              <button
+                onClick={toggleMute}
+                className="p-1.5 rounded-full bg-black/60 hover:bg-black/90 text-white backdrop-blur-md border border-white/20 transition-all hover:scale-105 shadow-sm"
+                title={isMuted ? 'Unmute Audio' : 'Mute Audio'}
+              >
+                {isMuted ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5 text-cyan-400" />}
+              </button>
+
+              <button
+                onClick={togglePlay}
+                className="p-1.5 rounded-full bg-black/60 hover:bg-black/90 text-white backdrop-blur-md border border-white/20 transition-all hover:scale-105 shadow-sm"
+                title={isPlaying ? 'Pause Loop' : 'Play Loop'}
+              >
+                {isPlaying ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5 fill-current text-emerald-400" />}
+              </button>
             </div>
-          )}
-        </div>
+
+            {/* Video Loop Indicator Badge */}
+            {showBadge && (
+              <div className="absolute bottom-2.5 left-2.5 z-20 flex items-center gap-1 px-2 py-0.5 rounded-full bg-black/65 backdrop-blur-md border border-cyan-500/30 text-[10px] font-mono text-cyan-300 pointer-events-none">
+                <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-ping mr-0.5"></span>
+                <Video className="w-3 h-3 text-cyan-400" />
+                <span>LOOP</span>
+              </div>
+            )}
+          </div>
+        )
       )}
 
       {/* =========================================================================

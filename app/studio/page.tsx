@@ -96,6 +96,16 @@ const REEL_PRESET_CLIPS = [
     name: 'Industrial Rolling Mill',
     url: 'https://res.cloudinary.com/demo/video/upload/rooster.mp4',
     poster: 'https://images.unsplash.com/photo-1504917599217-d4dc5ebe6122?w=1000'
+  },
+  {
+    name: 'India Tech Innovation (YouTube Shorts)',
+    url: 'https://www.youtube.com/shorts/kJQP7kiw5Fk',
+    poster: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=1000'
+  },
+  {
+    name: 'ISRO Space Mission (YouTube Shorts)',
+    url: 'https://www.youtube.com/shorts/5Bw_G751kM8',
+    poster: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1000'
   }
 ];
 
@@ -430,7 +440,7 @@ export default function EditorStudioPage() {
     }
 
     if (!reelVideoUrl.trim()) {
-      alert('Please enter or select a valid Vertical Video URL (MP4 / WebM).');
+      alert('Please enter or select a valid Video URL (YouTube Shorts or MP4 / WebM).');
       return;
     }
 
@@ -1373,7 +1383,7 @@ export default function EditorStudioPage() {
                       type="url"
                       value={reelVideoUrl}
                       onChange={(e) => setReelVideoUrl(e.target.value)}
-                      placeholder="https://your-cdn.com/reel-video.mp4"
+                      placeholder="YouTube Shorts URL (e.g. youtube.com/shorts/...) or MP4/WebM URL"
                       className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-900 font-mono placeholder-slate-400 focus:bg-white focus:border-red-600 focus:outline-none"
                     />
 
@@ -1595,25 +1605,16 @@ export default function EditorStudioPage() {
                     {/* Smartphone Mockup Container */}
                     <div className="mx-auto w-[260px] sm:w-[280px] aspect-[9/16] rounded-3xl overflow-hidden bg-black border-4 border-slate-800 shadow-2xl relative flex flex-col justify-between p-3 select-none">
                       
-                      {/* Background Video Loop or Poster */}
+                      {/* Background Video Loop, YouTube Shorts or Poster */}
                       <div className="absolute inset-0 z-0 overflow-hidden">
-                        {reelVideoUrl ? (
-                          <video
-                            src={reelVideoUrl}
-                            poster={reelPosterUrl}
-                            autoPlay
-                            loop
-                            muted
-                            playsInline
-                            className="w-full h-full object-cover"
-                          />
-                        ) : (
-                          <img
-                            src={reelPosterUrl || 'https://images.unsplash.com/photo-1541872703-74c5e44368f9?w=1000'}
-                            alt="Poster"
-                            className="w-full h-full object-cover opacity-80"
-                          />
-                        )}
+                        <AnimatedMedia
+                          mediaType={reelVideoUrl ? 'VIDEO_LOOP' : 'IMAGE'}
+                          mediaUrl={reelVideoUrl}
+                          imageUrl={reelPosterUrl || 'https://images.unsplash.com/photo-1541872703-74c5e44368f9?w=1000'}
+                          alt="Reel Preview"
+                          showBadge={false}
+                          className="w-full h-full object-cover"
+                        />
                         <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-black/90 pointer-events-none"></div>
                       </div>
 
