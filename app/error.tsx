@@ -14,6 +14,16 @@ export default function GlobalError({
   useEffect(() => {
     // Log unexpected errors for monitoring
     console.error('TruthPulse Portal Unhandled Error:', error);
+
+    // Auto-heal stale client chunk mismatch after new deployment
+    if (typeof window !== 'undefined' && error?.message && error.message.includes('Loading chunk')) {
+      const retryKey = 'tp_chunk_auto_retry';
+      const lastRetry = sessionStorage.getItem(retryKey);
+      if (!lastRetry || Date.now() - parseInt(lastRetry, 10) > 10000) {
+        sessionStorage.setItem(retryKey, Date.now().toString());
+        window.location.reload();
+      }
+    }
   }, [error]);
 
   return (
