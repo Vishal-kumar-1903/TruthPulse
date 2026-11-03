@@ -64,8 +64,9 @@ export default function WhatsAppFactCheckModal({ isOpen, onClose }: WhatsAppFact
         ? `✅ VERIFIED STATUTORY FACT\n\n"${rag.queryClaim}"\n\n📌 Statutory Basis: ${rag.officialStatuteCitation}\n\n🔍 Summary: ${rag.legalImplication}`
         : `🚨 DEBUNKED / FABRICATED RUMOR\n\n"${rag.queryClaim}"\n\n❌ Official Verdict: ${rag.legalImplication}\n\n📌 Statutory Reference: ${rag.officialStatuteCitation}\n\n⚠️ Kripya is rumor ko WhatsApp groups me aage forward na karein!`;
 
+      const siteUrl = typeof window !== 'undefined' ? window.location.origin : 'https://truthpulse-live.web.app';
       const shareText = encodeURIComponent(
-        `[TruthPulse Fact-Check Alert]\n\n${responseText}\n\nRead Full Gazette Proof: https://truth-pulse-coral.vercel.app/`
+        `[TruthPulse Fact-Check Alert]\n\n${responseText}\n\n🔍 Read Full Gazette Proof & SHA-256 Verification:\n${siteUrl}`
       );
 
       setMessages((prev) => [

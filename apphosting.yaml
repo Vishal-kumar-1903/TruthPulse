@@ -15,7 +15,7 @@ env:
       - RUNTIME
       - BUILD
   - variable: NEXT_PUBLIC_APP_URL
-    value: https://truthpulse.web.app
+    value: https://truthpulse-live.web.app
     availability:
       - RUNTIME
       - BUILD

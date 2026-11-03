@@ -20,7 +20,7 @@ interface UpiTipModalProps {
   onClose: () => void;
   authorName: string;
   articleTitle: string;
-  currentUser: AuthUser | null;
+  currentUser?: AuthUser | null;
 }
 
 export default function UpiTipModal({

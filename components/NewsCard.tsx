@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { 
   ThumbsUp, 
   ThumbsDown, 
@@ -400,7 +401,9 @@ export default function NewsCard({
 
           {/* Headline */}
           <h3 className={`${isHero ? 'text-lg sm:text-2xl lg:text-3xl font-black' : 'text-base sm:text-lg font-bold'} text-slate-900 dark:text-slate-100 group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors line-clamp-2 sm:line-clamp-3 leading-snug mb-2.5`}>
-            {displayTitle}
+            <Link href={`/article/${article._id}`} className="hover:underline">
+              {displayTitle}
+            </Link>
           </h3>
 
           {/* 1-Click "Listen in 20s" Audio Narration */}
