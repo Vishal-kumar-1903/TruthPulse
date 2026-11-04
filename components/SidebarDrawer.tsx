@@ -82,7 +82,7 @@ export default function SidebarDrawer({
   darkMode,
   onToggleDarkMode,
   onOpenLiveStream,
-  currentLang = 'hi',
+  currentLang = 'en',
   onSelectLang,
   onOpenWhatsAppTipline,
   onOpenGazetteRag

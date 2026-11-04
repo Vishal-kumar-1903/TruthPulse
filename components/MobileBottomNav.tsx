@@ -27,7 +27,7 @@ export default function MobileBottomNav({
   onOpenMetro,
   onOpenMenu,
   activeTab = 'feed',
-  currentLang = 'hi'
+  currentLang = 'en'
 }: MobileBottomNavProps) {
   return (
     <nav 

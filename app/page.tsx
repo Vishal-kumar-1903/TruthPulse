@@ -65,9 +65,9 @@ function NewsPortalContent() {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
-  // User & Portal Preferences
+  // User & Portal Preferences (Default: Light Mode & English)
   const [darkMode, setDarkMode] = useState<boolean>(false);
-  const [currentLang, setCurrentLang] = useState<SupportedLanguage>('hi');
+  const [currentLang, setCurrentLang] = useState<SupportedLanguage>('en');
   const [currentUser, setCurrentUser] = useState<AuthUser | null>(null);
   const [reelsList, setReelsList] = useState(DEFAULT_BREAKING_SHORTS);
 
@@ -81,7 +81,14 @@ function NewsPortalContent() {
       if (savedLang) {
         setCurrentLang(savedLang);
       } else {
-        setCurrentLang('hi');
+        setCurrentLang('en');
+      }
+
+      const savedTheme = localStorage.getItem('truthpulse_theme');
+      if (savedTheme === 'dark') {
+        setDarkMode(true);
+      } else {
+        setDarkMode(false);
       }
       const savedUser = localStorage.getItem('truthpulse_user');
       if (savedUser) setCurrentUser(JSON.parse(savedUser));
@@ -155,6 +162,23 @@ function NewsPortalContent() {
       document.documentElement.classList.remove('dark');
     }
   }, [darkMode]);
+
+  // Persistent Language Switcher
+  const handleSelectLang = (lang: SupportedLanguage) => {
+    setCurrentLang(lang);
+    try {
+      localStorage.setItem('truthpulse_lang', lang);
+    } catch {}
+  };
+
+  // Persistent Theme Switcher (Default Light)
+  const handleToggleDarkMode = () => {
+    const next = !darkMode;
+    setDarkMode(next);
+    try {
+      localStorage.setItem('truthpulse_theme', next ? 'dark' : 'light');
+    } catch {}
+  };
 
   // Update URL Query Parameters
   const updateQueryParams = (
@@ -361,7 +385,7 @@ function NewsPortalContent() {
         onSelectMetro={handleSelectMetro}
         onSearch={handleSearch}
         darkMode={darkMode}
-        onToggleDarkMode={() => setDarkMode(!darkMode)}
+        onToggleDarkMode={handleToggleDarkMode}
         onOpenLiveStream={modals.liveStream.open}
         onOpenSidebar={modals.sidebar.open}
         onOpenReels={() => modals.reels.open(0)}
@@ -369,7 +393,7 @@ function NewsPortalContent() {
         onOpenAuthModal={() => modals.auth.open('Sign in to access credibility voting, bookmark articles, and view personal TruthCredits.')}
         onLogout={handleLogout}
         currentLang={currentLang}
-        onSelectLang={setCurrentLang}
+        onSelectLang={handleSelectLang}
         onOpenWhatsAppTipline={modals.whatsApp.open}
       />
 
@@ -389,11 +413,11 @@ function NewsPortalContent() {
         onOpenAuthModal={() => modals.auth.open('Sign in to verify stories and access the citizen credibility economy.')}
         onLogout={handleLogout}
         darkMode={darkMode}
-        onToggleDarkMode={() => setDarkMode(!darkMode)}
+        onToggleDarkMode={handleToggleDarkMode}
         onOpenLiveStream={modals.liveStream.open}
         onOpenReels={() => modals.reels.open(0)}
         currentLang={currentLang}
-        onSelectLang={setCurrentLang}
+        onSelectLang={handleSelectLang}
         onOpenWhatsAppTipline={modals.whatsApp.open}
         onOpenGazetteRag={() => handleOpenGazetteRag()}
       />

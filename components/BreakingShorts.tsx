@@ -36,7 +36,7 @@ export default function BreakingShorts({
   shorts: initialShorts = DEFAULT_BREAKING_SHORTS,
   onSelectArticle,
   onOpenReels,
-  currentLang = 'hi'
+  currentLang = 'en'
 }: BreakingShortsProps) {
   const [liveShorts, setLiveShorts] = useState<BreakingShort[]>(initialShorts);
   const [currentIndex, setCurrentIndex] = useState(0);

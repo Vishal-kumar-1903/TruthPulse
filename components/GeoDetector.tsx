@@ -73,7 +73,7 @@ export default function GeoDetector({
   currentMetro,
   onLocationChange,
   onClearLocation,
-  currentLang = 'hi'
+  currentLang = 'en'
 }: GeoDetectorProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');

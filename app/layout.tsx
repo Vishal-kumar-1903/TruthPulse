@@ -28,7 +28,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="hi" suppressHydrationWarning className="w-full max-w-full overflow-x-hidden">
+    <html lang="en" suppressHydrationWarning className="w-full max-w-full overflow-x-hidden">
       <head>
         <link rel="manifest" href="/manifest.json" />
         <link rel="icon" type="image/svg+xml" href="/icon.svg" />
